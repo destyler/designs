@@ -11,17 +11,17 @@ Requires Node 20 or later. No install, build step, service account, or external
 resource is needed.
 
 ```sh
-npm start
+npm run start:legacy
 ```
 
 - Gallery: <http://127.0.0.1:4173/examples/scoped-themes/>
 - Browser checks: <http://127.0.0.1:4173/examples/scoped-themes/checks.html>
-- Minimal original fixture: <http://127.0.0.1:4173/>
+- Minimal original fixture: <http://127.0.0.1:4173/examples/native-contract/>
 
-The server binds to `127.0.0.1` only. Use `PORT=4174 npm start` if 4173 is occupied
-(PowerShell: `$env:PORT=4174; npm start`). Serve the repository root if using another
+The server binds to `127.0.0.1` only. Use `PORT=4174 npm run start:legacy` if 4173 is occupied
+(PowerShell: `$env:PORT=4174; npm run start:legacy`). Serve the repository root if using another
 static server; opening the HTML as a `file:` URL will not reliably load ES modules.
-The GitHub source link is not a deployed preview.
+The standalone native playground is also retained in the deployed site. The root page now shows the separate source-backed React/Vue comparison; see the repository README.
 
 ## A two-minute walkthrough
 
@@ -90,6 +90,5 @@ cross-browser testing.
 - Four-framework integration, SSR/hydration, and real `@destyler-ui`
   interoperability: **not implemented or tested by this example**.
 
-No deployment, release, license change, external asset, or package dependency is
-included. The example inherits the prototype's token contract and documented
+This native fixture itself has no external assets or package dependencies. It is retained as a legacy experiment in the deployed repository, not the new framework integration. The example inherits the prototype's token contract and documented
 synchronization limitations; it is not a production component library.
