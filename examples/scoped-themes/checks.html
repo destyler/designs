@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Browser checks · Destyler designs</title><link rel="stylesheet" href="playground.css"><link rel="stylesheet" href="checks.css"><script type="module" src="checks.js"></script></head>
+  <body>
+    <header class="site-header"><a class="brand" href="./">← Theme playground</a><span>Real DOM / local browser</span></header>
+    <main class="checks-main"><h1>Check the contract.</h1><p>These checks exercise the actual example in an isolated, same-origin frame. They use native browser DOM and computed styles, with synthetic clicks and tab-key events. Trusted Escape handling, focus trapping, visual review, and assistive technology still need manual checks.</p>
+      <button id="run-checks" class="shell-button" type="button">Run browser checks</button><p id="check-summary" role="status">Not run.</p><ol id="check-results"></ol>
+      <details open><summary>Show the live test frame</summary><div id="frame-container"></div></details>
+    </main>
+  </body>
+</html>

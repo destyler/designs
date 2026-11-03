@@ -4,6 +4,27 @@ This is **newly written code**, not a copy or backup of the earlier Mac pilot.
 Only the earlier task's written results informed the requirements. No Mac files,
 screenshots, source archives, or browser sessions were accessed to build it.
 
+## Interactive example
+
+Run the four-card [theme playground](examples/scoped-themes/README.md) locally:
+
+```sh
+npm start
+```
+
+Open <http://127.0.0.1:4173/examples/scoped-themes/>. No package installation is
+needed. The example compares Neutral/Ember in light/dark mode, independent theme
+roots, local accent overrides, keyboard tabs, nested roots, an un-themed baseline,
+and a detached body-level dialog with a live nine-token comparison. The shared
+dialog disposes its previous theme binding before changing source ownership.
+
+The page imports this repository's actual theme CSS and portal synchronizer. Its
+controls remain **native HTML fixtures, not real `@destyler-ui` framework
+components**. Nothing has been deployed; repository file links are not live previews.
+
+See the [example guide](examples/scoped-themes/README.md) for the browser test page,
+manual checks, and verification limits.
+
 ## Scope
 
 - Original Neutral and Ember themes, each light and dark.
@@ -28,11 +49,13 @@ Requires Node 20+; no dependencies or install step.
 ```sh
 npm test
 npm run check
+npm run test:http
 ```
 
 The tests exercise the portal synchronizer with in-memory DOM test doubles,
 cleanup, observation, stale values, separate roots, and static fixture contracts.
-They do **not** prove real DOM inheritance, computed style, native dialog behavior,
+The HTTP smoke checks serve the example and assets over a loopback socket. These
+Node checks do **not** prove real DOM inheritance, computed style, native dialog behavior,
 focus restoration, visual appearance, or accessibility.
 
 ## Portal integration
@@ -62,7 +85,10 @@ No repository-wide license is assigned by this prototype: the repository owner
 must choose licensing before redistribution as a package. `private: true` prevents
 accidental npm publication.
 
-No browser was opened or browser test attempted. Prior browser/security denials
-were not retried or bypassed. No claims are made about four-framework integration,
+The example includes 23 browser checks for actual DOM/computed styles. They have
+not been executed in this cloud environment: the cloud browser could not reach
+the execution context's loopback server, and observing its error page was blocked
+by URL policy. No browser security restriction was bypassed. No visual screenshot
+has been verified. No claims are made about four-framework integration,
 SSR/hydration, browser compatibility, mobile layouts, complete accessibility,
 real UI component interoperability, or visual parity with the earlier pilot.

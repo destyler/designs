@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Theme playground · Destyler designs</title>
+    <link rel="stylesheet" href="../../styles/themes.css">
+    <link rel="stylesheet" href="playground.css">
+    <script type="module" src="playground.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#playground">Skip to playground</a>
+    <header class="site-header">
+      <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">d.</span> destyler <span class="brand-detail">/ designs</span></a>
+      <nav aria-label="Example navigation"><a href="checks.html">Browser checks ↗</a><a href="../../">Minimal fixture ↗</a></nav>
+    </header>
+    <main id="playground">
+      <section class="intro" aria-labelledby="page-title">
+        <div><p class="eyebrow">EXAMPLE 01 / SCOPED THEMES</p><h1 id="page-title">One structure.<br>Different character.</h1></div>
+        <div class="intro-copy"><p>The same native controls, four starting points. Change one card. Its neighbours stay exactly where you left them.</p><p class="prototype-note"><span class="status-dot" aria-hidden="true"></span> Native HTML prototype. Not a framework integration.</p></div>
+      </section>
+      <p id="compatibility" class="compatibility" role="status" hidden></p>
+      <section aria-labelledby="compare-title">
+        <div class="section-heading"><div><h2 id="compare-title">Compare the collection</h2><p>Try the tabs, tick a checkbox, then take that theme into a detached dialog.</p></div><button class="shell-button" id="reset-all" type="button">Reset all</button></div>
+        <div id="cards" class="cards"></div>
+        <p id="announcement" class="sr-only" role="status"></p>
+      </section>
+      <section class="boundary-section" aria-labelledby="boundary-title">
+        <div class="section-heading"><div><p class="eyebrow">THE BOUNDARY TEST</p><h2 id="boundary-title">A theme stays in its lane.</h2></div></div>
+        <div class="boundary-grid">
+          <section id="nested-parent" class="boundary-preview" data-theme-root data-skin="ember" data-theme="dark" aria-labelledby="parent-title">
+            <p class="preview-kicker">OUTER ROOT / EMBER DARK</p><h3 id="parent-title">Warm outside.</h3>
+            <label data-scope="checkbox" data-part="root"><input type="checkbox" checked data-scope="checkbox" data-part="control"> Outer checkbox</label>
+            <section id="nested-child" class="boundary-preview nested-preview" data-theme-root data-skin="neutral" data-theme="light" aria-labelledby="child-title">
+              <p class="preview-kicker">NESTED ROOT / NEUTRAL LIGHT</p><h3 id="child-title">Independent inside.</h3>
+              <label data-scope="checkbox" data-part="root"><input type="checkbox" checked data-scope="checkbox" data-part="control"> Inner checkbox</label>
+            </section>
+          </section>
+          <section class="baseline" aria-labelledby="baseline-title"><p class="eyebrow">NO THEME ROOT</p><h3 id="baseline-title">The browser's own controls.</h3><p>These controls use the same data hooks, but sit outside every theme root. Component styles should not reach them.</p>
+            <label data-scope="checkbox" data-part="root"><input id="baseline-checkbox" type="checkbox" checked data-scope="checkbox" data-part="control"> Un-themed checkbox</label>
+            <p><button id="baseline-button" type="button" data-scope="button" data-part="root">Un-themed button</button></p>
+            <p class="boundary-caption">The surrounding page layout is example-only CSS.</p>
+          </section>
+        </div>
+      </section>
+      <footer class="page-footer"><p>Built from the existing <code>styles/themes.css</code> and <code>bindPortalTheme</code> implementation. No packages, fonts, or assets loaded from a CDN.</p><p>Requires CSS <code>@scope</code> and native <code>&lt;dialog&gt;</code>. Browser checks are a focused regression suite, not a compatibility or accessibility certification.</p></footer>
+    </main>
+    <template id="card-template">
+      <article class="lab-card">
+        <div class="card-toolbar"><div><span class="card-number"></span><h3 class="card-title"></h3></div><span class="mode-tag"></span></div>
+        <div class="preview" data-theme-root>
+          <div class="preview-heading"><span class="workspace-mark" aria-hidden="true">N</span><span class="preview-kicker">NORTHSTAR / WORKSPACE</span><span class="preview-ellipsis" aria-hidden="true">···</span></div>
+          <h4>A little more focus.</h4><p class="preview-copy">Make room for the work that matters.</p>
+          <div role="tablist" aria-label="Workspace settings" data-scope="tabs" data-part="list">
+            <button type="button" role="tab" aria-selected="true" tabindex="0" data-tab="overview" data-scope="tabs" data-part="trigger">Overview</button>
+            <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="activity" data-scope="tabs" data-part="trigger">Activity</button>
+            <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="archive" disabled data-scope="tabs" data-part="trigger">Archive</button>
+          </div>
+          <div role="tabpanel" tabindex="0" data-panel="overview" data-scope="tabs" data-part="content"><p class="panel-title">Your daily rhythm</p><label data-scope="checkbox" data-part="root"><input type="checkbox" checked data-scope="checkbox" data-part="control"> Keep notifications quiet</label><label data-scope="checkbox" data-part="root"><input type="checkbox" data-scope="checkbox" data-part="control"> Send a weekly digest</label></div>
+          <div role="tabpanel" tabindex="0" data-panel="activity" data-scope="tabs" data-part="content" hidden><p class="panel-title">Ready when you are.</p><p class="preview-copy">Tab state belongs to this card. Try the arrow keys, Home, or End.</p></div>
+          <div role="tabpanel" tabindex="0" data-panel="archive" data-scope="tabs" data-part="content" hidden>Archive is unavailable in this example.</div>
+          <div class="preview-footer"><span class="preview-footnote">Same markup. New mood.</span><button type="button" data-action="open" data-scope="button" data-part="root">Open dialog ↗</button></div>
+        </div>
+        <div class="card-controls"><div class="control-row"><button class="shell-button" type="button" data-action="skin">Switch skin</button><button class="shell-button" type="button" data-action="mode">Dark mode</button><button class="shell-button" type="button" data-action="override" aria-pressed="false">Local accent</button></div><div class="token-strip"><span><span class="token-swatch" aria-hidden="true"></span><code class="accent-value"></code></span><span>radius <code class="radius-value"></code></span><button class="text-button" type="button" data-action="reset">Reset</button></div></div>
+      </article>
+    </template>
+    <dialog id="theme-dialog" class="theme-dialog" data-scope="dialog" data-part="content" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+      <p class="preview-kicker">DETACHED PORTAL / BODY CHILD</p><h2 id="dialog-title">Your theme, carried through.</h2><p id="dialog-description">This dialog is outside the source card. Its computed public tokens are copied from that card, including its local accent override.</p>
+      <div class="portal-owner">Source <strong id="portal-owner"></strong></div>
+      <label data-scope="checkbox" data-part="root"><input type="checkbox" checked data-scope="checkbox" data-part="control"> Still using the same contract</label>
+      <div class="dialog-actions"><button type="button" data-action="mode" data-scope="button" data-part="root">Toggle source mode</button><button type="button" data-action="override" data-scope="button" data-part="root">Toggle local accent</button></div>
+      <details class="token-details"><summary>Compare all 9 public tokens</summary><dl id="portal-tokens"></dl></details>
+      <div class="dialog-footer"><span id="portal-sync" role="status"></span><button type="button" data-action="close" data-scope="button" data-part="root" autofocus>Close dialog</button></div>
+    </dialog>
+  </body>
+</html>
