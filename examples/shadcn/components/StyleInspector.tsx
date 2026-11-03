@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { Check, Copy, Download, ExternalLink } from 'lucide-react'
+import { Check, Copy, Download, ExternalLink, X } from 'lucide-react'
 import tokens from '../styles/tokens.css?raw'
 import reactAdapter from '../adapters/ReactDemo.tsx?raw'
 import vueAdapter from '../adapters/VueDemo.vue?raw'
@@ -10,7 +10,7 @@ type View = 'tokens' | 'classes' | 'compiled' | 'adapter'
 const groups = ['tabs', 'switch', 'checkbox', 'dialog', 'card', 'button', 'label'] as const
 const repo = 'https://github.com/destyler/designs/blob/prototype/cloud-scoped-themes/examples/shadcn/'
 
-export function StyleInspector({ framework, selectedComponent = 'switch' }: { framework: Framework; selectedComponent?: (typeof groups)[number] }) {
+export function StyleInspector({ framework, selectedComponent = 'switch', onClose }: { framework: Framework; selectedComponent?: (typeof groups)[number]; onClose?: () => void }) {
   const [view, setView] = useState<View>('tokens')
   const [component, setComponent] = useState<(typeof groups)[number]>(selectedComponent)
   const [compiled, setCompiled] = useState<{ code: string; url?: string }>()
@@ -89,7 +89,7 @@ export function StyleInspector({ framework, selectedComponent = 'switch' }: { fr
     document.getElementById(`source-tab-${tabs[next].id}`)?.focus()
   }
   return <section id="css-inspector" className="style-inspector" aria-labelledby="inspector-title">
-    <div className="inspector-heading"><div><p className="eyebrow">Under the surface</p><h2 id="inspector-title">The details, in code.</h2></div><span className="inspector-badge">Read-only · live source</span></div>
+    <div className="inspector-heading"><div><p className="eyebrow">Under the surface</p><h2 id="inspector-title">The details, in code.</h2></div><div className="inspector-actions"><span className="inspector-badge">Read-only · live source</span>{onClose && <button onClick={onClose} className="inspector-close" aria-label="Close code view"><X size={16}/></button>}</div></div>
     <div className="source-tabs" role="tablist" aria-label="Style source">
       {tabs.map((tab, index) => <button key={tab.id} id={`source-tab-${tab.id}`} role="tab" aria-selected={view === tab.id} aria-controls="source-panel" tabIndex={view === tab.id ? 0 : -1} onClick={() => setView(tab.id)} onKeyDown={event => navigate(event, index)}>{tab.label}</button>)}
     </div>

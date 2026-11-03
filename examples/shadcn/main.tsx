@@ -35,6 +35,9 @@ function App() {
   const [framework, setFramework] = useState<Framework>('react')
   const [modes, setModes] = useState({ reference: false, react: false, vue: false })
   const [showCSS, setShowCSS] = useState(false)
+  useEffect(() => {
+    if (showCSS) document.getElementById('css-inspector')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+  }, [showCSS])
   useEffect(() => { const update = () => { if (Object.hasOwn(examples, window.location.hash.slice(1))) setExample(currentExample()) }; window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update) }, [])
   const selected = examples[example]
   const title = framework === 'react' ? 'Destyler React' : 'Destyler Vue'
@@ -59,7 +62,7 @@ function App() {
         <div className="page-breadcrumb"><span>{selected.group}</span><ChevronRight size={12}/><span>{selected.title}</span></div>
         <div className="page-intro"><div><h1>{selected.title}<span className="title-dot">.</span></h1><p className="intro-lead">{selected.description}</p><p className="intro-copy">{selected.detail}</p></div><span className="design-tag"><span/>New York</span></div>
         <div className="comparison-toolbar">
-          <div className="preview-controls"><button className={!showCSS ? 'selected' : ''} onClick={() => setShowCSS(false)} aria-pressed={!showCSS}><PanelsTopLeft size={15}/>Preview</button><button className={showCSS ? 'selected' : ''} aria-expanded={showCSS} aria-controls="css-inspector" onClick={() => setShowCSS(value => !value)}><Code2 size={15}/>{showCSS ? 'Hide CSS' : 'View CSS'}</button></div>
+          <div className="preview-controls"><button className={!showCSS ? 'selected' : ''} onClick={() => setShowCSS(false)} aria-pressed={!showCSS}><PanelsTopLeft size={15}/>Preview</button><button id="css-toggle" className={showCSS ? 'selected' : ''} aria-expanded={showCSS} aria-controls="css-inspector" onClick={() => setShowCSS(value => !value)}><Code2 size={15}/>{showCSS ? 'Hide CSS' : 'View CSS'}</button></div>
           <div className="toolbar-actions"><div className="framework-control"><label htmlFor="framework">Framework</label><div className="select-wrap"><select id="framework" aria-label="Destyler framework" value={framework} onChange={event => setFramework(event.target.value as Framework)}><option value="react">React</option><option value="vue">Vue</option></select><ChevronDown size={13} aria-hidden="true"/></div></div><div className="theme-control" role="group" aria-label="Both color modes"><button aria-label="All light" title="All light" aria-pressed={!modes.reference && !modes[framework]} onClick={() => setModes({ reference: false, react: false, vue: false })}><Sun size={14}/></button><button aria-label="All dark" title="All dark" aria-pressed={modes.reference && modes[framework]} onClick={() => setModes({ reference: true, react: true, vue: true })}><Moon size={14}/></button></div></div>
         </div>
         <div className="preview-board">
@@ -72,7 +75,7 @@ function App() {
           </div>
           <div className="preview-footnote"><span><span className="live-indicator"/>Live preview<span className="footnote-separator">/</span>Try both. They work independently.</span><span className="keyboard-hint"><kbd>{selected.shortcut}</kbd>{selected.action}</span></div>
         </div>
-        {showCSS && <StyleInspector framework={framework} selectedComponent={example === 'settings' ? 'tabs' : example}/>}
+        {showCSS && <StyleInspector framework={framework} selectedComponent={example === 'settings' ? 'tabs' : example} onClose={() => { setShowCSS(false); document.getElementById('css-toggle')?.focus() }}/>}
         <section className="design-note" aria-label="About this comparison"><div><span className="note-eyebrow">THE SAME DESIGN LANGUAGE</span><h2>Different foundations. Familiar details.</h2><p>Original shadcn on the left. The same tokens and styles on real Destyler components on the right. Switch frameworks without changing the design.</p></div><a href={source} className="source-callout"><span>Built from the source</span><strong>shadcn/ui · 4aaea19 <ArrowUpRight size={14}/></strong><small>Official New York v4 + Zinc</small></a></section>
         <details className="implementation-notes"><summary>Implementation notes <ChevronDown size={14}/></summary><div className="details-grid"><div><h3>Two frameworks, one preview</h3><p>React and Vue are implemented. Solid and Svelte are not yet implemented. Switching frameworks resets the Destyler example; the reference keeps its state.</p></div><div><h3>Honest about the source</h3><p>Unmodified upstream shadcn components. Destyler uses shared class recipes with explicit state-selector adaptations. Card and Button are presentational.</p></div><div><h3>Just a demo</h3><p>No data is sent or saved. CSS inspection shows the actual source and applied stylesheet. It is a page stylesheet, not a standalone component package.</p></div></div></details>
         <div className="availability"><span className="availability-label">Available</span><span><Check size={11}/>React</span><span><Check size={11}/>Vue</span><span className="unavailable">Solid & Svelte · not implemented</span></div>

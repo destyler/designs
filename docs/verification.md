@@ -1,5 +1,38 @@
 # Verification · 2026-11-03
 
+## Component-library redesign (latest)
+
+The visual redesign is on the same prototype branch and existing Vercel project. The initial redesign application commit is `4b32ababf546768d16efcf2ed92e7d92ef65a372`; deployment `dpl_AwYMWhpbE5nZBmSDetS6oUsFomnp` reached READY and served the public project URL. Follow-up commits refine the code disclosure, align dialog summaries, and extend tests.
+
+### Research and design
+
+Actual cloud-browser visits and screenshots of the previous site, shadcn home and Switch documentation, Base UI Checkbox, and Radix Themes informed the redesign. See [design references](design-references.md) for exact links and decisions. No brand assets copied.
+
+### Checks rerun for the redesign
+
+- 22 source/provenance/legacy tests, JavaScript syntax, Vue/TypeScript, Vite production build and HTTP routing passed.
+- Happy DOM now exercises the focused Switch, Checkbox, Tabs and Dialog examples for both frameworks, state and disabled controls, live counts, three tabs, repeated modal close, open-modal unmount cleanup, hash navigation, and prior Settings behavior.
+- The browser below is actual cloud Chrome via its UI tools. The standalone Playwright CLI suite was updated for the new Settings route but was not run in this session.
+- GitHub had no status checks or check-runs on the initial redesign commit. Local checks are not a claimed GitHub CI pass.
+
+### Actual browser evidence
+
+- Viewed desktop screenshots of the default Switch page and dark Dialog comparison. The first viewport now shows the component controls, with a library sidebar and compact header instead of the previous large marketing header.
+- Repeated React/Vue/React switching left exactly two preview panels mounted.
+- Reference, React and Vue switches and checkboxes responded to Space; disabled examples remained disabled.
+- Tabs responded to arrow keys and selected Password content in all three implementations.
+- Reference and both framework dialogs opened and closed repeatedly with Escape and Done. A phone-width Vue dialog restored focus to its trigger on Escape.
+- The source inspector loaded the actual applied CSS and exposed a download link to that same stylesheet. Adapter copying showed success and the clipboard text matched the displayed source.
+- A real 390-pixel iframe (375 CSS pixels of content after the browser scrollbar) showed the horizontal component picker and vertically stacked full-width previews. No page-level horizontal overflow with either the preview or compiled CSS open. Vue switch and modal interactions were exercised inside that viewport.
+
+### Limits
+
+- The 390-pixel iframe is responsive browser testing, not physical-phone/touch emulation. No claim of exhaustive cross-browser or assistive-technology testing.
+- The cloud browser could not connect to the workspace localhost; visual and interactive checks used the deployed Vercel site. The user’s computer was not accessed.
+- The existing large bundle and upstream date-package import warning remain. The build succeeds. Solid/Svelte, SSR and production packaging remain unimplemented and are explicitly disclosed.
+
+## Earlier comparison verification (historical)
+
 ## Deployed code
 
 - Repository: `destyler/designs`, branch `prototype/cloud-scoped-themes`.

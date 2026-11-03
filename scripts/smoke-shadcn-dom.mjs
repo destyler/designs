@@ -48,6 +48,95 @@ assert.ok(inspectorToggle,'CSS inspector toggle mounts')
 assert.equal(inspectorToggle.getAttribute('aria-expanded'),'false')
 inspectorToggle.click(); await settle()
 assert.ok(document.querySelector('#css-inspector [data-testid="css-source"]'),'CSS inspector source renders on demand')
-console.log('PASS: production bundle conditionally mounts React/Vue, preserves reference, changes switch/tab state, and expands CSS inspector in Happy DOM. Not a real-browser or visual test.')
+// Focused examples exercise production-mounted primitives in both frameworks.
+async function selectFramework(name) {
+  framework.value=name
+  framework.dispatchEvent(new window.Event('change',{bubbles:true}))
+  await settle()
+  assert.equal(document.querySelectorAll('.demo-panel').length,2,'Exactly two comparison panels')
+  const inactive=name==='react'?'vue':'react'
+  assert.equal(document.querySelector(`[data-demo="${inactive}"]`),null,'Inactive adapter is unmounted')
+  assert.equal(document.querySelector(`[data-portal-owner="${inactive}"]`),null,'Inactive adapter portals are removed')
+}
+async function navigate(example) {
+  const link=document.querySelector(`nav[aria-label="Examples"] a[href="#${example}"]`)
+  assert.ok(link,`${example}: navigation link exists`)
+  link.click()
+  // Explicit dispatch also models hash-only navigation without a document reload.
+  window.location.hash=example
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'))
+  await settle()
+  assert.equal(document.querySelector('.comparison-grid').dataset.example,example)
+  assert.equal(link.getAttribute('aria-current'),'page',`${example}: active nav updates`)
+}
+const isChecked=control=>control instanceof window.HTMLInputElement ? control.checked : control.getAttribute('aria-checked')==='true'
+for(const name of ['react','vue']) {
+  await selectFramework(name)
+  for(const example of ['switch','checkbox']) {
+    await navigate(example)
+    for(const owner of ['reference',name]) {
+      const root=document.querySelector(`[data-demo="${owner}"]`)
+      const controls=[...root.querySelectorAll(owner==='reference' ? `[role="${example}"]` : `input${example==='switch'?'[role="switch"]':'[type="checkbox"]'}`)]
+      assert.equal(controls.length,3,`${owner} ${example}: three real controls`)
+      assert.deepEqual(controls.map(isChecked),[true,false,true],`${owner} ${example}: initial states`)
+      controls[1].click(); await settle()
+      assert.equal(isChecked(controls[1]),true,`${owner} ${example}: unchecked control changes`)
+      assert.match(root.querySelector('[role="status"]').textContent,/3 of 3/,`${owner} ${example}: status updates`)
+      controls[0].click(); await settle()
+      assert.equal(isChecked(controls[0]),false,`${owner} ${example}: checked control changes`)
+      assert.ok(controls[2].disabled || controls[2].getAttribute('aria-disabled')==='true',`${owner} ${example}: final control disabled`)
+      controls[2].click(); await settle()
+      assert.equal(isChecked(controls[2]),true,`${owner} ${example}: disabled state preserved`)
+      assert.match(root.querySelector('[role="status"]').textContent,/2 of 3/)
+    }
+  }
+  await navigate('tabs')
+  for(const owner of ['reference',name]) {
+    const root=document.querySelector(`[data-demo="${owner}"]`)
+    const tabs=[...root.querySelectorAll('[role="tab"]')]
+    assert.deepEqual(tabs.map(tab=>tab.textContent),['Account','Password','Team'])
+    assert.equal(root.querySelector('input[type="checkbox"], [role="switch"]'),null,'Tabs are a focused example')
+    for(const [index,title] of [[1,'Password & security'],[2,'Your team'],[0,'Your account']]) {
+      tabs[index].dispatchEvent(new window.MouseEvent('mousedown',{bubbles:true,button:0}))
+      tabs[index].click(); await settle()
+      assert.equal(tabs[index].getAttribute('aria-selected'),'true',`${owner}: selected tab updates`)
+      const panels=[...root.querySelectorAll('[role="tabpanel"]')].filter(panel=>!panel.hidden && panel.getAttribute('data-state')!=='inactive')
+      assert.ok(panels.some(panel=>panel.textContent.includes(title)),`${owner}: ${title} content is active`)
+    }
+  }
+  await navigate('dialog')
+  for(const owner of ['reference',name]) {
+    const root=document.querySelector(`[data-demo="${owner}"]`)
+    const trigger=[...root.querySelectorAll('button')].find(button=>button.textContent==='Review preferences')
+    assert.ok(trigger,`${owner}: dialog trigger mounts`)
+    for(const closeMethod of ['done','escape']) {
+      trigger.click(); await settle()
+      const dialog=document.querySelector(`[data-demo-dialog="${owner}"]`)
+      assert.ok(dialog && !dialog.hidden,`${owner}: dialog opens`)
+      assert.equal(dialog.getAttribute('role'),'dialog')
+      assert.match(dialog.textContent,/Your preferences/)
+      assert.match(dialog.textContent,/Marketing: off · Updates: on · Tips: on/)
+      assert.ok(dialog.closest('[data-design="shadcn"]'),`${owner}: portal owns design theme`)
+      if(closeMethod==='done') [...dialog.querySelectorAll('button')].find(button=>button.textContent==='Done').click()
+      else dialog.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}))
+      await settle()
+      const closed=document.querySelector(`[data-demo-dialog="${owner}"]`)
+      assert.ok(!closed || closed.hidden || closed.getAttribute('data-state')==='closed',`${owner}: ${closeMethod} closes dialog`)
+    }
+  }
+  // Changing the framework while its dialog is open must remove its portal.
+  document.querySelector(`[data-demo="${name}"] [data-scope="dialog"][data-part="trigger"]`).click()
+  await settle()
+  assert.ok(document.querySelector(`[data-demo-dialog="${name}"]`))
+  await selectFramework(name==='react'?'vue':'react')
+  assert.equal(document.querySelector(`[data-demo-dialog="${name}"]`),null,'Unmount removes open dialog')
+}
+// Simulate a browser back/forward hash update, independent from sidebar clicks.
+window.history.replaceState(null,'','#checkbox')
+window.dispatchEvent(new window.HashChangeEvent('hashchange'))
+await settle()
+assert.equal(document.querySelector('.comparison-grid').dataset.example,'checkbox','Hash navigation restores example')
+assert.equal(document.querySelector('nav[aria-label="Examples"] [aria-current="page"]').getAttribute('href'),'#checkbox')
+console.log('PASS: production bundle covers settings compatibility, focused controls/tabs/dialogs, React/Vue switching, portal cleanup, hash navigation, and CSS inspector in Happy DOM. Not a real-browser or visual test.')
 await window.happyDOM.abort()
 process.exit(0)
