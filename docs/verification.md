@@ -3,44 +3,64 @@
 ## Deployed code
 
 - Repository: `destyler/designs`, branch `prototype/cloud-scoped-themes`.
-- Code commit: `2410c2b5fca00f0495243215bda8ae62230ea285`.
+- Application commit: `03fff5bf946e3db4c7a20ea0c3a62b8b7cdae880`.
 - Vercel project: existing `destyler-designs-prototype` only.
-- Deployment: `dpl_B4DmwuWwzHg4FfqTPEykUbJ5j4G6`, **READY**.
+- Deployment: `dpl_BQ1PXKSHV8JDSAqyQAtopqszQeAq`, **READY**.
 - Verified live URL: https://destyler-designs-prototype.vercel.app/
-- Vercel built the exact commit using `npm ci` and `npm run build` (19-second build).
-- No main-branch merge, npm release, or user-computer access.
+- Vercel built the exact application commit using `npm ci` and `npm run build` (about 21 seconds).
+- The final verification pass also restricted Tailwind scanning to application and vendored component sources, preventing documentation/test text from changing generated CSS.
+- No main-branch merge, npm release, UI/core package changes, or user-computer access.
 
 ## Automated cloud checks
 
-- 18 Node source/contract/legacy tests: passing.
+- 22 Node source, provenance, comparison-contract and legacy tests: passing.
 - JavaScript syntax and TypeScript/Vue checks: passing.
 - Production Vite build: passing.
-- Production bundle in Happy DOM: reference, React and Vue mount; switch and tab state changes pass. This is not a visual/browser test.
-- Legacy HTTP route smoke: passing.
-- GitHub reported no check-runs attached to the code commit. The checks above were run in the cloud workspace, not a claimed GitHub CI pass.
-- Build warnings remain: the published Destyler aggregate export references a non-exported default in its date dependency; the comparison bundle is large because it includes both frameworks and the reference. No date component is used in this slice.
+- Production bundle in Happy DOM: repeated React/Vue switching, inactive framework unmount, reference preservation, switch/tab state and inspector expansion pass. Happy DOM is not a browser or visual fidelity test.
+- Legacy HTTP route smoke: 8 example/assets routes and metadata protection pass.
+- `git diff --check`: passing.
+- GitHub reported no check-runs attached to the application commit. The checks above were run in the cloud workspace, not a claimed GitHub CI pass.
 
-## Live cloud-browser verification
+## Live cloud-browser checks
 
-Checked the deployed site in the supported cloud Chrome browser, with real input and read-only computed-style inspection:
+The deployed production alias was opened in the supported cloud Chrome browser. Inputs were sent through actual browser controls; computed styles and source text were inspected read-only.
 
-- All three columns render and use the expected accessible controls.
-- Marketing switch and tips checkbox respond to Space; the dialog reflects their actual state (`Marketing: on · Updates: on · Tips: off`).
-- Left/Right keyboard navigation selects the appropriate tab in all three implementations.
-- Disabled controls are disabled. The disabled checkbox label's opacity is `0.5` in all three implementations.
-- Repeated dialog opening, Done, and Escape work. After waiting for the exit animation, dialogs are hidden and focus returns to their own trigger.
-- Light Card height was 377 px; radius 14 px. Background, text, border and shadow match across the three columns. Equal-width grid fractional rounding differs by at most 0.016 px.
-- Switch width is 32 px and height 18.3906 px in all columns; Tabs list height is 36 px and radius 10 px.
-- Dark Card background is `oklch(0.21 0.006 285.885)`, foreground `oklch(0.985 0 0)`, border `oklch(1 0 0 / 0.1)` in all three columns.
-- Each dialog is outside `#app` in a body-level portal. Dark dialog background is `oklch(0.141 0.005 285.823)`, width 512 px, radius 10 px in all three implementations.
-- Switching only the Vue column to dark leaves both other columns light.
-- No application-source console errors appeared in the inspected log set. Browser-extension metadata errors were excluded explicitly.
-- Full-page light/dark comparison screenshot inspected and saved as a task artifact.
+### Comparison and components
+
+- Desktop has exactly two visible panels: official shadcn reference and one Destyler framework. The two panels have equal widths at the inspected desktop viewport.
+- React → Vue → React → Vue switching mounts only the selected framework and removes the previous framework's portal owners. The reference's changed switch state survives switching.
+- The marketing switch and tips checkbox respond to Space in all three implementations. The dialog reports the changed state (`Marketing: on · Updates: on · Tips: off`).
+- Left/Right keyboard navigation selects the appropriate tab. Disabled controls are disabled. Vue's reactive updates are asynchronous; the repeatable test suite now waits for DOM state instead of asserting immediately after input.
+- Repeated dialog opening, Done, and Escape close correctly and restore focus to each trigger. Vue was exercised through four close cycles.
+- Independent color mode: Vue dark leaves reference light. All dark affects the visible reference and selected framework and is retained when selecting the other framework.
+- Dark React and Vue dialogs are body-level portals outside `#app`; background is `oklch(0.141 0.005 285.823)`.
+- Visible light Card height was 339 px and radius 14 px in both desktop panels. This is a targeted comparison, not a pixel-diff certification.
+
+### Source inspector
+
+- View CSS / Hide CSS opens, removes, and reopens the inspector.
+- Arrow-key navigation and Home move the source-tab selection.
+- All seven component recipe filters show only that component's slots and both original and adapted classes.
+- Theme-token text matches the actual checked-in token file exactly.
+- React and Vue adapter views follow the framework selector and match their actual adapter files exactly.
+- Compiled CSS loads successfully from the actual production stylesheet link. Displayed text matches the locally built stylesheet exactly; Download CSS points to that same asset.
+- Copy reports successful completion. The cloud browser's separate clipboard inspection API did not return the web clipboard contents, so an independent clipboard round-trip is **not claimed**. The standalone suite includes success/failure coverage but was not run here.
+
+### Narrow viewport
+
+- Opened `/examples/shadcn/responsive.html`, which embeds the same live app in a real 390 px iframe viewport. This is responsive layout verification, not a mobile-device or touch simulation.
+- At this viewport the panels stack vertically. The browser reserves 15 px for a scrollbar, leaving a 375 px document content width.
+- For React and Vue, all four inspector views have document `scrollWidth = clientWidth = 375`: no page-level horizontal overflow.
+- Both frameworks' dialogs fit at width 358 px with 16 px margins in the 390 px viewport, and close through Done.
+- Desktop and narrow-viewport screenshots were visually inspected.
+- No application-source errors appeared in the inspected console logs. Browser-extension metadata errors were excluded explicitly.
 
 ## Limits
 
-Local headless Chromium could not launch because this execution environment denied IPC socket creation (`Operation not permitted`), including one sandbox-external attempt. The live checks above were instead performed in the supported cloud-browser service, with no user-computer access.
+Local headless Chromium could not launch: the environment denied IPC socket creation (`Operation not permitted`), including one sandbox-external attempt. Therefore `npm run test:browser` was **not run**. Browser evidence above comes from the live cloud-browser checks, not that standalone suite. No claims of mobile-device, touch, screen-reader, comprehensive accessibility, cross-browser, SSR/hydration or pixel-perfect coverage are made.
 
-`scripts/test-shadcn-browser.mjs` contains repeatable Playwright coverage, including a 390 px viewport check. That standalone suite and its mobile viewport test were **not run** here because of the local launcher limitation. Desktop appearance and listed live interactions were verified manually through browser automation. No claims of mobile, screen-reader, full accessibility, cross-browser, SSR/hydration, pixel-perfect screenshot diff, or full-component coverage are made.
+This slice covers React and Vue only, default variants of Tabs/Switch/Checkbox/Dialog, plus presentational Card/Button. Solid and Svelte are explicitly not implemented and are not selectable.
 
-This slice covers React and Vue only, default variants of Tabs/Switch/Checkbox/Dialog, plus presentational Card/Button. It is not a four-framework implementation or complete shadcn migration engine.
+The inspector is read-only. Component recipes are Tailwind class strings; the compiled stylesheet includes the page-wide reset and demo layout, not a zero-global standalone distribution. Portals receive their owner's color mode, but arbitrary local variable overrides are not synchronized by these adapters.
+
+Build warnings remain: the published Destyler aggregate export references a non-exported default in its date dependency, and the application chunk exceeds 500 kB (both framework runtimes and the reference are bundled). No date component is used in this slice.
