@@ -1,4 +1,4 @@
-# Destyler designs · shadcn source-backed example
+# Destyler designs · component comparison
 
 A separate design layer for **real, unstyled Destyler UI components**. This repository does not add styles to `destyler/ui` or the underlying state machines.
 
@@ -12,10 +12,22 @@ npm run dev
 Open the printed local URL. The root page and `/examples/shadcn/` render the same side-by-side comparison:
 
 1. **Reference:** unmodified official shadcn/ui New York v4 components, running on React + Radix.
-2. **Destyler React:** published `@destyler-ui/react@0.0.1-beta.21` primitives.
-3. **Destyler Vue:** published `@destyler-ui/vue@0.0.1-beta.21` primitives.
+2. **Destyler:** one real framework at a time. Use the framework selector to switch between published `@destyler-ui/react@0.0.1-beta.21` and `@destyler-ui/vue@0.0.1-beta.21` primitives.
 
-Tabs, Switch, Checkbox, and Dialog are real framework components, not handwritten stateful HTML substitutes. Cards and buttons are presentational upstream markup. Each column has independent light/dark state; body-level React portals and Vue Teleports receive their owning column's mode. The example is client-rendered, has no backend and does not persist settings.
+Switching frameworks unmounts the previous demo, including its portals, and resets that demo’s control state. The reference remains mounted. Each framework’s selected light/dark mode is retained for this page session. Only React and Vue are selectable. Desktop uses two columns; narrow screens stack the same two panels.
+
+Tabs, Switch, Checkbox, and Dialog are real framework components, not handwritten stateful HTML substitutes. Cards and buttons are presentational upstream markup. Each panel has independent light/dark state; body-level React portals and Vue Teleports receive their owning column's mode. The example is client-rendered, has no backend and does not persist settings.
+
+## Inspect the CSS and adapter
+
+Click **View CSS** below the introduction. The inspector has four views:
+
+- **Theme tokens:** the actual `styles/tokens.css` imported as raw source, with the shared scoped light/dark Zinc variables.
+- **Component classes:** original shadcn and adapted Destyler class recipes, filtered by component. These are Tailwind class strings, **not standalone CSS**. React and Vue consume the same `styles/recipes.ts` values.
+- **Compiled CSS:** the actual stylesheet fetched from this page’s same-origin stylesheet link. Copy preserves its exact contents, and Download CSS links to that asset. It includes utilities, animations, scoped tokens, the global Tailwind reset, and demo layout. In Vite development, the inspector reads the injected processed styles instead. Loading errors are visible and retryable.
+- **React/Vue adapter:** the actual source for the currently selected framework, imported with Vite `?raw`, including real component imports and application of shared recipes.
+
+The inspector is read-only; it does not modify live CSS. Copy uses the browser clipboard API and reports unsupported/denied clipboard access. Apply the classes to the corresponding Destyler parts, include the Tailwind build input in `styles/app.css`, and wrap the component and portal roots in `data-design="shadcn"` (plus `class="dark"` for dark mode). The full page CSS is not a packaged component stylesheet; no claim of zero-global CSS is made.
 
 ## Where the design comes from
 

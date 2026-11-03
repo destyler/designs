@@ -15,7 +15,19 @@ const entry=[...html.matchAll(/src="(\/assets\/[^\"]+\.js)"/g)].at(-1)[1]
 await import(new URL('../dist'+entry,import.meta.url))
 const settle=()=>new Promise(r=>setTimeout(r,100))
 await settle()
-for(const name of ['reference','react','vue']) {
+const framework = document.querySelector('select[aria-label="Destyler framework"]')
+assert.ok(framework, 'Framework selector mounts')
+const reference = document.querySelector('.demo-panel[data-demo="reference"]')
+assert.ok(reference, 'Reference mounts')
+for(const name of ['reference','react','vue','react','vue']) {
+  if(name !== 'reference') {
+    framework.value=name
+    framework.dispatchEvent(new window.Event('change',{bubbles:true}))
+    await settle()
+    assert.equal(document.querySelectorAll('.demo-panel').length,2,'Only two demo panels mount')
+    assert.equal(document.querySelector(`.demo-panel[data-demo="${name==='react'?'vue':'react'}"]`),null,'Inactive framework unmounts')
+    assert.equal(document.querySelector('.demo-panel[data-demo="reference"]'),reference,'Reference instance persists')
+  }
   const root=document.querySelector(`[data-demo="${name}"]`)
   assert.ok(root, name)
   assert.equal(root.querySelectorAll('[role=tab]').length,2,`${name}: tabs mount`)
@@ -31,6 +43,11 @@ for(const name of ['reference','react','vue']) {
   assert.equal(tab.getAttribute('aria-selected'),'true',`${name}: tab changes`)
   const first=root.querySelectorAll('[role=tab]')[0]; first.dispatchEvent(new window.MouseEvent('mousedown',{bubbles:true,button:0})); first.click(); await settle()
 }
-console.log('PASS: built production bundle mounts real Reference/React/Vue components and changes switch/tab state in Happy DOM. Not a real-browser or visual test.')
+const inspectorToggle=[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='View CSS')
+assert.ok(inspectorToggle,'CSS inspector toggle mounts')
+assert.equal(inspectorToggle.getAttribute('aria-expanded'),'false')
+inspectorToggle.click(); await settle()
+assert.ok(document.querySelector('#css-inspector [data-testid="css-source"]'),'CSS inspector source renders on demand')
+console.log('PASS: production bundle conditionally mounts React/Vue, preserves reference, changes switch/tab state, and expands CSS inspector in Happy DOM. Not a real-browser or visual test.')
 await window.happyDOM.abort()
 process.exit(0)

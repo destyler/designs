@@ -14,6 +14,7 @@ export default defineConfig({
   build: { rollupOptions: { input: {
     main: fileURLToPath(new URL('./index.html', import.meta.url)),
     shadcn: fileURLToPath(new URL('./examples/shadcn/index.html', import.meta.url)),
+    responsive: fileURLToPath(new URL('./examples/shadcn/responsive.html', import.meta.url)),
     nativeContract: fileURLToPath(new URL('./examples/native-contract/index.html', import.meta.url)),
     legacy: fileURLToPath(new URL('./examples/scoped-themes/index.html', import.meta.url)),
     legacyChecks: fileURLToPath(new URL('./examples/scoped-themes/checks.html', import.meta.url)),
