@@ -10,13 +10,23 @@ const errors=[]
 page.on('pageerror', e=>errors.push(e.message))
 const panel = name => page.locator(`.demo-panel[data-demo="${name}"]`)
 const checked = control => control.evaluate(el=>'checked' in el ? el.checked : el.getAttribute('aria-checked')==='true')
+const waitChecked = async (control, expected) => {
+  const element=await control.elementHandle()
+  await page.waitForFunction(({element,expected})=>('checked' in element ? element.checked : element.getAttribute('aria-checked')==='true')===expected,{element,expected},{timeout:5000})
+}
+const waitSelected = async (root, name) => {
+  await root.getByRole('tab',{name,exact:true}).and(root.locator('[role="tab"][aria-selected="true"]')).waitFor({state:'visible',timeout:5000})
+}
 const background = locator => locator.evaluate(el=>getComputedStyle(el).getPropertyValue('--background').trim())
 const activeFramework = async name => {
   await page.getByLabel('Destyler framework',{exact:true}).selectOption(name)
+  await panel(name).waitFor({state:'visible',timeout:5000})
   await panel(name).getByRole('switch',{name:'Marketing emails'}).waitFor()
   assert.equal(await page.locator('.demo-panel').count(),2,'Exactly two demos are mounted')
   assert.equal(await panel('reference').count(),1,'Reference stays mounted')
   const inactive=name==='react'?'vue':'react'
+  await panel(inactive).waitFor({state:'detached',timeout:5000})
+  await page.locator(`[data-portal-owner="${inactive}"]`).waitFor({state:'detached',timeout:5000})
   assert.equal(await panel(inactive).count(),0,'Other framework is unmounted')
   assert.equal(await page.locator(`[data-portal-owner="${inactive}"]`).count(),0,'Unmount cleans up inactive framework portals')
 }
@@ -25,15 +35,19 @@ const exerciseControls = async name => {
   const marketing=root.getByRole('switch',{name:'Marketing emails'})
   const initial=await checked(marketing)
   await marketing.press('Space')
+  await waitChecked(marketing,!initial)
   assert.equal(await checked(marketing),!initial,`${name}: keyboard switch`)
   const tips=root.getByRole('checkbox',{name:'Include helpful tips'})
   const initialTips=await checked(tips)
   await tips.press('Space')
+  await waitChecked(tips,!initialTips)
   assert.equal(await checked(tips),!initialTips,`${name}: keyboard checkbox`)
   await root.getByRole('tab',{name:'Notifications'}).press('ArrowRight')
+  await waitSelected(root,'Security')
   assert.equal(await root.getByRole('tab',{name:'Security'}).getAttribute('aria-selected'),'true')
   assert.equal(await root.getByRole('switch',{name:'Security alerts'}).isDisabled(),true)
   await root.getByRole('tab',{name:'Security'}).press('ArrowLeft')
+  await waitSelected(root,'Notifications')
   assert.equal(await root.getByRole('tab',{name:'Notifications'}).getAttribute('aria-selected'),'true')
   const trigger=root.getByRole('button',{name:'Review preferences'})
   for(const closing of ['Escape','Done','Escape','Done']) {
@@ -45,6 +59,7 @@ const exerciseControls = async name => {
     assert.equal(await background(dialog),await background(root.locator('.demo-surface')),`${name}: portal inherits its owner theme`)
     if(closing==='Escape') await dialog.press('Escape'); else await dialog.getByRole('button',{name:'Done'}).click()
     await dialog.waitFor({state:'hidden'})
+    await page.waitForFunction(el=>document.activeElement===el,await trigger.elementHandle(),{timeout:5000})
     assert.equal(await trigger.evaluate(el=>document.activeElement===el),true,`${name}: focus restored after ${closing}`)
   }
 }
@@ -89,6 +104,7 @@ try {
   for(const name of ['Theme tokens','Component classes','Compiled CSS','Vue adapter']) {
     const tab=inspector.getByRole('tab',{name,exact:true})
     await tab.click()
+    await waitSelected(inspector,name)
     assert.equal(await tab.getAttribute('aria-selected'),'true')
     await source.waitFor()
     if(name==='Compiled CSS') {
@@ -118,12 +134,15 @@ try {
   await inspector.getByRole('tab',{name:'Component classes',exact:true}).click()
   const classesTab=inspector.getByRole('tab',{name:'Component classes',exact:true})
   await classesTab.press('ArrowLeft')
+  await waitSelected(inspector,'Theme tokens')
   const tokensTab=inspector.getByRole('tab',{name:'Theme tokens',exact:true})
   assert.equal(await tokensTab.getAttribute('aria-selected'),'true')
   assert.equal(await tokensTab.evaluate(el=>document.activeElement===el),true,'Inspector arrow keys move selection and focus')
   await tokensTab.press('End')
+  await waitSelected(inspector,'Vue adapter')
   assert.equal(await inspector.getByRole('tab',{name:'Vue adapter',exact:true}).getAttribute('aria-selected'),'true')
   await inspector.getByRole('tab',{name:'Vue adapter',exact:true}).press('Home')
+  await waitSelected(inspector,'Theme tokens')
   assert.equal(await tokensTab.getAttribute('aria-selected'),'true')
   await classesTab.click()
   const recipes=inspector.getByLabel('Component recipe',{exact:true})

@@ -38,3 +38,12 @@ test('compiled CSS identifies and fetches the applied stylesheet with error hand
   assert.match(inspector,/role="alert"/)
   assert.match(inspector,/Clipboard unavailable/)
 })
+
+
+test('Tailwind scans the application and official components, not docs or tests', async () => {
+  const css = await readFile(new URL('../examples/shadcn/styles/app.css', import.meta.url), 'utf8')
+  assert.match(css, /@import "tailwindcss" source\(none\)/)
+  assert.ok(css.includes('@source "../";'))
+  assert.ok(css.includes('@source "../../../vendor/shadcn/new-york-v4/ui";'))
+  assert.ok(!css.includes('@source "../../..";'))
+})
