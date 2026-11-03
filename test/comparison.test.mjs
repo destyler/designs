@@ -6,7 +6,9 @@ const app = await read('examples/shadcn/main.tsx')
 const inspector = await read('examples/shadcn/components/StyleInspector.tsx')
 
 test('comparison exposes an accessible framework selector and explicit inspector disclosure',()=>{
-  assert.match(app.replace(/<br[^>]*>/g,''),/One design\. Two implementations\./)
+  assert.match(app,/aria-label="Examples"/)
+  for(const name of ['switch','checkbox','tabs','dialog','settings']) assert.ok(app.includes(name))
+  assert.match(app,/Solid and Svelte are not yet implemented/)
   assert.match(app,/aria-label="Destyler framework"/)
   assert.match(app,/value="react"/)
   assert.match(app,/value="vue"/)

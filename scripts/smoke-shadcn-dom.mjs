@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { Window } from 'happy-dom'
-const window = new Window({ url:'http://localhost:4173', settings:{ disableCSSFileLoading:true, disableComputedStyleRendering:true } })
+const window = new Window({ url:'http://localhost:4173/#settings', settings:{ disableCSSFileLoading:true, disableComputedStyleRendering:true } })
 for(const key of ['window','document','navigator','HTMLElement','HTMLInputElement','HTMLButtonElement','Element','Node','NodeFilter','Event','CustomEvent','MouseEvent','KeyboardEvent','MutationObserver','ResizeObserver','IntersectionObserver','SVGElement','DocumentFragment','getComputedStyle','requestAnimationFrame','cancelAnimationFrame']) {
   const value = key==='window' ? window : typeof window[key] === 'function' && ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'].includes(key) ? window[key].bind(window) : window[key]
   Object.defineProperty(globalThis,key,{configurable:true,value})

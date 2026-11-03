@@ -64,8 +64,8 @@ const exerciseControls = async name => {
   }
 }
 try {
-  await page.goto(baseURL)
-  await page.getByRole('heading',{name:'One design. Two implementations.'}).waitFor()
+  await page.goto(baseURL + '/#settings')
+  await page.getByRole('heading',{name:'Settings.'}).waitFor()
   await activeFramework('react')
   const referenceNode=await panel('reference').elementHandle()
   await exerciseControls('reference')
