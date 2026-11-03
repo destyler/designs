@@ -38,7 +38,7 @@ function App() {
   useEffect(() => {
     if (showCSS) document.getElementById('css-inspector')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
   }, [showCSS])
-  useEffect(() => { const update = () => { if (Object.hasOwn(examples, window.location.hash.slice(1))) setExample(currentExample()) }; window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update) }, [])
+  useEffect(() => { const update = () => { if (!window.location.hash || Object.hasOwn(examples, window.location.hash.slice(1))) setExample(currentExample()) }; window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update) }, [])
   const selected = examples[example]
   const title = framework === 'react' ? 'Destyler React' : 'Destyler Vue'
   const Component = framework === 'react' ? ReactDemo : VueMount
