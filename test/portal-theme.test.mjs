@@ -87,7 +87,7 @@ test('stylesheet declares all public tokens and explicit scope boundary', async 
   assert.doesNotMatch(css, /@import|url\(/)
 })
 test('fixture IDs and references are consistent, with two detached dialogs', async () => {
-  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8')
+  const html = await readFile(new URL('../examples/native-contract/index.html', import.meta.url), 'utf8')
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])
   assert.equal(ids.length, new Set(ids).size)
   for (const match of html.matchAll(/\b(?:aria-controls|aria-labelledby|data-portal)="([^"]+)"/g)) {

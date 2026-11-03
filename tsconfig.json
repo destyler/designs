@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "moduleResolution": "Bundler", "jsx": "react-jsx",
+    "strict": true, "skipLibCheck": true, "esModuleInterop": true,
+    "allowImportingTsExtensions": true, "noEmit": true,
+    "baseUrl": ".", "paths": { "cn": ["examples/shadcn/lib/utils.ts"], "@/lib/utils": ["examples/shadcn/lib/utils.ts"], "@/registry/new-york-v4/ui/*": ["vendor/shadcn/new-york-v4/ui/*"] },
+    "types": ["vite/client"]
+  },
+  "include": ["examples/shadcn/**/*.ts", "examples/shadcn/**/*.tsx", "examples/shadcn/**/*.vue", "vendor/shadcn/**/*.tsx"]
+}

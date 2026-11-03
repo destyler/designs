@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/shadcn-ui/ui",
+  "commit": "4aaea19d9cff3e0908e12a8c1d504b8c5ec34610",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2023 shadcn",
+  "retrievedAt": "2026-11-03",
+  "files": [
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/tabs.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/tabs.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/tabs.tsx",
+      "sha256": "e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b",
+      "bytes": 3772
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/switch.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/switch.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/switch.tsx",
+      "sha256": "743676f33f823ffa8008bbd5eb94cb68e227599447d60e132a202291a395f8e4",
+      "bytes": 1398
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/checkbox.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/checkbox.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/checkbox.tsx",
+      "sha256": "ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941",
+      "bytes": 1204
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/label.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/label.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx",
+      "sha256": "344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+      "bytes": 596
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/card.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/card.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/card.tsx",
+      "sha256": "ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059",
+      "bytes": 1977
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/button.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/button.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx",
+      "sha256": "79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+      "bytes": 2382
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/dialog.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/dialog.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/dialog.tsx",
+      "sha256": "2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+      "bytes": 4304
+    },
+    {
+      "path": "vendor/shadcn/LICENSE",
+      "source": "LICENSE.md",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/LICENSE.md",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "bytes": 1063
+    },
+    {
+      "path": "vendor/shadcn/themes.ts",
+      "source": "apps/v4/registry/themes.ts",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/themes.ts",
+      "sha256": "60cb5ed25f7b39d9973e2280f476dd2119a4268317f45bd7ee3cac7883db8ea0",
+      "bytes": 44547
+    },
+    {
+      "path": "vendor/shadcn/upstream-globals.css",
+      "source": "apps/v4/app/globals.css",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/app/globals.css",
+      "sha256": "c5e271374236f23bcfd559ce64aaf6b8641ee7276156c0f803dd9cb24277af12",
+      "bytes": 13830
+    }
+  ],
+  "notes": [
+    "Vendored source files are unmodified UTF-8 source retrieved through the GitHub connector at the pinned commit.",
+    "themes.ts is canonical theme data; upstream-globals.css is website CSS retained for provenance, not an application stylesheet to import wholesale.",
+    "zinc.css is a mechanically extracted light/dark Zinc theme from themes.ts, not an upstream source file.",
+    "Resolve cn and @/registry/new-york-v4/ui/button through build aliases instead of modifying vendored source."
+  ]
+}

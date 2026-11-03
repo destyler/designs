@@ -1,94 +1,63 @@
-# Scoped themes: cloud reimplementation
+# Destyler designs · shadcn source-backed example
 
-This is **newly written code**, not a copy or backup of the earlier Mac pilot.
-Only the earlier task's written results informed the requirements. No Mac files,
-screenshots, source archives, or browser sessions were accessed to build it.
+A separate design layer for **real, unstyled Destyler UI components**. This repository does not add styles to `destyler/ui` or the underlying state machines.
 
-## Interactive example
-
-Run the four-card [theme playground](examples/scoped-themes/README.md) locally:
+## Run the example
 
 ```sh
-npm start
+npm ci
+npm run dev
 ```
 
-Open <http://127.0.0.1:4173/examples/scoped-themes/>. No package installation is
-needed. The example compares Neutral/Ember in light/dark mode, independent theme
-roots, local accent overrides, keyboard tabs, nested roots, an un-themed baseline,
-and a detached body-level dialog with a live nine-token comparison. The shared
-dialog disposes its previous theme binding before changing source ownership.
+Open the printed local URL. The root page and `/examples/shadcn/` render the same side-by-side comparison:
 
-The page imports this repository's actual theme CSS and portal synchronizer. Its
-controls remain **native HTML fixtures, not real `@destyler-ui` framework
-components**. Nothing has been deployed; repository file links are not live previews.
+1. **Reference:** unmodified official shadcn/ui New York v4 components, running on React + Radix.
+2. **Destyler React:** published `@destyler-ui/react@0.0.1-beta.21` primitives.
+3. **Destyler Vue:** published `@destyler-ui/vue@0.0.1-beta.21` primitives.
 
-See the [example guide](examples/scoped-themes/README.md) for the browser test page,
-manual checks, and verification limits.
+Tabs, Switch, Checkbox, and Dialog are real framework components, not handwritten stateful HTML substitutes. Cards and buttons are presentational upstream markup. Each column has independent light/dark state; body-level React portals and Vue Teleports receive their owning column's mode. The example is client-rendered, has no backend and does not persist settings.
 
-## Scope
+## Where the design comes from
 
-- Original Neutral and Ember themes, each light and dark.
-- One HTML contract using explicit `data-theme-root`, `data-scope`, `data-part`.
-- Two independent source roots, native Checkbox, keyboard-operable Tabs, and
-  native modal Dialog fixtures. These are **not real `@destyler-ui` components**
-  and do not recreate the previous React/Vue/Solid/Svelte integration.
-- Detached dialog roots receive an allowlisted set of computed CSS variables,
-  including source-local overrides. Theme switching is available inside dialogs.
-- Opt-in theme selectors; an un-themed checkbox baseline is included.
+The source is pinned to shadcn/ui commit `4aaea19d9cff3e0908e12a8c1d504b8c5ec34610` (2026-11-02). `vendor/shadcn/` preserves seven exact component source files, canonical theme definitions and the complete MIT license. `docs/shadcn-sources.json` records source URLs and SHA-256 values.
 
-`styles/themes.css` uses CSS `@scope` with nested-root boundaries. Browsers must
-support that feature; compatibility is not established here. A themed root's
-own inherited typography/colors naturally apply to its descendants. Components
-outside all theme roots receive no styles from this stylesheet. Arbitrary custom
-markup is not automatically supported: use the documented hooks or an adapter.
+`npm run sync:shadcn` extracts default-variant class recipes from those files and the exact Zinc token values. React and Vue consume the **same generated recipes**. The reference imports the unmodified source, using build aliases for the upstream utility and button imports.
 
-## Non-browser checks
+Adaptation is explicit and limited:
 
-Requires Node 20+; no dependencies or install step.
+- Tabs: Radix `data-state="active"` → Destyler `data-selected`.
+- Checkbox/Switch controls: focus-visible, disabled and invalid pseudo/ARIA selectors → corresponding Destyler data attributes, because the actual focusable input is hidden while the visual control is a separate part.
+- Label disabled peers: native `peer-disabled` → `peer-data-[disabled]`.
+- Switch hidden inputs explicitly receive `role="switch"`.
+- Default size/variant attributes and layout wrappers are supplied by each adapter.
+
+Colors, spacing, typography, borders, radii, shadows and transition values are extracted from the pinned source rather than invented. `public/THIRD_PARTY_NOTICES.txt` is regenerated during builds and shipped with the site.
+
+## Checks
 
 ```sh
-npm test
-npm run check
-npm run test:http
+npm test                 # Source hash/recipe/token contracts and legacy tests
+npm run check            # JavaScript syntax
+npm run check:types      # TypeScript + Vue
+npm run build            # Production Vite bundle and license notices
+npm run test:dom         # Run built bundle in Happy DOM; real mount/state smoke
+npm run test:http        # Legacy static-server routing checks
+npm run preview          # Start built site for browser tests
+npm run test:browser     # Playwright Chromium; BASE_URL/CHROMIUM_PATH optional
 ```
 
-The tests exercise the portal synchronizer with in-memory DOM test doubles,
-cleanup, observation, stale values, separate roots, and static fixture contracts.
-The HTTP smoke checks serve the example and assets over a loopback socket. These
-Node checks do **not** prove real DOM inheritance, computed style, native dialog behavior,
-focus restoration, visual appearance, or accessibility.
+The source checks independently assert byte-identical vendor files, deterministic extraction, exact canonical Zinc tokens, allowed selector substitutions and published package imports. Happy DOM is **not a browser or visual fidelity test**. Browser evidence and limits are recorded in `docs/verification.md`.
 
-## Portal integration
+## Deliberately limited scope
 
-```js
-import { bindPortalTheme } from './src/portal-theme.js'
-const binding = bindPortalTheme(sourceRoot, detachedPortalRoot)
-// Call after stylesheet or ancestor changes not on sourceRoot itself:
-binding.sync()
-// Call when unmounting; original portal attributes and tokens are restored:
-binding.dispose()
-```
+- This is a runnable vertical slice, **not a complete shadcn port**. Default component variants only; React and Vue only. Solid, Svelte, SSR/hydration and a general migration CLI are not implemented here.
+- The example's Tailwind reset is page-wide. Generated theme tokens are scoped to `[data-design="shadcn"]`; this is not yet a distributable zero-global-CSS package.
+- Portals receive the owned color mode; arbitrary local CSS-variable overrides are not synchronized by these new adapters. The earlier independent synchronizer remains a separate experiment.
+- The production bundle includes two frameworks plus the upstream reference, so it is larger than a single-framework application. The installed Destyler aggregate export also produces an upstream date-package build warning; no date component is used here.
+- No npm publication, main-branch merge, UI/core package changes, or user-computer access are part of this example.
 
-The source and portal must be distinct, non-nested elements. Own the binding once
-per portal; dispose it before rebinding or changing portal ownership. Do not
-independently mutate theme attributes/tokens on the bound portal. Root attribute
-changes to `data-skin`, `data-theme`, `style`, and `class` are observed; keep
-`data-theme-root` present for the binding lifetime. External stylesheet changes, ancestor changes, system color
-preferences, and CSS animation are not observed automatically. Synchronize those
-explicitly. Token allowlisting deliberately avoids copying unrelated properties.
+## Earlier experiments
 
-## Provenance and limitations
+The original native-HTML fixture remains at `/examples/native-contract/`; its four-card playground is `/examples/scoped-themes/`. These are explicitly labelled native HTML and are not the new framework integration. The old `src/portal-theme.js` and `styles/themes.css` remain independently testable.
 
-All committed source and tests were authored for this reconstruction; no
-third-party code, assets, packages, fonts, or remotely loaded resources are used.
-No repository-wide license is assigned by this prototype: the repository owner
-must choose licensing before redistribution as a package. `private: true` prevents
-accidental npm publication.
-
-The example includes 23 browser checks for actual DOM/computed styles. They have
-not been executed in this cloud environment: the cloud browser could not reach
-the execution context's loopback server, and observing its error page was blocked
-by URL policy. No browser security restriction was bypassed. No visual screenshot
-has been verified. No claims are made about four-framework integration,
-SSR/hydration, browser compatibility, mobile layouts, complete accessibility,
-real UI component interoperability, or visual parity with the earlier pilot.
+No repository-wide license is assigned here. The owner must select a license for original work before packaging; the upstream and dependency notices remain mandatory. `private: true` prevents accidental npm publication.
