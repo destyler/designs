@@ -1,0 +1,8 @@
+{
+  "name": "@destyler/designs-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent, dependency-free scoped theme contract prototype",
+  "scripts": { "test": "node --test", "check": "node --check src/portal-theme.js && node --check src/demo.js" }
+}

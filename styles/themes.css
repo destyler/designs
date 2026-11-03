@@ -1,0 +1,64 @@
+/* Original CSS. Every selector explicitly opts into the theme contract. */
+[data-theme-root] {
+  --ds-bg: #ffffff;
+  --ds-fg: #17202b;
+  --ds-muted: #536171;
+  --ds-accent: #244ed8;
+  --ds-on-accent: #ffffff;
+  --ds-border: #a3afbd;
+  --ds-radius: 6px;
+  --ds-font: system-ui, sans-serif;
+  --ds-shadow: 0 8px 28px #17202b18;
+  color: var(--ds-fg);
+  background: var(--ds-bg);
+  font-family: var(--ds-font);
+  color-scheme: light;
+}
+[data-theme-root][data-skin="ember"] {
+  --ds-bg: #fff7eb;
+  --ds-fg: #482b20;
+  --ds-muted: #76503d;
+  --ds-accent: #a43c20;
+  --ds-border: #b99170;
+  --ds-radius: 18px;
+  --ds-font: Georgia, serif;
+  --ds-shadow: 0 12px 32px #71371720;
+}
+[data-theme-root][data-theme="dark"] {
+  --ds-bg: #17202b;
+  --ds-fg: #f3f6fb;
+  --ds-muted: #bcc8d8;
+  --ds-accent: #a6bcff;
+  --ds-on-accent: #15204b;
+  --ds-border: #718196;
+  color-scheme: dark;
+}
+[data-theme-root][data-skin="ember"][data-theme="dark"] {
+  --ds-bg: #302017;
+  --ds-fg: #fff0db;
+  --ds-muted: #dbc0a6;
+  --ds-accent: #ffb38c;
+  --ds-on-accent: #4e220e;
+  --ds-border: #a27b5b;
+}
+/* Zero-specificity scope boundaries prevent a parent's rules crossing nested roots. */
+@scope ([data-theme-root]) to ([data-theme-root]) {
+  [data-scope="checkbox"][data-part="root"] { display: flex; gap: .6rem; align-items: center; }
+  [data-scope="checkbox"][data-part="control"] { accent-color: var(--ds-accent); width: 1.2rem; height: 1.2rem; }
+  [data-scope="tabs"][data-part="list"] { display: flex; gap: .5rem; border-bottom: 1px solid var(--ds-border); }
+  [data-scope="tabs"][data-part="trigger"], [data-scope="button"][data-part="root"] {
+    font: inherit; color: var(--ds-fg); background: var(--ds-bg); border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius); padding: .55rem .8rem; cursor: pointer;
+  }
+  [data-scope="tabs"][data-part="trigger"][aria-selected="true"], [data-scope="button"][data-part="root"] {
+    background: var(--ds-accent); color: var(--ds-on-accent);
+  }
+  [data-part]:focus-visible { outline: 3px solid var(--ds-accent); outline-offset: 3px; }
+  [data-part]:disabled { opacity: .5; cursor: not-allowed; }
+  [data-scope="tabs"][data-part="content"] { padding-block: 1rem; }
+}
+[data-theme-root][data-scope="dialog"][data-part="content"] {
+  border: 1px solid var(--ds-border); border-radius: var(--ds-radius); box-shadow: var(--ds-shadow);
+  padding: 1.5rem; max-width: min(30rem, 80vw);
+}
+[data-theme-root][data-scope="dialog"][data-part="content"]::backdrop { background: #0008; }
