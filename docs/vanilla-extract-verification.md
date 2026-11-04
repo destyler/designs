@@ -49,3 +49,9 @@ Even the component-scoped Tailwind baseline is not guaranteed byte-for-byte feat
 `test/vanilla-extract.test.mjs` checks the private package guard, no runtime/peer dependencies, CSS side-effect declaration, public stylesheet export, compiled class/token contracts, and state/reduced-motion CSS. Built-output assertions skip if the package has not been built; the full verification script requires a built package and fails rather than silently skipping.
 
 The verification found and helped fix one real distribution issue: an emitted `index.d.ts` re-export of `./styles.css` passed Bundler resolution but failed NodeNext. The build now flattens declarations into `index.d.ts`; both consumer modes are checked to prevent regression.
+
+## Actual consumer adapter SSR/hydration
+
+`npm run test:designs:panels` compiles the actual four `Panel` components against the packed style artifact. All eight server/hydration checks pass: no server DOM, portals absent during SSR, server control/trigger nodes preserved on hydration, body portals mounted outside the hydrated root, dark theme and explicit token overrides applied and removed, Switch toggle/disabled behavior, Dialog open/close/reopen, and portal removal on unmount. No captured console warnings/errors. These happy-dom checks are separate from real-browser CSS and focus checks.
+
+A first real-browser inspection caught a baseline fixture problem: removing Tailwind preflight also removed its `[hidden]` behavior, so closed baseline content was visible. The fixture now has a scoped hidden rule and scoped border/text resets. Shared slot paragraph spacing is explicitly identical across the two columns. This was a comparison-fixture fix, not a vanilla-extract runtime workaround.

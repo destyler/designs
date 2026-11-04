@@ -1,9 +1,10 @@
 @layer fixture-reset, destyler, theme, base, components, utilities;
 @layer fixture-reset {
-  [data-engine="tailwind"] :where(*, ::before, ::after) { box-sizing: border-box; border: 0 solid; }
+  [data-engine="tailwind"] :where(*, ::before, ::after) { box-sizing: border-box; border: 0 solid; border-color: var(--dy-border); }
   [data-engine="tailwind"] :where(button, input, select) { font: inherit; color: inherit; }
   [data-engine="tailwind"] button { background: transparent; }
-  [data-engine="tailwind"] p { margin: 0; }
+  [data-engine="tailwind"] :where(p, h1, h2, h3) { margin: 0; }
+  [data-engine="tailwind"] [hidden] { display: none !important; }
 }
 /* Fixture layout only. No Switch or Dialog appearance is supplied here. */
 
@@ -29,3 +30,7 @@ h1 { margin: 12px 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.15; lette
 .fixture-note { margin-top: 24px; color: #52525b; font-size: 12px; }
 @media (max-width: 720px) { .fixture-grid { grid-template-columns: 1fr; } .fixture-page { padding: 28px 16px; } }
 
+
+/* Shared fixture slot typography, independent of either style engine. */
+.fixture-hint { margin: 12px 0; }
+.fixture-portal p { margin: 0; }

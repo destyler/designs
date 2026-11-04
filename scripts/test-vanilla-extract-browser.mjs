@@ -5,13 +5,14 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4173'
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}) })
 const evidence = []
 const properties = ['width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor', 'borderRadius', 'boxShadow', 'opacity']
-const snapshot = (locator, keys = properties) => locator.evaluate((el, keys) => Object.fromEntries(keys.map(key => [key, getComputedStyle(el)[key]])), keys)
+const snapshot = (locator, keys = properties) => locator.evaluate((el, keys) => Object.fromEntries(keys.map(key => [key, key === 'boxShadow' ? getComputedStyle(el)[key].replace(/rgba\(0, 0, 0, 0\) 0px 0px 0px 0px, ?/g, '') : getComputedStyle(el)[key]])), keys)
 try {
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
     const errors = []; page.on('pageerror', error => errors.push(error.message))
     const url = process.env[`${framework.toUpperCase()}_URL`] || `${base}/vanilla-extract/${framework}/`
     await page.goto(url)
+    assert.equal(await page.locator('[data-demo-dialog]:visible').count(), 0, 'Initially closed dialogs are invisible')
     const panels = ['vanilla', 'tailwind'].map(engine => page.locator(`[data-panel="${framework}-${engine}"]`))
     for (const dark of [false, true]) {
       for (const panel of panels) await panel.getByLabel('Dark', { exact: true }).setChecked(dark)

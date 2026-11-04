@@ -20,7 +20,8 @@
     "build:designs": "node scripts/build-vanilla-extract.mjs",
     "build:consumers": "node scripts/vanilla-extract-consumers.mjs build all",
     "test:designs": "node scripts/verify-vanilla-extract.mjs",
-    "test:designs:browser": "node scripts/test-vanilla-extract-browser.mjs"
+    "test:designs:browser": "node scripts/test-vanilla-extract-browser.mjs",
+    "test:designs:panels": "node scripts/verify-vanilla-extract-panels.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.1-beta.21",

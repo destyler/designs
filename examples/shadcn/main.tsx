@@ -69,7 +69,7 @@ function App() {
         <nav className="component-navigation" aria-label="Examples">
           {['Components', 'Patterns'].map(group => <div className="nav-group" key={group}><p>{group}<span>{group === 'Components' ? '04' : '01'}</span></p>{Object.entries(examples).filter(([, item]) => item.group === group).map(([id, item]) => <a key={id} href={`#${id}`} aria-current={example === id ? 'page' : undefined}><item.icon size={17}/><span>{item.title}</span><span className="nav-number" aria-hidden="true">{item.number}</span></a>)}</div>)}
         </nav>
-        <div className="sidebar-bottom"><span className="sidebar-eyebrow">BUILT ON YOUR FRAMEWORK</span><div className="framework-availability"><span><Check size={12}/>React</span><span><Check size={12}/>Vue</span></div><p>Solid & Svelte<br/>Not implemented yet.</p><a href={repository}>Explore the project <ArrowUpRight size={13}/></a></div>
+        <div className="sidebar-bottom"><span className="sidebar-eyebrow">BUILT ON YOUR FRAMEWORK</span><div className="framework-availability"><span><Check size={12}/>React</span><span><Check size={12}/>Vue</span></div><p>Solid & Svelte<br/>Available in the vanilla-extract PoC.</p><a href={repository}>Explore the project <ArrowUpRight size={13}/></a></div>
       </aside>
       <main id="main-content" className="main-content" tabIndex={-1}>
         <div className="page-breadcrumb"><span>{selected.group}</span><ChevronRight size={12}/><span>{selected.category}</span></div>
