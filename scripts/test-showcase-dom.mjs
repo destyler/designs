@@ -16,6 +16,8 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 60))
 const read = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8')
 const change = async (element, value) => { element.value = value; element.dispatchEvent(new window.Event('change', { bubbles: true })); await settle() }
 try {
+  let copiedSource = ''
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { copiedSource = text } } })
   document.body.innerHTML = '<div id="app"></div>'
   const html = await read('dist/index.html')
   const entry = [...html.matchAll(/src="(\/assets\/[^\"]+\.js)"/g)].at(-1)?.[1]
@@ -52,12 +54,26 @@ try {
     assert.equal(document.getElementById('preview-panel').hidden, true)
     assert.equal(document.getElementById('code-panel').hidden, false)
     assert.equal(document.querySelector('iframe.framework-frame'), iframe, 'Code keeps live preview mounted')
+    document.getElementById('source-tab-component').click(); await settle()
     const extension = name === 'vue' ? 'vue' : name === 'svelte' ? 'svelte' : 'tsx'
     assert.equal(document.querySelector('[data-testid="css-source"]').textContent, await read(`examples/vanilla-extract/${name}/Showcase.${extension}`), `${name}: displayed code is exact live source`)
-    const file = document.querySelector('#source-file')
-    for (const [value, path] of [['css','packages/vanilla-extract/dist/styles.css'],['styles','packages/vanilla-extract/src/styles.css.ts'],['shared','examples/vanilla-extract/shared/showcase.ts'],['layout','examples/vanilla-extract/shared/showcase.css']]) {
-      await change(file, value)
+    const fileTabs = document.querySelector('[aria-label="Source files"]')
+    assert.equal(fileTabs.querySelectorAll('[role="tab"]').length, 6)
+    for (const [value, path] of [['css','packages/vanilla-extract/dist/styles.css'],['exports','packages/vanilla-extract/dist/index.js'],['styles','packages/vanilla-extract/src/styles.css.ts'],['shared','examples/vanilla-extract/shared/showcase.ts'],['layout','examples/vanilla-extract/shared/showcase.css']]) {
+      document.getElementById(`source-tab-${value}`).click(); await settle()
+      assert.equal(document.querySelector('.source-file-path').textContent, path)
+      assert.equal(document.querySelector('[role="tab"][id^="source-tab-"][aria-selected="true"]').id, `source-tab-${value}`)
+      assert.equal(document.querySelectorAll('[id^="source-tab-"][tabindex="0"]').length, 1)
+      if (value === 'css' || value === 'exports') {
+        assert.equal(document.querySelector('[aria-label="Open full source on GitHub"]'), null, 'Generated CSS never links to a nonexistent GitHub path')
+        assert.ok(document.querySelector('[aria-label^="Download generated"]'))
+      }
+      assert.equal(document.querySelector('iframe.framework-frame'), iframe, 'File changes preserve live preview')
       assert.equal(document.querySelector('[data-testid="css-source"]').textContent, await read(path), `${name}: ${value} matches exact file bytes`)
+      document.querySelector('[aria-label="Copy source"]').click(); await settle()
+      assert.equal(copiedSource, await read(path), 'Copy receives original bytes without line numbers')
+      assert.equal(document.querySelector('.source-copy-status').textContent, 'Copied')
+      assert.equal(document.querySelectorAll('.source-line-numbers span').length, (await read(path)).split('\n').length)
     }
     preserved()
     preview.click(); await settle()
@@ -76,11 +92,28 @@ try {
     preserved()
   }
   code.click(); await settle()
+  assert.equal(document.getElementById('source-tab-layout').getAttribute('aria-selected'), 'true', 'Preview/Code preserves selected source file')
+  const tabIds = ['component', 'styles', 'css', 'exports', 'shared', 'layout']
+  const fileTab = id => document.getElementById(`source-tab-${id}`)
+  for (const [from, key, to] of [['layout', 'ArrowRight', 'component'], ['component', 'ArrowLeft', 'layout'], ['layout', 'Home', 'component'], ['component', 'End', 'layout'], ['layout', 'ArrowLeft', 'shared'], ['shared', 'ArrowRight', 'layout']]) {
+    fileTab(from).focus(); fileTab(from).dispatchEvent(new window.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); await settle()
+    assert.equal(document.activeElement, fileTab(to), 'File keyboard navigation moves focus')
+    assert.equal(fileTab(to).getAttribute('aria-selected'), 'true')
+    assert.equal(document.getElementById('source-file-panel').getAttribute('aria-labelledby'), `source-tab-${to}`)
+    for (const id of tabIds) assert.equal(fileTab(id).tabIndex, id === to ? 0 : -1)
+  }
+  for (const name of ['vue', 'solid', 'svelte', 'react']) {
+    await change(framework, name)
+    assert.equal(fileTab('layout').getAttribute('aria-selected'), 'true', 'Framework changes preserve shared file choice')
+    assert.equal(document.querySelector('[data-testid="css-source"]').textContent, await read('examples/vanilla-extract/shared/showcase.css'))
+  }
+  fileTab('component').click(); await settle()
   for (const name of ['vue', 'solid', 'svelte', 'react']) {
     await change(framework, name)
     const extension = name === 'vue' ? 'vue' : name === 'svelte' ? 'svelte' : 'tsx'
     assert.equal(document.getElementById('preview-panel').hidden, true, 'Framework selection preserves the chosen Code view')
     assert.equal(document.querySelector('[data-testid="css-source"]').textContent, await read(`examples/vanilla-extract/${name}/Showcase.${extension}`), `${name}: changing framework while Code is open refreshes exact source`)
+    assert.equal(document.querySelector('.source-file-path').textContent, `examples/vanilla-extract/${name}/Showcase.${extension}`)
     preserved()
   }
   preview.click(); await settle()

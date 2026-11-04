@@ -15,7 +15,8 @@ Open the printed URL. The root page compares a **fixed original shadcn/ui refere
 - Changing frameworks only resets the right-hand consumer. The left remains mounted, including its control state and theme.
 - Preview and Code replace each other **inside the right-hand panel**. The left remains visible. Returning to Preview preserves its mounted state.
 - Each column has an independent light/dark control. The two controls above the comparison can change both together.
-- Code reads the selected framework's actual `Showcase` source, shared data/layout, style definitions and exact compiled package CSS. It does not substitute simulated snippets or the host page stylesheet.
+- Code is a read-only IDE with filename tabs, exact paths, line numbers and syntax highlighting. Arrow keys/Home/End switch files; the tab strip and editor scroll independently on narrow screens. Preview/Code preserves the selected file.
+- Files are the selected framework's actual `Showcase` source, shared data/layout, style definitions, generated package CSS and generated class/theme/token JavaScript exports. Generated files are labelled and downloadable; tracked sources link to GitHub. Code/copy preserves exact file bytes, not simulated snippets or the host page stylesheet.
 - Each framework runs in a same-origin iframe to keep framework runtimes and CSS isolated. Its Dialog opens within that canvas, not over the entire host page. Messages verify both origin and source.
 - Narrow screens stack the same two panels. Component URLs are `/#switch` and `/#dialog`; browser Back/Forward restores the selected example.
 

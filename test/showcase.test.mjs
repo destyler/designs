@@ -49,3 +49,16 @@ test('frame messages validate both source window and origin in each direction', 
   assert.match(shared, /\['light', 'dark'\]\.includes\(value\.theme\)/)
   assert.doesNotMatch(main + shared, /postMessage\([^\n]+['"]\*['"]/)
 })
+
+
+test('IDE file tabs identify actual files, support keyboard navigation and separate generated output', () => {
+  assert.match(source, /role="tablist" aria-label="Source files"/)
+  assert.match(source, /aria-selected=\{file === id\}/)
+  assert.match(source, /tabIndex=\{file === id \? 0 : -1\}/)
+  assert.match(source, /ArrowLeft.*ArrowRight.*Home.*End/)
+  assert.match(source, /className="source-file-path"/)
+  assert.match(source, /className="source-line-numbers" aria-hidden="true"/)
+  assert.match(source, /selected.generated \? <button onClick=\{download\}/)
+  assert.doesNotMatch(source, /<select/)
+  assert.doesNotMatch(main, /showCode && <SourceInspector/)
+})
