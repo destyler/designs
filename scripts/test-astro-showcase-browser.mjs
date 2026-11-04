@@ -191,6 +191,7 @@ try {
     for (const [from, key, to] of [['code','ArrowLeft','preview'], ['preview','End','code'], ['code','Home','preview']]) {
       await page.locator(`#${name}-${from}-tab`).press(key)
       assert.equal(await focused(page.locator(`#${name}-${to}-tab`)), true)
+      assert.equal(await page.locator(`#${name}-${to}-tab`).evaluate(el => getComputedStyle(el).outlineOffset), '-3px', 'Joined toolbar focus ring stays inside its panel')
       await view(name, to === 'code')
       for (const other of Object.keys(frameworks).filter(other => other !== name)) await view(other, false)
     }
