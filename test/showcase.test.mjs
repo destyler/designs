@@ -138,3 +138,17 @@ test('original reference owns an isolated document and keeps upstream close cont
   assert.match(reference, /root\.classList\.toggle\('dark', state\.theme === 'dark'\)/)
   assert.match(reference, /root\.dataset\.theme = state\.theme/)
 })
+
+
+test('comparison workspace is full-bleed with joined framework panels', async () => {
+  const css = await read('examples/showcase/showcase.css')
+  assert.match(css, /\.unified-showcase \.site-layout \{ max-width: none;/)
+  assert.match(css, /\.unified-showcase \.main-content \{ max-width: none; padding: 38px 0 0;/)
+  assert.match(css, /padding-inline: var\(--shell-inset\)/, 'Text keeps its reading inset')
+  assert.match(css, /\.implementations-grid \{[^}]*align-items: stretch; gap: 0;/)
+  assert.match(css, /\.destyler-panel:nth-child\(odd\) \{ border-right: 1px solid var\(--shell-line\);/)
+  assert.match(css, /@media \(max-width: 860px\) \{\s*\.implementations-grid \{ grid-template-columns: minmax\(0,1fr\);/)
+  assert.match(css, /\.destyler-panel:nth-child\(odd\) \{ border-right: 0;/)
+  assert.match(css, /\.destyler-panel > \[role=tabpanel\] \{ grid-row: 3;/)
+  assert.match(css, /\.destyler-toolbar button,[^}]*outline-offset: -3px;/)
+})

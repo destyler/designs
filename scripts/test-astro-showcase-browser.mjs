@@ -99,6 +99,43 @@ const screenshot = async name => {
   await page.screenshot({ path, fullPage: true })
   evidence.screenshots.push(path)
 }
+const joinedLayout = async () => {
+  const layout = await page.evaluate(() => {
+    const rect = selector => {
+      const r = document.querySelector(selector).getBoundingClientRect()
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }
+    }
+    return {
+      width: innerWidth, viewport: document.documentElement.clientWidth,
+      shell: rect('.site-layout'), main: rect('.main-content'), reference: rect('.reference-panel'),
+      panels: ['react', 'vue', 'solid', 'svelte'].map(name => rect(`[data-demo="${name}"]`)),
+      gap: getComputedStyle(document.querySelector('.implementations-grid')).gap,
+    }
+  })
+  const same = (a, b, label) => assert.ok(Math.abs(a - b) <= 1, `${label}: ${a} vs ${b}`)
+  same(layout.shell.left, 0, 'Shell reaches left viewport edge')
+  same(layout.shell.right, layout.viewport, 'Shell reaches right viewport edge')
+  same(layout.reference.left, layout.main.left, 'Reference reaches main left edge')
+  same(layout.reference.right, layout.main.right, 'Reference reaches main right edge')
+  assert.equal(layout.gap, '0px', 'No framework gutters')
+  const [react, vue, solid, svelte] = layout.panels
+  if (layout.width > 860) {
+    for (const [left, right] of [[react, vue], [solid, svelte]]) {
+      same(left.left, layout.main.left, 'Left column reaches main edge')
+      same(left.right, right.left, 'Columns share one seam')
+      same(right.right, layout.main.right, 'Right column reaches main edge')
+      same(left.bottom, right.bottom, 'Mixed views retain aligned row borders')
+    }
+    same(react.bottom, solid.top, 'Rows meet without gutters')
+  } else {
+    for (let i = 0; i < layout.panels.length; i++) {
+      same(layout.panels[i].left, layout.main.left, 'Stacked panel reaches left edge')
+      same(layout.panels[i].right, layout.main.right, 'Stacked panel reaches right edge')
+      if (i) same(layout.panels[i - 1].bottom, layout.panels[i].top, 'Stacked panels share one seam')
+    }
+  }
+  evidence.checks.push({ joinedLayout: layout })
+}
 const frameworks = { react: 'React', vue: 'Vue', solid: 'Solid', svelte: 'Svelte' }
 const sides = ['reference', ...Object.keys(frameworks)]
 const extension = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
@@ -170,9 +207,11 @@ try {
     await page.getByLabel(label, { exact: true }).click()
   }
   evidence.checks.push('Five simultaneously live frameworks, independent view/file/theme controls, exact sources and clipboard, keyboard navigation, preserved reference state and every iframe runtime')
+  await joinedLayout()
   await screenshot('desktop-switch')
   await page.locator('#react-code-tab').click()
   await page.locator('#solid-code-tab').click()
+  await joinedLayout()
   for (const example of ['dialog', 'switch', 'dialog']) {
     await navigate(example)
     for (const name of Object.keys(frameworks)) {
@@ -203,7 +242,7 @@ try {
   await preserved()
   await page.getByLabel('All light', { exact: true }).click()
   for (const side of sides) await theme(side, 'light')
-  for (const width of [390, 320]) {
+  for (const width of [1920, 1440, 900, 860, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 844 })
     for (const component of ['switch', 'dialog']) {
       await navigate(component)
@@ -211,7 +250,8 @@ try {
         assert.equal(await frame(side).locator('body').evaluate(el => el.ownerDocument.documentElement.scrollWidth <= el.ownerDocument.defaultView.innerWidth), true, `${width}/${side}: no canvas overflow`)
       }
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${component}: no host overflow`)
-      await screenshot(`mobile-${width}-${component}`)
+      await joinedLayout()
+      await screenshot(`responsive-${width}-${component}`)
     }
     for (const name of Object.keys(frameworks)) {
       await page.locator(`#${name}-code-tab`).click()
@@ -219,11 +259,12 @@ try {
         await page.locator(`#${name}-source-tab-${id}`).click()
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${name}/${id}: code does not overflow host`)
       }
-      await screenshot(`mobile-${width}-${name}-code`)
+      await joinedLayout()
+      await screenshot(`responsive-${width}-${name}-code`)
       await page.locator(`#${name}-preview-tab`).click()
     }
   }
-  evidence.checks.push('Global themes, real Back/Forward, desktop and 390px/320px preview/code overflow with actual screenshots')
+  evidence.checks.push('Global themes, real Back/Forward, joined panel geometry and overflow from 1920px to 320px in preview/code, with actual screenshots')
   assert.deepEqual(evidence.errors, [], 'No console, runtime or hydration errors')
   evidence.status = 'passed'
 } catch (error) {

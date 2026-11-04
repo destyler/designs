@@ -13,7 +13,7 @@ npm run preview
 Open the printed URL. Astro 5 owns the document, site navigation and static generation. A server-rendered React island handles the comparison controls. The root page shows the **original shadcn/ui reference at the top**, followed by **four real Destyler implementations: React, Vue, Solid and Svelte**. Switch and Dialog are the two CSS-only integrations. Their native data attributes select the design; consumers do not bind generated classes.
 
 - Each canvas shows only the selected component: a single Switch, or an Open dialog trigger and its actual modal. No notification cards, settings forms, or status summaries.
-- Desktop implementations use a two-column grid. Narrow screens stack them, with the reference first.
+- The comparison workspace runs flush from the sidebar to the viewport edge. Desktop implementations share a continuous two-column grid with single-pixel dividers; below 860px they stack without gutters, with the reference first. Text retains its reading inset. Mixed Preview/Code rows keep their borders and captions aligned.
 - Each framework card owns its own Preview/Code tabs. Code replaces only that card's preview; the other four previews stay visible. Returning to Preview preserves the mounted component state.
 - Each of the five previews has an independent light/dark control. The controls above the reference can change all five together.
 - Code defaults to the actual selected `SwitchExample` or `DialogExample` source for that framework. These files are also imported and rendered by Preview. The other component and the iframe bridge are not included.
