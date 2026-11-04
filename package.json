@@ -28,7 +28,8 @@
     "test:showcase:dom": "node scripts/test-astro-host-dom.mjs",
     "build:css-consumers": "node scripts/build-css-only-consumers.mjs build",
     "check:css-types": "vue-tsc --noEmit -p examples/css-only/tsconfig.json && tsc --noEmit -p examples/css-only/solid/tsconfig.json && svelte-check --tsconfig ./examples/css-only/svelte/tsconfig.json",
-    "test:css": "node scripts/verify-css-only.mjs && node scripts/verify-css-only-ssr.mjs && node scripts/verify-css-only-unocss.mjs"
+    "test:css": "node scripts/verify-css-only.mjs && node scripts/verify-css-only-ssr.mjs && node scripts/verify-css-only-unocss.mjs",
+    "test:reference:browser": "node scripts/test-reference-browser.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.1-beta.21",

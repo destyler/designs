@@ -66,7 +66,7 @@ const dialogTest = async side => {
   await trigger.waitFor()
   assert.equal(await root.getByRole('switch').count(), 0)
   await cleanCanvas(side)
-  for (const close of ['Escape', 'Close', 'outside']) {
+  for (const close of side === 'reference' ? ['Escape', 'Close', 'icon', 'outside'] : ['Escape', 'Close', 'outside']) {
     await trigger.click()
     const dialog = root.getByRole('dialog', { name: 'Dialog title', exact: true })
     await dialog.waitFor({ state: 'visible' })
@@ -75,7 +75,8 @@ const dialogTest = async side => {
     assert.ok((await dialog.innerText()).includes('This is a dialog description.'))
     assert.equal(await page.getByRole('dialog').count(), 0, 'Dialog is contained in iframe')
     if (close === 'Escape') await dialog.press('Escape')
-    else if (close === 'Close') await dialog.getByRole('button', { name: 'Close', exact: true }).click()
+    else if (close === 'Close') await (side === 'reference' ? dialog.locator('[data-slot="dialog-footer"]') : dialog).getByRole('button', { name: 'Close', exact: true }).click()
+    else if (close === 'icon') await dialog.locator(':scope > [data-slot="dialog-close"]').click()
     else {
       const box = await frameElement(side).boundingBox()
       assert.ok(box)
@@ -91,7 +92,7 @@ const navigate = async component => {
 }
 const theme = async (side, value) => {
   await until(() => frame(side).locator('main').getAttribute('data-theme'), value, `${side}: theme`)
-  if (side !== 'reference') await until(() => frame(side).locator('html').getAttribute('data-theme'), value, `${side}: document theme for portals`)
+  await until(() => frame(side).locator('html').getAttribute('data-theme'), value, `${side}: document theme for portals`)
 }
 const screenshot = async name => {
   const path = `${output}/${name}.png`

@@ -123,3 +123,18 @@ test('all frameworks remain visible without framework selection or persistence',
     assert.ok(source.includes('${framework}-' + suffix), `${suffix}: framework-qualified ID`)
   }
 })
+
+
+test('original reference owns an isolated document and keeps upstream close control', async () => {
+  const page = await read('src/pages/reference.astro')
+  const reference = await read('examples/showcase/ReferencePreview.tsx')
+  const css = await read('examples/showcase/reference.css')
+  assert.doesNotMatch(page, /SiteLayout|showcase\.css|app\.css/)
+  assert.match(page, /reference\.css/)
+  assert.match(css, /vendor\/shadcn\/zinc\.css/)
+  assert.match(css, /\*\s*\{\s*@apply border-border outline-ring\/50;/)
+  assert.doesNotMatch(css, /@import[^;]*(?:designs-css-only|showcase|app\.css|tokens\.css)/)
+  assert.doesNotMatch(reference, /showCloseButton=\{false\}|<DialogContent[^>]*className=/)
+  assert.match(reference, /root\.classList\.toggle\('dark', state\.theme === 'dark'\)/)
+  assert.match(reference, /root\.dataset\.theme = state\.theme/)
+})

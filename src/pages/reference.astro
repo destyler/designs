@@ -1,7 +1,20 @@
 ---
-import SiteLayout from '../layouts/SiteLayout.astro'
+import '../../examples/showcase/reference.css'
 import ReferencePreview from '../../examples/showcase/ReferencePreview'
 ---
-<SiteLayout title="Original shadcn/ui component">
-  <ReferencePreview client:load />
-</SiteLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Original shadcn/ui component</title>
+    <script is:inline>
+      // Match the iframe URL before first paint; the island owns later updates.
+      const theme = new URLSearchParams(location.search).get('theme') === 'dark' ? 'dark' : 'light'
+      document.documentElement.classList.toggle('dark', theme === 'dark')
+      document.documentElement.dataset.theme = theme
+    </script>
+  </head>
+  <body><ReferencePreview client:load /></body>
+</html>
