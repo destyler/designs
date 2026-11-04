@@ -49,5 +49,5 @@ function ReferenceControls({ example }: { example: 'switch' | 'checkbox' }) {
     {example === 'checkbox' && <Checkbox id={`${id}-${item.key}`} checked={checked[item.key]} disabled={item.disabled} onCheckedChange={value => setChecked(current => ({ ...current, [item.key]: value === true }))}/>}
     <div className="demo-row-copy"><Label className="sample-label" htmlFor={`${id}-${item.key}`}>{item.label}</Label><p className="sample-description">{item.description}</p></div>
     {example === 'switch' && <Switch id={`${id}-${item.key}`} checked={checked[item.key]} disabled={item.disabled} onCheckedChange={value => setChecked(current => ({ ...current, [item.key]: value }))}/>}
-  </div>)}<p className="sample-description sample-divider" role="status">{items.filter(item => checked[item.key]).length} of 3 {example === 'switch' ? 'notifications enabled' : 'options selected'}. Changes stay in this demo.</p></div>
+  </div>)}<p className="sample-description sample-divider" role="status">{items.filter(item => checked[item.key]).length} of 3 {example === 'switch' ? 'notifications enabled' : 'options selected'}.</p></div>
 }

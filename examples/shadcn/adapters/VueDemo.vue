@@ -98,7 +98,7 @@ const tips = ref<boolean | 'indeterminate'>(true)
     <p class="sample-description sample-divider" role="status">
       {{ selectedCount }} of 3
       {{ example === 'switch' ? 'notifications enabled' : 'options selected' }}.
-      Changes stay in this demo.
+
     </p>
   </div>
   <!-- @source-start: tabs -->

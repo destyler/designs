@@ -363,7 +363,7 @@ function ReactControls({ example }: { example: 'switch' | 'checkbox' }) {
       <p className="sample-description sample-divider" role="status">
         {items.filter((item) => checked[item.key]).length} of 3{' '}
         {example === 'switch' ? 'notifications enabled' : 'options selected'}.
-        Changes stay in this demo.
+
       </p>
     </div>
   )

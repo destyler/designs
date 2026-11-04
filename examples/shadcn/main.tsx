@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createApp, h, reactive } from 'vue'
-import { Moon, Sun, ArrowUpRight, Check, Code2, ChevronDown, ChevronRight, PanelsTopLeft, ToggleRight, SquareCheck, PanelTop, SlidersHorizontal, CodeXml, Bell, Plus } from 'lucide-react'
+import { Moon, Sun, ArrowUpRight, Check, Code2, ChevronDown, ChevronRight, PanelsTopLeft, ToggleRight, SquareCheck, PanelTop, SlidersHorizontal, CodeXml, Plus } from 'lucide-react'
 import { ReferenceDemo } from './components/ReferenceDemo'
 import { ReactDemo } from './adapters/ReactDemo'
 import { StyleInspector, type Framework } from './components/StyleInspector'
@@ -12,10 +12,10 @@ import './styles/app.css'
 const source = 'https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui'
 const repository = 'https://github.com/destyler/designs/tree/prototype/cloud-scoped-themes'
 const examples = {
-  switch: { title: 'Switch', category: 'Form controls', description: 'A simple toggle for the things that matter.', icon: ToggleRight, shortcut: 'Space', action: 'Toggle a focused switch', group: 'Components', number: '01' },
-  checkbox: { title: 'Checkbox', category: 'Form controls', description: 'Make a choice. See every state.', icon: SquareCheck, shortcut: 'Space', action: 'Check or uncheck an option', group: 'Components', number: '02' },
-  tabs: { title: 'Tabs', category: 'Navigation', description: 'Related views, one considered space.', icon: PanelsTopLeft, shortcut: '← →', action: 'Move between tabs', group: 'Components', number: '03' },
-  dialog: { title: 'Dialog', category: 'Overlays', description: 'Bring the important things into focus.', icon: PanelTop, shortcut: 'Esc', action: 'Close and return focus', group: 'Components', number: '04' },
+  switch: { title: 'Switch', category: 'Form controls', description: 'Toggle a setting on or off.', icon: ToggleRight, shortcut: 'Space', action: 'Toggle a focused switch', group: 'Components', number: '01' },
+  checkbox: { title: 'Checkbox', category: 'Form controls', description: 'Select one or more options.', icon: SquareCheck, shortcut: 'Space', action: 'Check or uncheck an option', group: 'Components', number: '02' },
+  tabs: { title: 'Tabs', category: 'Navigation', description: 'Move between related views.', icon: PanelsTopLeft, shortcut: '← →', action: 'Move between tabs', group: 'Components', number: '03' },
+  dialog: { title: 'Dialog', category: 'Overlays', description: 'Show a focused view over the page.', icon: PanelTop, shortcut: 'Esc', action: 'Close and return focus', group: 'Components', number: '04' },
   settings: { title: 'Settings', category: 'Composition', description: 'A few small components. A complete experience.', icon: SlidersHorizontal, shortcut: 'Tab', action: 'Explore the controls', group: 'Patterns', number: '05' },
 } as const
 export type Example = keyof typeof examples
@@ -67,7 +67,7 @@ function App() {
       <aside className="sidebar" aria-label="Component library">
         <div className="library-choice"><span className="shadcn-mark" aria-hidden="true">╱╱</span><div><strong>shadcn/ui</strong><span>New York collection</span></div></div>
         <nav className="component-navigation" aria-label="Examples">
-          {['Components', 'Patterns'].map(group => <div className="nav-group" key={group}><p>{group}<span>{group === 'Components' ? '04' : '01'}</span></p>{Object.entries(examples).filter(([, item]) => item.group === group).map(([id, item]) => <a key={id} href={`#${id}`} aria-current={example === id ? 'page' : undefined}><item.icon size={17}/><span>{item.title}</span><span className="nav-number">{item.number}</span></a>)}</div>)}
+          {['Components', 'Patterns'].map(group => <div className="nav-group" key={group}><p>{group}<span>{group === 'Components' ? '04' : '01'}</span></p>{Object.entries(examples).filter(([, item]) => item.group === group).map(([id, item]) => <a key={id} href={`#${id}`} aria-current={example === id ? 'page' : undefined}><item.icon size={17}/><span>{item.title}</span><span className="nav-number" aria-hidden="true">{item.number}</span></a>)}</div>)}
         </nav>
         <div className="sidebar-bottom"><span className="sidebar-eyebrow">BUILT ON YOUR FRAMEWORK</span><div className="framework-availability"><span><Check size={12}/>React</span><span><Check size={12}/>Vue</span></div><p>Solid & Svelte<br/>Not implemented yet.</p><a href={repository}>Explore the project <ArrowUpRight size={13}/></a></div>
       </aside>
@@ -83,7 +83,7 @@ function App() {
             <div className="comparison-grid" data-example={example}>
               {panels.map(({ id, title: panelTitle, subtitle, component: Demo }, index) => <section key={id} className="demo-panel" data-demo={id} aria-label={`${panelTitle} preview`}>
                 <div className="panel-heading"><div className="panel-identity">{index ? <Mark small/> : <span className="shadcn-mark" aria-hidden="true">╱╱</span>}<h2>{index ? 'Destyler' : 'shadcn/ui'}</h2><span className="panel-badge">{index ? 'ADAPTED' : 'ORIGINAL'}</span></div><button aria-label={`Toggle ${panelTitle} color mode`} aria-pressed={modes[id]} title={`Toggle ${panelTitle} color mode`} className="panel-mode" onClick={() => setModes(state => ({ ...state, [id]: !state[id] }))}>{modes[id] ? <Moon size={15}/> : <Sun size={15}/>}</button></div>
-                <div data-design="shadcn" className={'demo-surface ' + (modes[id] ? 'dark' : '')}><div className={'demo-example' + (example === 'switch' || example === 'checkbox' ? ' control-example' : '')} key={example}>{(example === 'switch' || example === 'checkbox') && <div className="example-card-heading"><span className="example-card-icon"><Bell size={17}/></span><h3>{example === 'switch' ? 'Notifications' : 'Stay in the loop'}</h3><p>{example === 'switch' ? 'Choose what reaches your inbox.' : 'A few updates, on your terms.'}</p></div>}<Demo dark={modes[id]} example={example}/></div></div>
+                <div data-design="shadcn" className={'demo-surface ' + (modes[id] ? 'dark' : '')}><div className={'demo-example' + (example === 'switch' || example === 'checkbox' ? ' control-example' : '')} key={example}>{(example === 'switch' || example === 'checkbox') && <div className="example-card-heading"><h3>{example === 'switch' ? 'Notifications' : 'Stay in the loop'}</h3><p>{example === 'switch' ? 'Choose what reaches your inbox.' : 'A few updates, on your terms.'}</p></div>}<Demo dark={modes[id]} example={example}/></div></div>
                 <div className="panel-caption"><span><span className="small-status"/>{subtitle}</span><span>{index ? 'beta.21' : 'New York v4'}</span></div>
               </section>)}
             </div>
