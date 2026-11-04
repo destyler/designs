@@ -42,5 +42,8 @@
     "examples/vanilla-extract/**/*.ts",
     "examples/vanilla-extract/**/*.tsx",
     "examples/vanilla-extract/**/*.vue"
+  ],
+  "exclude": [
+    "examples/vanilla-extract/solid"
   ]
 }

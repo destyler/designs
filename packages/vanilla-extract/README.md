@@ -1,6 +1,6 @@
 # Precompiled vanilla-extract proof
 
-Experimental **Switch + Dialog only**, derived from the pinned shadcn New York default design. This package is private and not published. It contains style names and CSS, not React/Vue components or state machines. Existing Tailwind examples remain intact.
+Experimental **Switch + Dialog only**, derived from the pinned shadcn New York default design. This package is private and not published. It contains style names and CSS, not React/Vue/Solid/Svelte components or state machines. Existing Tailwind examples remain intact.
 
 ## Consumer contract
 
@@ -9,7 +9,7 @@ import { classes, themes, vars } from '@destyler/designs-vanilla-extract-poc'
 import '@destyler/designs-vanilla-extract-poc/styles.css'
 ```
 
-Apply `themes.light` or `themes.dark` to a wrapper. Apply class strings to the matching `@destyler-ui/react` or `@destyler-ui/vue` primitive parts. `Switch.Control` needs `data-size="default"` or `"sm"`; the normal Destyler data-state/data-disabled/data-focus-visible attributes drive the styles. `Switch.HiddenInput` remains the real focusable input; the example assigns `role="switch"`.
+Apply `themes.light` or `themes.dark` to a wrapper. Apply class strings to the matching `@destyler-ui/react`, `@destyler-ui/vue`, `@destyler-ui/solid`, or `@destyler-ui/svelte` primitive parts. `Switch.Control` needs `data-size="default"` or `"sm"`; the normal Destyler data-state/data-disabled/data-focus-visible attributes drive the styles. `Switch.HiddenInput` remains the real focusable input; the example assigns `role="switch"`.
 
 `classes` exposes `switchRoot`, `switchControl`, `switchThumb`, `switchLabel`, `button`, `dialogBackdrop`, `dialogPositioner`, `dialogContent`, `dialogHeader`, `dialogTitle`, `dialogDescription`, `dialogFooter`, and `dialogClose`.
 
@@ -29,12 +29,12 @@ The CSS uses the named `@layer destyler`, no global reset or element selectors. 
 - Buttons and text helpers are included only to exercise the dialog, not a complete Button design system.
 - Layout is inherited from the consumer; minimal box sizing, border and typography resets are scoped to the exported component classes.
 - Reduced-motion timing is explicitly added to vanilla-extract; it is not present in the pinned upstream recipes. Arbitrary slot content remains the consumer's responsibility.
-- No automatic custom-variable synchronization, persistence, open-on-server modal proof, exhaustive assistive technology audit, or Solid/Svelte adapter test.
+- No automatic custom-variable synchronization, persistence, open-on-server modal proof, or exhaustive assistive technology audit.
 - The combined stylesheet contains both components and both themes, so importing a class does not prune unrelated CSS. A per-component publishing strategy is a future decision.
 - No repository-wide license has been selected for original work. Upstream shadcn MIT license and notices are retained; publishing remains blocked by `private: true`.
 
 ## Build and verify
 
-From repository root: `npm run build:designs`, `npm run test:designs`, then `npm run build:consumers`. See `examples/vanilla-extract/README.md` for runnable React/Vue + UnoCSS consumers and `docs/vanilla-extract-verification.md` for measured results and limits.
+From repository root: `npm run build:designs`, `npm run test:designs`, then `npm run build:consumers`. See `examples/vanilla-extract/README.md` for runnable React/Vue/Solid/Svelte + UnoCSS consumers and `docs/vanilla-extract-verification.md` for measured results and limits.
 
 The build uses the official vanilla-extract **Rollup** integration with `extract`, not its Vite application plugin (upstream explicitly does not support that plugin for library builds). This creates CSS and JS before consumers build. Declarations are flattened so both TypeScript Bundler and NodeNext resolution work without authoring dependencies.

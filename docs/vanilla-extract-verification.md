@@ -21,13 +21,19 @@ node --test test/vanilla-extract.test.mjs
 
 Vanilla-extract remains a development dependency of the authoring repository. “No runtime/plugin dependency” describes downstream consumption of the compiled style package, not authoring `.css.ts` files.
 
+## Supported framework scope
+
+The [current Destyler UI README](https://github.com/destyler/ui#pick-your-framework) lists React, Vue, Solid, and Svelte. This verification uses all four published `@destyler-ui/*` packages, pinned at `0.0.1-beta.21`; it does not substitute lower-level core adapters. Exact installed versions are recorded in `verification.json`. This covers the current four UI frameworks, not every framework supported by lower-level Destyler core.
+
 ## SSR and hydration
 
-`test/vanilla-extract-ssr.mjs` runs each framework and styling variant in fresh Node processes. The SSR process has no DOM shim. It renders real `@destyler-ui/react` or `@destyler-ui/vue` Switch and Dialog primitives, including labels, controls, hidden input, trigger, backdrop, positioner, content, title, description, and close trigger.
+`test/vanilla-extract-ssr.mjs` runs each framework and styling variant in fresh Node processes. The SSR process has no DOM shim. It renders real `@destyler-ui/react`, `@destyler-ui/vue`, `@destyler-ui/solid`, and `@destyler-ui/svelte` Switch and Dialog primitives, including labels, controls, hidden input, trigger, backdrop, positioner, content, title, description, and close trigger.
 
-A separate hydration process loads that saved HTML into happy-dom, hydrates with the same primitive tree, toggles the Switch, opens and closes the Dialog, and reopens it. Console errors and warnings are recorded. React recoverable hydration errors are captured explicitly. The styled version imports the installed tarball's JS, not authoring source. The unstyled version uses the same primitives with no style classes, providing a control for primitive or harness failures.
+Solid and Svelte fixtures are compiled separately for server and browser with their normal framework plugins, without any vanilla-extract plugin. Solid uses its official `generateHydrationScript()` bootstrap. No browser globals are present when the server bundle imports or renders.
 
-This is SSR/hydration evidence for inline, initially closed dialogs with explicit stable IDs. It is not universal proof about all Destyler components or framework SSR frameworks. Portals, initially open dialogs, visual layout, focus trapping, keyboard behavior, nested themes, and portal theme inheritance require separate browser checks. The CSS itself is separately verified through bundling; happy-dom is not used to claim visual CSS parity.
+A separate hydration process loads that saved HTML into happy-dom, hydrates with the same primitive tree, toggles the Switch, opens and closes the Dialog, and reopens it. The original server-rendered Switch control and Dialog trigger must retain object identity after hydration, preventing an unnoticed full client rerender from counting as a pass. Console errors and warnings are recorded. React recoverable hydration errors are captured explicitly. The styled version imports the installed tarball's JS, not authoring source. The unstyled version uses the same primitives with no style classes, providing a control for primitive or harness failures.
+
+There are 16 cases: four frameworks × styled/unstyled × server/hydration. This is SSR/hydration evidence for inline, initially closed dialogs with explicit stable IDs. It is not universal proof about all Destyler components or framework SSR frameworks. Portals, initially open dialogs, visual layout, focus trapping, keyboard behavior, nested themes, and portal theme inheritance require separate browser checks. The CSS itself is separately verified through bundling; happy-dom is not used to claim visual CSS parity.
 
 ## Reading the size results
 

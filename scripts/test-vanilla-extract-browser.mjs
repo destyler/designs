@@ -7,7 +7,7 @@ const evidence = []
 const properties = ['width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor', 'borderRadius', 'boxShadow', 'opacity']
 const snapshot = (locator, keys = properties) => locator.evaluate((el, keys) => Object.fromEntries(keys.map(key => [key, getComputedStyle(el)[key]])), keys)
 try {
-  for (const framework of ['react', 'vue']) {
+  for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
     const errors = []; page.on('pageerror', error => errors.push(error.message))
     const url = process.env[`${framework.toUpperCase()}_URL`] || `${base}/vanilla-extract/${framework}/`
@@ -77,5 +77,5 @@ try {
     await page.close()
   }
   await writeFile('artifacts/vanilla-extract/browser.json', JSON.stringify(evidence, null, 2))
-  console.log('React/Vue browser state, style, theme, override, focus, responsive and isolation checks passed.')
+  console.log('React/Vue/Solid/Svelte browser state, style, theme, override, focus, responsive and isolation checks passed.')
 } finally { await browser.close() }

@@ -6,6 +6,7 @@ import { resolve, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gzipSync } from 'node:zlib'
 import { build } from 'vite'
+import { buildFrameworkProbes } from '../test/vanilla-extract-build-probes.mjs'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 const artifacts = join(root, 'artifacts/vanilla-extract')
@@ -13,6 +14,11 @@ await mkdir(artifacts, { recursive: true })
 const run = (command, args, cwd = root) => execFileSync(command, args, { cwd, env: { ...process.env, npm_config_cache: join(tmpdir(), 'destyler-ve-npm-cache') }, encoding: 'utf8', timeout: 120_000, maxBuffer: 10 * 1024 * 1024 })
 const size = data => ({ rawBytes: Buffer.byteLength(data), gzipBytes: gzipSync(data, { level: 9 }).byteLength })
 const report = { generatedAt: new Date().toISOString(), environment: { node: process.version, platform: process.platform }, distribution: {}, ssr: [], sizes: {}, limitations: [] }
+report.frameworks = {}
+for (const framework of ['react', 'vue', 'solid', 'svelte']) {
+  const manifest = JSON.parse(await readFile(join(root, `node_modules/@destyler-ui/${framework}/package.json`), 'utf8'))
+  report.frameworks[framework] = { package: manifest.name, version: manifest.version, source: `https://github.com/destyler/ui/tree/main/packages/${framework}` }
+}
 const packageRoot = join(root, 'packages/vanilla-extract')
 const packed = JSON.parse(run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', artifacts], packageRoot))[0]
 const tarball = join(artifacts, packed.filename)
@@ -45,17 +51,18 @@ await writeFile(join(isolated, 'index.html'), '<!doctype html><html><body><div i
 await writeFile(join(isolated, 'main.js'), `import {classes,themes} from '@destyler/designs-vanilla-extract-poc'; import '@destyler/designs-vanilla-extract-poc/styles.css'; document.querySelector('#app').className=themes.light; document.querySelector('#app').innerHTML='<button class="'+classes.button+'">Packed consumer</button>';`)
 const bareOutput = await build({ configFile: false, root: isolated, logLevel: 'silent', plugins: [], build: { outDir: join(artifacts, 'plain-consumer'), emptyOutDir: true } })
 report.distribution.plainViteConsumer = { pass: true, vanillaExtractPlugin: false, output: bareOutput.output.map(f => ({ file: f.fileName, ...size(f.type === 'chunk' ? f.code : f.source) })) }
-for (const framework of ['react', 'vue']) {
+await buildFrameworkProbes(root, artifacts)
+for (const framework of ['react', 'vue', 'solid', 'svelte']) {
   for (const variant of ['styled', 'unstyled']) {
     const htmlFile = join(artifacts, `${framework}-${variant}-ssr.html`)
     for (const mode of ['ssr', 'hydrate']) {
       const resultFile = join(artifacts, `${framework}-${variant}-${mode}.json`)
-      run(process.execPath, ['test/vanilla-extract-ssr.mjs', framework, mode, entry, resultFile, htmlFile, variant])
+      run(process.execPath, ['test/vanilla-extract-ssr.mjs', framework, mode, entry, resultFile, htmlFile, variant, join(artifacts, 'framework-probes')])
       report.ssr.push(JSON.parse(await readFile(resultFile, 'utf8')))
     }
   }
 }
-for (const framework of ['react', 'vue']) {
+for (const framework of ['react', 'vue', 'solid', 'svelte']) {
   for (const mode of ['ssr', 'hydrate']) {
     const styled = report.ssr.find(r => r.framework === framework && r.mode === mode && r.variant === 'styled')
     const unstyled = report.ssr.find(r => r.framework === framework && r.mode === mode && r.variant === 'unstyled')
@@ -72,7 +79,7 @@ async function collect(dir) {
   return files
 }
 report.sizes.fullDemoBuildContextOnly = await collect(join(root, 'dist/assets'))
-report.sizes.consumerBuildsContextOnly = { react: await collect(join(root, 'dist/vanilla-extract/react')), vue: await collect(join(root, 'dist/vanilla-extract/vue')) }
+report.sizes.consumerBuildsContextOnly = { react: await collect(join(root, 'dist/vanilla-extract/react')), vue: await collect(join(root, 'dist/vanilla-extract/vue')), solid: await collect(join(root, 'dist/vanilla-extract/solid')), svelte: await collect(join(root, 'dist/vanilla-extract/svelte')) }
 try { report.sizes.tailwindSwitchDialogBaseline = JSON.parse(await readFile(join(artifacts, 'tailwind-baseline.json'), 'utf8')) } catch { report.limitations.push('Tailwind Switch/Dialog baseline not generated yet. Run its baseline script, then rerun this verification. Full demo asset sizes are context only, never an equivalent comparison.') }
 report.limitations.push('Hydration and interactions use happy-dom, not a browser layout engine. This does not verify visual parity, focus trapping, keyboard navigation, nested themes, or portaled theme inheritance.')
 report.limitations.push('Style package sizes exclude React/Vue, Destyler primitives and application code. Raw and gzip sizes are measured independently per artifact. Existing Tailwind recipes include additional variants and animations; component-scoped baseline is scope-matched, not byte-identical feature parity.')
