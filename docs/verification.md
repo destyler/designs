@@ -1,3 +1,53 @@
+# Verification · 2026-11-04
+
+## Component lab refinement (current)
+
+- Application commit: `665ae50815379d85f58e50cf885834a023166fa5` on `prototype/cloud-scoped-themes`.
+- Vercel deployment: `dpl_2RNhG7jEg7tKmhE99AoyL1PWHsBV`, READY, production alias https://destyler-designs-prototype.vercel.app/.
+- Remote commit and local Git tree were compared and match. GitHub reports no status checks or check-runs for this commit; the local checks below are not a claim of CI success.
+- No main-branch merge, npm release, core/UI package edits, or user-computer access.
+
+### Visual review and iteration
+
+Actual cloud Chrome screenshots of the previous site, shadcn Switch, Radix Themes Switch, and Base UI Switch were inspected before implementation. The first implementation was then inspected at desktop and phone width, not accepted solely because tests passed. A second pass removed a redundant icon block, tightened the title/toolbar spacing, increased source readability and metadata contrast, aligned panel headers, and shortened repetitive status copy.
+
+At the inspected 1180 × 757 desktop viewport, both default comparison panels measure 422.5 px wide and share y=280.90625 to bottom=743.46875. Both inset component cards have the same y=359.90625 and height=318.5625, so the complete default comparison is visible in the first screen. The page has no horizontal overflow.
+
+The same app was inspected in a 390 px iframe, with 375 CSS px content width after the browser scrollbar. The rail becomes a horizontal picker and previews stack. The rendered preview, Vue source and compiled-CSS views have document scrollWidth=clientWidth=375. This is responsive browser testing, not physical-phone or touch emulation.
+
+Screenshots captured: desktop Preview, desktop Code, phone-width Preview, and phone-width compiled CSS. The screenshots were visually inspected and provided to the coordinating assistant for delivery; image files are workspace artifacts rather than runtime assets.
+
+### Actual browser interactions
+
+- Preview and Code are keyboard-operable tabs in the same region. Code hides the preview rather than displaying it above or beside code. The DOM retains two mounted panels; switching back restores the live controls, without scrolling to a separate section.
+- Source adapts when React changes to Vue, and focused excerpts are visibly labelled with exact line ranges. Tokens/classes/full CSS remain available.
+- Compiled CSS text has SHA-256 `b47019cee1415516af4b4675ad1065f47ce449734d325cb05a84931da525f33c`, matching the actual locally built production asset byte-for-byte. The download target matches the applied stylesheet URL.
+- Copy reports success. The browser's separate clipboard inspection API returned an empty string, so an independent clipboard round-trip is **not claimed**.
+- React/Vue/React switching leaves exactly two panels. Switches respond to Space; checkbox checked counts change from 2 to 1 in the reference and both frameworks.
+- Tabs select Password via ArrowRight in the reference, React and Vue.
+- Reference/Vue dialogs close through Escape and Done; the final React dialog also closes with Escape. Focus returns to Review preferences. A dark Vue portal uses the owning dark token (`oklch(14.1% .005 285.823)`).
+- Phone-width Vue dialog fits at approximately 358 px with 16 px margins in the 390 px viewport and restores trigger focus after Escape.
+- Native browser Back restores Checkbox after Tabs, and Forward restores Tabs.
+- Inspected browser error logs contained extension metadata errors, not application-source errors.
+
+### Automated checks
+
+- 24 Node tests pass, including upstream source hashes, recipes, exact source-excerpt ranges, and bounded/lossless syntax coloring.
+- JavaScript syntax, TypeScript/Vue, production Vite build, and Happy DOM production smoke pass.
+- HTTP routing smoke passes all 8 routes and repository-metadata protection.
+- `git diff --check` passes.
+- Regression tests now cover Preview/Code exclusivity, preserved mounted state, view-tab and source-tab keyboard operation, close-focus restoration, source bytes, component/hash navigation and framework portal cleanup.
+
+### Limits
+
+Standalone Playwright Chromium cannot launch in this workspace because the runtime denies IPC socket creation. That suite was updated but **not run**. Localhost is not reachable from the separate cloud browser; actual-browser checks above used the deployed public site. Happy DOM does not substitute for these browser checks.
+
+Existing upstream date-export and large-bundle build warnings remain. This remains a React/Vue client-rendered prototype, not a full shadcn port or distributable zero-global stylesheet; Solid/Svelte and SSR are explicitly not implemented. No claim of exhaustive accessibility, cross-browser, touch or pixel-diff certification.
+
+---
+
+## Previous verification (historical)
+
 # Verification · 2026-11-03
 
 ## Component-library redesign (latest)
