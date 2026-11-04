@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { Window } from 'happy-dom'
-const window = new Window({ url:'http://localhost:4173/#settings', settings:{ disableCSSFileLoading:true, disableComputedStyleRendering:true } })
+const window = new Window({ url:'http://localhost:4173/examples/shadcn/#settings', settings:{ disableCSSFileLoading:true, disableComputedStyleRendering:true } })
 for(const key of ['window','document','navigator','HTMLElement','HTMLInputElement','HTMLButtonElement','Element','Node','NodeFilter','Event','CustomEvent','MouseEvent','KeyboardEvent','MutationObserver','ResizeObserver','IntersectionObserver','SVGElement','DocumentFragment','getComputedStyle','requestAnimationFrame','cancelAnimationFrame']) {
   const value = key==='window' ? window : typeof window[key] === 'function' && ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'].includes(key) ? window[key].bind(window) : window[key]
   Object.defineProperty(globalThis,key,{configurable:true,value})
@@ -10,7 +10,7 @@ for (const key of Object.getOwnPropertyNames(window)) {
   if (/^(HTML.*Element|SVG.*Element|Document|ShadowRoot|CSS.*|Node.*)$/.test(key) && !(key in globalThis)) Object.defineProperty(globalThis,key,{configurable:true,value:window[key]})
 }
 window.document.body.innerHTML='<div id="app"></div>'
-const html=await readFile('dist/index.html','utf8')
+const html=await readFile('dist/examples/shadcn/index.html','utf8')
 const entry=[...html.matchAll(/src="(\/assets\/[^\"]+\.js)"/g)].at(-1)[1]
 await import(new URL('../dist'+entry,import.meta.url))
 const settle=()=>new Promise(r=>setTimeout(r,100))

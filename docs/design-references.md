@@ -1,3 +1,13 @@
+# Unified four-framework comparison · 2026-11-04
+
+The current pass revisited actual cloud Chrome screenshots of [shadcn Switch](https://ui.shadcn.com/docs/components/base/switch) and [Base UI Switch](https://base-ui.com/react/components/switch). Their restrained navigation, concise headings, clear example boundaries and file controls informed the arrangement. No brand or layout assets were copied.
+
+The user's intended hierarchy is now explicit: the original shadcn panel is fixed on the left; framework choice and mutually exclusive Preview/Code controls belong to the Destyler panel on the right. All four frameworks show real published primitives and the same compiled design CSS. The old two-framework comparison is retained separately, rather than silently relabelling its simulated coverage.
+
+Only completed Switch and Dialog adapters appear in the component navigation. Scoped, independent preview canvases keep framework CSS from affecting the reference. At narrow widths, the panels stack and all controls remain available. Technical caveats stay in the collapsed notes and the verification report.
+
+---
+
 # Component lab visual study · 2026-11-04
 
 The previous redesign did not meet the user's visual bar. This pass began with actual cloud-browser visits and screenshots, rather than relying on remembered documentation layouts.

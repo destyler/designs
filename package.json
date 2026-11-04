@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Source-backed shadcn New York design adapters on real Destyler React and Vue primitives",
+  "description": "Fixed shadcn reference and real Destyler React, Vue, Solid and Svelte style adapters",
   "scripts": {
     "start": "vite --host 127.0.0.1",
     "test": "node --test test/*.test.mjs",
@@ -16,7 +16,7 @@
     "check:types": "vue-tsc --noEmit && tsc --noEmit -p examples/vanilla-extract/solid/tsconfig.json && svelte-check --tsconfig ./examples/vanilla-extract/svelte/tsconfig.json",
     "sync:shadcn": "node scripts/extract-shadcn-recipes.mjs",
     "test:browser": "node scripts/test-shadcn-browser.mjs",
-    "test:dom": "node scripts/smoke-shadcn-dom.mjs",
+    "test:dom": "node scripts/smoke-shadcn-dom.mjs && node scripts/test-showcase-dom.mjs",
     "build:designs": "node scripts/build-vanilla-extract.mjs",
     "build:consumers": "node scripts/vanilla-extract-consumers.mjs build all",
     "test:designs": "node scripts/verify-vanilla-extract.mjs",

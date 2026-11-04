@@ -1,0 +1,47 @@
+/* The reference always stays mounted; Preview / Code belongs only to Destyler. */
+.unified-showcase .comparison-grid { align-items: start; }
+.unified-showcase .page-intro { padding-bottom: 30px; }
+.comparison-summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 18px; }
+.comparison-summary p { font-size: 12px; color: #77776f; }
+.comparison-summary .theme-control { border: 0; padding: 0; }
+.reference-toolbar, .destyler-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 51px; padding: 0 18px; border-bottom: 1px solid #e7e7df; font-size: 11px; color: #6b6b63; }
+.reference-fixed { display: inline-flex; gap: 6px; align-items: center; color: #929286; font-size: 10px; }
+.destyler-toolbar .preview-controls { gap: 18px; height: 100%; }
+.destyler-toolbar .preview-controls button { font-size: 11px; padding: 0; gap: 5px; }
+.destyler-toolbar .select-wrap select { min-width: 83px; height: 29px; padding: 0 25px 0 10px; font-size: 11px; background: #fafaf8; }
+.destyler-toolbar .select-wrap svg { top: 9px; right: 8px; }
+.unified-showcase .demo-surface { min-height: 370px; height: 370px; }
+.framework-preview { position: relative; height: 370px; background: #f4f4f0; }
+.framework-frame { display: block; border: 0; width: 100%; height: 370px; }
+.framework-preview.dark { background: #19191b; }
+.preview-loading { position: absolute; inset: 0; background: inherit; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; font-size: 12px; color: #77776f; }
+.preview-loading button { border: 1px solid #bbb; padding: 7px 12px; border-radius: 5px; }
+.preview-loading a { display: inline-flex; align-items: center; gap: 5px; }
+.unified-showcase .panel-caption { height: 43px; font-size: 10px; }
+.panel-caption a { display: inline-flex; align-items: center; gap: 5px; }
+.sidebar-scope { margin: 29px 12px 0; font-size: 10px; color: #77776e; line-height: 1.8; }
+.sidebar-scope p { margin-top: 8px; color: #99998d; }
+.scope-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #e35b30; margin-right: 6px; }
+.unified-showcase .framework-availability { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.unified-showcase .sidebar-bottom { padding-top: 45px; }
+.showcase-source { height: 370px; display: flex; flex-direction: column; position: relative; background: #fafaf7; color: #48483c; }
+.source-file-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 16px; border-bottom: 1px solid #e7e7df; background: #f4f4ee; }
+.source-file-controls select { font-family: ui-monospace, monospace; color: #626255; font-size: 11px; min-width: 0; max-width: calc(100% - 65px); }
+.source-file-actions { display: flex; gap: 14px; color: #747469; }
+.source-file-actions button, .source-file-actions a { padding: 3px; }
+.showcase-source-note { font-size: 10px; line-height: 1.6; color: #8b8b7b; padding: 9px 17px; border-bottom: 1px solid #edede6; }
+.showcase-source pre { flex: 1; min-height: 0; overflow: auto; white-space: pre; tab-size: 2; font: 11px/1.9 ui-monospace, SFMono-Regular, Consolas, monospace; padding: 15px 17px 24px; margin: 0; }
+.source-copy-status { position: absolute; right: 15px; bottom: 7px; background: #fafaf7; font-size: 10px; color: #567754; padding: 0 3px; }
+.showcase-source pre:focus-visible { outline: 2px solid #e35b30; outline-offset: -3px; }
+@media (max-width: 1100px) { .reference-toolbar, .destyler-toolbar { padding-left: 14px; padding-right: 14px; } .reference-fixed { font-size: 9px; } }
+@media (max-width: 850px) and (min-width: 701px) { .destyler-toolbar { padding: 0 10px; gap: 6px; } .destyler-toolbar .preview-controls { gap: 12px; } .preview-controls button svg { display: none; } .reference-fixed { display: none; } }
+@media (max-width: 700px) {
+  .sidebar-scope { display: none; }
+  .unified-showcase .page-intro { padding-bottom: 22px; }
+  .comparison-summary { gap: 8px; margin-bottom: 13px; }
+  .comparison-summary p { font-size: 10px; }
+  .reference-toolbar, .destyler-toolbar { padding-left: 18px; padding-right: 18px; }
+  .unified-showcase .comparison-grid { gap: 20px; }
+  .unified-showcase .demo-surface { padding: 24px 22px; }
+  .unified-showcase .site-footer > div { gap: 16px; }
+}

@@ -41,7 +41,9 @@
     "packages/vanilla-extract/src/**/*.ts",
     "examples/vanilla-extract/**/*.ts",
     "examples/vanilla-extract/**/*.tsx",
-    "examples/vanilla-extract/**/*.vue"
+    "examples/vanilla-extract/**/*.vue",
+    "examples/showcase/**/*.ts",
+    "examples/showcase/**/*.tsx"
   ],
   "exclude": [
     "examples/vanilla-extract/solid"

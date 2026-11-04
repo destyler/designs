@@ -1,11 +1,13 @@
 import { render } from 'solid-js/web'
 import { Panel } from './Panel'
+import { Showcase } from './Showcase'
 import '../shared/app.css'
 import '@destyler/designs-vanilla-extract-poc/styles.css'
 import 'virtual:uno.css'
+const showcase = new URLSearchParams(location.search).has('showcase')
 const isolated = new URLSearchParams(location.search).has('isolated')
-if (!isolated) await import('../shared/baseline.generated.css')
-render(() => <main class="fixture-page">
+if (!isolated && !showcase) await import('../shared/baseline.generated.css')
+render(() => showcase ? <Showcase/> : <main class="fixture-page">
   <div class="fixture-kicker">Destyler / Style pipeline proof</div>
   <h1>One behavior. Two style engines.</h1>
   <p class="fixture-intro">Real published Solid Switch and Dialog primitives. Compare the existing Tailwind recipes with a precompiled vanilla-extract package, inside a consumer that runs only Solid and UnoCSS plugins.</p>

@@ -2,32 +2,32 @@
 
 A separate design layer for **real, unstyled Destyler UI components**. This repository does not add styles to `destyler/ui` or the underlying state machines.
 
-## Run the example
+## Run the unified comparison
 
 ```sh
 npm ci
-npm run dev
+npm run build
+npm run preview
 ```
 
-Open the printed local URL. The root page and `/examples/shadcn/` render the same component library and side-by-side comparison. Choose Switch, Checkbox, Tabs, or Dialog in the sidebar; Settings contains the composed example. The selected example is shareable as `/#switch`, `/#checkbox`, `/#tabs`, `/#dialog`, or `/#settings`:
+Open the printed URL. The root page compares a **fixed original shadcn/ui reference** on the left with **real Destyler React, Vue, Solid or Svelte** on the right. Switch and Dialog are the two completed style adapters; the page does not offer unimplemented components.
 
-1. **Reference:** unmodified official shadcn/ui New York v4 components, running on React + Radix.
-2. **Destyler:** one real framework at a time. Use the framework selector to switch between published `@destyler-ui/react@0.0.1-beta.21` and `@destyler-ui/vue@0.0.1-beta.21` primitives.
+- Changing frameworks only resets the right-hand consumer. The left remains mounted, including its control state and theme.
+- Preview and Code replace each other **inside the right-hand panel**. The left remains visible. Returning to Preview preserves its mounted state.
+- Each column has an independent light/dark control. The two controls above the comparison can change both together.
+- Code reads the selected framework's actual `Showcase` source, shared data/layout, style definitions and exact compiled package CSS. It does not substitute simulated snippets or the host page stylesheet.
+- Each framework runs in a same-origin iframe to keep framework runtimes and CSS isolated. Its Dialog opens within that canvas, not over the entire host page. Messages verify both origin and source.
+- Narrow screens stack the same two panels. Component URLs are `/#switch` and `/#dialog`; browser Back/Forward restores the selected example.
 
-Switching frameworks unmounts the previous demo, including its portals, and resets that demo’s control state. The reference remains mounted. Each framework’s selected light/dark mode is retained for this page session. Only React and Vue are selectable. Changing components resets both examples. Desktop uses a library rail, component workbench, and equal two-column canvases; narrow screens have a horizontal component picker and stack the same two panels. Back/forward navigation restores the selected component.
+The integrated comparison needs the built consumers, so use `build` + `preview` for the full site. `npm run dev` is the Vite source server for the older React/Vue example at `/examples/shadcn/`; use the individual consumer dev commands in `examples/vanilla-extract/README.md` when editing an adapter.
 
-Tabs, Switch, Checkbox, and Dialog are real framework components, not handwritten stateful HTML substitutes. Cards and buttons are presentational upstream markup. Each panel has independent light/dark state; body-level React portals and Vue Teleports receive their owning column's mode. The example is client-rendered, has no backend and does not persist settings.
+## Preserved examples
 
-## Inspect the CSS and adapter
+The earlier React/Vue comparison remains at `/examples/shadcn/`, including Checkbox, Tabs and Settings. Its older Tailwind source inspector is separate from the new four-framework style package.
 
-Choose **Code** beside **Preview** in the component toolbar. These are mutually exclusive views in the same workbench; the hidden preview remains mounted so returning to it preserves its state. Code opens the selected component’s actual React or Vue implementation, with exact source excerpts and line ranges. The inspector has four views:
+The original style-engine proof remains at `/vanilla-extract/{react,vue,solid,svelte}/`. It compares the precompiled vanilla-extract package with existing Tailwind recipes and exercises theme tokens, explicit overrides and UnoCSS. The unified comparison embeds its dedicated `?showcase=1` mode, which does not load baseline Tailwind CSS.
 
-- **Theme tokens:** the actual `styles/tokens.css` imported as raw source, with the shared scoped light/dark Zinc variables.
-- **Component classes:** original shadcn and adapted Destyler class recipes, filtered by component. These are Tailwind class strings, **not standalone CSS**. React and Vue consume the same `styles/recipes.ts` values.
-- **Compiled CSS:** the actual stylesheet fetched from this page’s same-origin stylesheet link. Copy preserves its exact contents, and Download CSS links to that asset. It includes utilities, animations, scoped tokens, the global Tailwind reset, and demo layout. In Vite development, the inspector reads the injected processed styles instead. Loading errors are visible and retryable.
-- **React/Vue adapter:** the actual source for the selected component and framework, imported with Vite `?raw`. Focused examples show labelled, exact line excerpts; Settings shows the entire adapter. The full file is linked on GitHub. Syntax highlighting preserves the displayed and copied source bytes.
-
-The inspector is read-only; it does not modify live CSS. The component class filter follows the selected example (Settings defaults to Tabs). Copy uses the browser clipboard API and reports unsupported/denied clipboard access. Apply the classes to the corresponding Destyler parts, include the Tailwind build input in `styles/app.css`, and wrap the component and portal roots in `data-design="shadcn"` (plus `class="dark"` for dark mode). The full page CSS is not a packaged component stylesheet; no claim of zero-global CSS is made.
+Nothing is persisted or sent. These are client-rendered examples and not a released component distribution.
 
 ## Where the design comes from
 
