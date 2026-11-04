@@ -31,8 +31,8 @@ export function SourceInspector({ framework, example }: { framework: Framework; 
     styles: { name: 'styles.css.ts', path: 'packages/vanilla-extract/src/styles.css.ts', code: styleSource, language: 'TypeScript', kind: 'typescript', note: 'Style definitions → compiled into static CSS and class-name exports at build time.' },
     css: { name: 'styles.css', path: 'packages/vanilla-extract/dist/styles.css', code: compiledCss, language: 'CSS', kind: 'css', generated: true, note: 'Generated package CSS, loaded by all four frameworks. No page CSS mixed in.' },
     exports: { name: 'index.js', path: 'packages/vanilla-extract/dist/index.js', code: compiledExports, language: 'JavaScript', kind: 'javascript', generated: true, note: 'Generated class, theme and token exports. Plain strings, not a styling runtime.' },
-    shared: { name: 'showcase.ts', path: 'examples/vanilla-extract/shared/showcase.ts', code: sharedSource, language: 'TypeScript', kind: 'typescript', note: 'Shared demo content and validated messages between the page and preview.' },
-    layout: { name: 'showcase.css', path: 'examples/vanilla-extract/shared/showcase.css', code: layoutSource, language: 'CSS', kind: 'css', note: 'Demo layout only. Component styles come from the compiled style package.' },
+    shared: { name: 'showcase.ts', path: 'examples/vanilla-extract/shared/showcase.ts', code: sharedSource, language: 'TypeScript', kind: 'typescript', note: 'SSR-safe initial state and validated messages between the page and preview.' },
+    layout: { name: 'showcase.css', path: 'examples/vanilla-extract/shared/showcase.css', code: layoutSource, language: 'CSS', kind: 'css', note: 'Canvas centering and visually hidden labels only. Component styles come from the compiled package.' },
   }
   const selected = files[file]
   const tokens = useMemo(() => tokenizeSource(selected.code), [selected.code])

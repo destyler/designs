@@ -5,14 +5,14 @@
   "type": "module",
   "description": "Fixed shadcn reference and real Destyler React, Vue, Solid and Svelte style adapters",
   "scripts": {
-    "start": "vite --host 127.0.0.1",
+    "start": "npm run dev",
     "test": "node --test test/*.test.mjs",
     "test:http": "node scripts/smoke-http.mjs",
     "check": "node scripts/check.mjs",
-    "dev": "vite --host 127.0.0.1",
+    "dev": "npm run build:designs && npm run build:consumers && astro dev --host 127.0.0.1",
     "start:legacy": "node scripts/serve.mjs",
-    "build": "npm run build:designs && node scripts/copy-notices.mjs && vite build && npm run build:consumers",
-    "preview": "vite preview --host 127.0.0.1",
+    "build": "npm run build:designs && node scripts/copy-notices.mjs && astro build && vite build && npm run build:consumers",
+    "preview": "astro preview --host 127.0.0.1",
     "check:types": "vue-tsc --noEmit && tsc --noEmit -p examples/vanilla-extract/solid/tsconfig.json && svelte-check --tsconfig ./examples/vanilla-extract/svelte/tsconfig.json",
     "sync:shadcn": "node scripts/extract-shadcn-recipes.mjs",
     "test:browser": "node scripts/test-shadcn-browser.mjs",
@@ -21,7 +21,11 @@
     "build:consumers": "node scripts/vanilla-extract-consumers.mjs build all",
     "test:designs": "node scripts/verify-vanilla-extract.mjs",
     "test:designs:browser": "node scripts/test-vanilla-extract-browser.mjs",
-    "test:designs:panels": "node scripts/verify-vanilla-extract-panels.mjs"
+    "test:designs:panels": "node scripts/verify-vanilla-extract-panels.mjs",
+    "check:astro": "astro check --tsconfig tsconfig.astro.json",
+    "test:showcase:browser": "node scripts/test-astro-showcase-browser.mjs",
+    "test:showcase:rendering": "node scripts/verify-showcase-rendering.mjs",
+    "test:showcase:dom": "node scripts/test-astro-host-dom.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.1-beta.21",
@@ -42,6 +46,8 @@
     "vue": "3.5.22"
   },
   "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "@astrojs/react": "4.4.2",
     "@sveltejs/vite-plugin-svelte": "6.2.4",
     "@tailwindcss/node": "4.3.4",
     "@tailwindcss/vite": "4.3.4",
@@ -52,6 +58,7 @@
     "@vitejs/plugin-react": "5.0.4",
     "@vitejs/plugin-vue": "6.0.1",
     "@vue/server-renderer": "3.5.22",
+    "astro": "5.18.2",
     "happy-dom": "21.0.4",
     "playwright": "1.56.1",
     "rollup-plugin-esbuild": "6.2.1",

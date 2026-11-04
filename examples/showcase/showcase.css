@@ -74,3 +74,9 @@
   .unified-showcase .demo-surface { padding: 24px 22px; }
   .unified-showcase .site-footer > div { gap: 16px; }
 }
+
+/* Component-only canvases: there are no example cards or application layouts. */
+.unified-showcase .framework-preview { background: #fff; }
+.unified-showcase .framework-preview.dark { background: #09090b; }
+.reference-stage { min-height: 100vh; display: grid; place-items: center; background: var(--background); margin: 0; padding: 24px; }
+.noscript-note { font-size: 12px; color: #77776e; padding: 16px 0; }

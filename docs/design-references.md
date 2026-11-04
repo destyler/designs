@@ -1,3 +1,13 @@
+# Astro component-only pass · 2026-11-04
+
+The user clarified that preview canvases should show only the selected component, not an example application layout, and that the site should be written with Astro. The root document, header, library navigation, footer and reference route now live in `.astro` pages/layouts. A React island supplies only the interactive comparison.
+
+Both canvases now center one real Switch, or the minimal trigger/modal for Dialog. Notifications cards, preference lists, descriptions of product updates and enabled-count summaries are removed from the current showcase. The pinned shadcn components themselves are unchanged. Both Dialogs use an isolated iframe viewport, so one side does not cover the whole site while the other stays local.
+
+The prior research below remains historical context. The current pass preserves the neutral documentation shell, actual IDE filename tabs and narrow-screen stacking; it removes fixture styling rather than proposing a new visual identity. Actual-browser verification for this pass is separately reported in `astro-verification.md` and must not be inferred from the earlier screenshots.
+
+---
+
 # Unified four-framework comparison · 2026-11-04
 
 The current pass revisited actual cloud Chrome screenshots of [shadcn Switch](https://ui.shadcn.com/docs/components/base/switch) and [Base UI Switch](https://base-ui.com/react/components/switch). Their restrained navigation, concise headings, clear example boundaries and file controls informed the arrangement. No brand or layout assets were copied.
