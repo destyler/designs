@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '@destyler/designs-css-only-poc/styles.css'
 import { onMounted, ref } from 'vue'
 import { Dialog } from '@destyler-ui/vue'
 

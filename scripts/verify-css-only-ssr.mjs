@@ -16,7 +16,9 @@ for (const framework of ['react', 'vue', 'solid', 'svelte']) {
   const fixture = join(root, `examples/css-only/${framework}/Example.${framework === 'vue' ? 'vue' : framework === 'svelte' ? 'svelte' : 'tsx'}`)
   const fixtureSource = await readFile(fixture, 'utf8')
   if (/\b(?:className|class|style)\s*=|\b(?:classes|themes)\s*(?:as\s+\w+)?\s*[,}]/.test(fixtureSource)) throw new Error(`${framework}: fixture contains style/class maps or attributes`)
-  if (/from\s*['"][^'"]*designs|import\s*['"][^'"]*\.css/.test(fixtureSource)) throw new Error(`${framework}: fixture imports styling runtime rather than leaving CSS to application entry`)
+  // Each example owns one static package import. It adds no styling runtime.
+  const primitiveSource = fixtureSource.replace(/^\s*import '@destyler\/designs-css-only-poc\/styles\.css'\s*$/m, '')
+  if (/from\s*['"][^'"]*designs|import\s*['"][^'"]*\.css/.test(primitiveSource)) throw new Error(`${framework}: fixture imports unexpected styling code`)
   for (const mode of ['ssr', 'hydrate']) {
     let source = `import ${['react', 'solid'].includes(framework) ? '{ Example }' : 'Example'} from ${JSON.stringify(fixture)};\n`
     if (framework === 'react') source += `import { createElement } from 'react'; import { ${mode === 'ssr' ? 'renderToString' : 'hydrateRoot'} } from 'react-dom/${mode === 'ssr' ? 'server' : 'client'}'; export function run(target, onError) { const tree = createElement(Example); ${mode === 'ssr' ? 'return renderToString(tree)' : 'const app = hydrateRoot(target, tree, { onRecoverableError: onError }); return () => app.unmount()'}; }`
@@ -25,7 +27,7 @@ for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     if (framework === 'svelte') source += `${mode === 'ssr' ? "import { render } from 'svelte/server'" : "import { hydrate, unmount } from 'svelte'"}; export function run(target) { ${mode === 'ssr' ? 'return render(Example).body' : 'const app = hydrate(Example, { target, recover: false }); return () => unmount(app)'}; }`
     const sourcePath = join(out, `${framework}-${mode}-entry.mjs`)
     await writeFile(sourcePath, source)
-    await build({ configFile: false, root, logLevel: 'error', plugins: framework === 'react' ? [react()] : framework === 'vue' ? [vue()] : framework === 'solid' ? [solid({ ssr: true })] : [svelte({ configFile: false })], ssr: { noExternal: ['solid', 'svelte'].includes(framework) ? true : undefined }, build: { ssr: mode === 'ssr' ? sourcePath : false, outDir: out, emptyOutDir: false, minify: false, lib: mode === 'hydrate' ? { entry: sourcePath, formats: ['es'], fileName: () => `${framework}-${mode}.mjs` } : undefined, rollupOptions: { output: { entryFileNames: `${framework}-${mode}.mjs`, inlineDynamicImports: true } } } })
+    await build({ configFile: false, root, resolve: { alias: { '@destyler/designs-css-only-poc/styles.css': process.env.CSS_ONLY_PACKAGE_CSS || join(root, 'packages/css-only/styles.css') } }, logLevel: 'error', plugins: framework === 'react' ? [react()] : framework === 'vue' ? [vue()] : framework === 'solid' ? [solid({ ssr: true })] : [svelte({ configFile: false })], ssr: { noExternal: ['solid', 'svelte'].includes(framework) ? true : undefined }, build: { ssr: mode === 'ssr' ? sourcePath : false, outDir: out, emptyOutDir: false, minify: false, lib: mode === 'hydrate' ? { entry: sourcePath, formats: ['es'], fileName: () => `${framework}-${mode}.mjs` } : undefined, rollupOptions: { output: { entryFileNames: `${framework}-${mode}.mjs`, inlineDynamicImports: true } } } })
     const resultPath = join(out, `${framework}-${mode}.json`)
     execFileSync(process.execPath, ['test/css-only-ssr.mjs', framework, mode, out, resultPath], { cwd: root, encoding: 'utf8', timeout: 120_000 })
     const result = JSON.parse(await readFile(resultPath, 'utf8'))

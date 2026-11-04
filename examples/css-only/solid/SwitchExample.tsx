@@ -1,3 +1,4 @@
+import '@destyler/designs-css-only-poc/styles.css'
 import { createSignal } from 'solid-js'
 import { Switch } from '@destyler-ui/solid/switch'
 

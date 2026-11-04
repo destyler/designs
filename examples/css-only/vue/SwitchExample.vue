@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '@destyler/designs-css-only-poc/styles.css'
 import { ref } from 'vue'
 import { Switch } from '@destyler-ui/vue'
 

@@ -83,10 +83,9 @@ try {
   const sources = async (name, example) => {
     const files = {
       component: `examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
-      styles: `examples/css-only/${name}/styles.ts`,
       css: 'packages/css-only/styles.css',
     }
-    assert.equal(card(name).querySelectorAll(`[aria-label="${frameworks[name]} source files"] [role="tab"]`).length, 3)
+    assert.equal(card(name).querySelectorAll(`[aria-label="${frameworks[name]} source files"] [role="tab"]`).length, 2)
     assert.ok(card(name).querySelector(`[data-source-framework="${name}"]`))
     for (const [id, path] of Object.entries(files)) {
       const others = Object.keys(frameworks).filter(other => other !== name).map(other => [other, card(other).querySelector('.source-file-path').textContent])

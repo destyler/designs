@@ -1,5 +1,7 @@
 # CSS-only integration into the five-panel Astro site
 
+Current source layout: [component-local CSS imports](./component-css-import-verification.md) supersede this report's three-tab description. All four frameworks now show the component and distributed CSS, with no separate `styles.ts` entry.
+
 2026-11-04. Integrated the independent CSS-only proof (`96235b5`) with the visual redesign (`32d809d`, cherry-picked locally as `2389647`). This integration was prepared in an independent cloud checkout. No push, deployment, release, UI/core change or user-computer access was performed.
 
 ## Actual site changes

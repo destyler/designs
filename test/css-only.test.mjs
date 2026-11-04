@@ -39,11 +39,18 @@ test('all four consumers use native primitives with no styling maps, classes, ru
     const ext = ['vue', 'svelte'].includes(framework) ? framework : 'tsx'
     const fixture = await read(`examples/css-only/${framework}/Example.${ext}`)
     assert.match(fixture, new RegExp(`@destyler-ui/${framework}`))
-    assert.doesNotMatch(fixture, /\bclass(?:Name)?\s*=|:class=|\bstyle\s*=|designs-|vanilla-extract|tailwind|unocss/)
+    const cssImport = "import '@destyler/designs-css-only-poc/styles.css'"
+    const primitiveSource = fixture.replace(cssImport, '')
+    assert.doesNotMatch(primitiveSource, /\bclass(?:Name)?\s*=|:class=|\bstyle\s*=|designs-|vanilla-extract|tailwind|unocss/)
     const main = await read(`examples/css-only/${framework}/main.${['react', 'solid'].includes(framework) ? 'tsx' : 'ts'}`)
-    assert.match(main, /import '\.\/styles'/)
-    const styleEntry = await read(`examples/css-only/${framework}/styles.ts`)
-    assert.equal(styleEntry.trim(), "import '@destyler/designs-css-only-poc/styles.css'")
+    assert.doesNotMatch(main, /import '\.\/styles'/)
+    await assert.rejects(read(`examples/css-only/${framework}/styles.ts`), { code: 'ENOENT' })
+    for (const component of ['Example', 'SwitchExample', 'DialogExample']) {
+      const source = await read(`examples/css-only/${framework}/${component}.${ext}`)
+      assert.equal(source.split(cssImport).length - 1, 1, `${framework}/${component}: one static CSS import`)
+      assert.doesNotMatch(source.replace(cssImport, ''), /\bclass(?:Name)?\s*=|:class=|\bstyle\s*=|designs-|vanilla-extract|tailwind|unocss/)
+      assert.doesNotMatch(source, /<style\b/, 'Package CSS must remain global, including body portals')
+    }
     const config = await read(`examples/css-only/${framework}/vite.config.ts`)
     assert.doesNotMatch(config, /import.+(?:vanilla-extract|tailwind|unocss)/)
   }

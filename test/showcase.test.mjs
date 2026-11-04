@@ -44,11 +44,12 @@ test('reference is above four independently stateful framework cards', () => {
 test('code uses exact CSS package and framework CSS imports rather than host page styles', async () => {
   assert.match(source, /packages\/css-only\/styles\.css\?raw/)
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
-    assert.ok(source.includes(`../css-only/${framework}/styles.ts?raw`))
-    const styles = await read(`examples/css-only/${framework}/styles.ts`)
-    assert.match(styles, /import ['"]@destyler\/designs-css-only-poc\/styles\.css['"]/)
-    assert.doesNotMatch(styles, /classes|themes|vanilla-extract/)
+    const extension = framework === 'vue' ? 'vue' : framework === 'svelte' ? 'svelte' : 'tsx'
+    for (const component of ['Switch', 'Dialog']) {
+      assert.match(await read(`examples/css-only/${framework}/${component}Example.${extension}`), /import ['"]@destyler\/designs-css-only-poc\/styles\.css['"]/)
+    }
   }
+  assert.doesNotMatch(source, /styles\.ts|reactStyles|vueStyles|solidStyles|svelteStyles/)
   assert.match(source, /navigator\.clipboard\.writeText\(selected\.code\)/)
   assert.doesNotMatch(source, /document\.querySelectorAll|fetch\(/)
 })
@@ -107,7 +108,7 @@ test('component-only compositions retain real primitives without application fix
 
 test('source follows the selected component and hides preview plumbing', () => {
   assert.match(source, /sources\[framework\]\[example\]/)
-  assert.match(source, /const fileIds = \['component', 'styles', 'css'\]/)
+  assert.match(source, /const fileIds = \['component', 'css'\]/)
   assert.doesNotMatch(source, /shared\/showcase|Showcase\.(tsx|vue|svelte)\?raw|dist\/index\.js\?raw/)
   assert.match(source, /setFile\('component'\).*\[example\]/)
   assert.match(source, /\[file, framework, example\]/)

@@ -109,10 +109,9 @@ const view = async (name, code) => {
 const inspectFiles = async (name, example) => {
   const files = {
     component: `examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
-    styles: `examples/css-only/${name}/styles.ts`,
     css: 'packages/css-only/styles.css',
   }
-  assert.equal(await card(name).getByRole('tablist', { name: `${frameworks[name]} source files`, exact: true }).getByRole('tab').count(), 3)
+  assert.equal(await card(name).getByRole('tablist', { name: `${frameworks[name]} source files`, exact: true }).getByRole('tab').count(), 2)
   for (const [id, path] of Object.entries(files)) {
     await page.locator(`#${name}-source-tab-${id}`).click()
     const expected = await readFile(path, 'utf8')
@@ -215,7 +214,7 @@ try {
     }
     for (const name of Object.keys(frameworks)) {
       await page.locator(`#${name}-code-tab`).click()
-      for (const id of ['component', 'styles', 'css']) {
+      for (const id of ['component', 'css']) {
         await page.locator(`#${name}-source-tab-${id}`).click()
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${name}/${id}: code does not overflow host`)
       }

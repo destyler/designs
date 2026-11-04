@@ -1,0 +1,386 @@
+{
+  "date": "2026-11-04",
+  "baseCommit": "4ff0216059016905ae049403f4a3289747e04d37",
+  "scope": "Direct CSS imports in all four frameworks, two source tabs, no navigation-arrow changes",
+  "publication": "Local only; no push or deployment",
+  "checks": {
+    "build": "passed",
+    "unitTests": {
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0
+    },
+    "syntax": "passed",
+    "frameworkTypes": "passed",
+    "astroDiagnostics": {
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0
+    },
+    "staticAstroOutput": "passed",
+    "packedCSS": {
+      "unitTests": 5,
+      "isolatedOfflineInstall": true,
+      "bareViteWithoutPlugins": true,
+      "plainImportJavaScriptBytes": 0,
+      "packedCSSUsedByAllFourConsumers": true,
+      "componentImportsDeduplicated": true,
+      "builds": [
+        "react",
+        "vue",
+        "solid",
+        "svelte",
+        "pinned-shadcn-reference"
+      ],
+      "types": [
+        "react",
+        "vue",
+        "solid",
+        "svelte"
+      ],
+      "unoGeneratedOverride": true
+    },
+    "fixtureSSRHydration": {
+      "cases": [
+        {
+          "framework": "react",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 4347,
+          "portalAbsentOnServer": true,
+          "noStyleClasses": true,
+          "pass": true
+        },
+        {
+          "framework": "react",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "portalMountedUnderBody": true,
+          "initiallyHidden": true,
+          "switchInteractive": true,
+          "controlledSwitchInteractive": true,
+          "disabledSwitchPreserved": true,
+          "readonlySwitchPreserved": true,
+          "rtlCaseObservedDirection": "rtl",
+          "dialogOpenCloseCycles": 3,
+          "noStyleClasses": true,
+          "portalRemovedOnUnmount": true,
+          "pass": true
+        },
+        {
+          "framework": "vue",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 4695,
+          "portalAbsentOnServer": true,
+          "noStyleClasses": true,
+          "pass": true
+        },
+        {
+          "framework": "vue",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "portalMountedUnderBody": true,
+          "initiallyHidden": true,
+          "switchInteractive": true,
+          "controlledSwitchInteractive": true,
+          "disabledSwitchPreserved": true,
+          "readonlySwitchPreserved": true,
+          "rtlCaseObservedDirection": "rtl",
+          "dialogOpenCloseCycles": 3,
+          "noStyleClasses": true,
+          "portalRemovedOnUnmount": true,
+          "pass": true
+        },
+        {
+          "framework": "solid",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 4964,
+          "portalAbsentOnServer": true,
+          "noStyleClasses": true,
+          "pass": true
+        },
+        {
+          "framework": "solid",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "portalMountedUnderBody": true,
+          "initiallyHidden": true,
+          "switchInteractive": true,
+          "controlledSwitchInteractive": true,
+          "disabledSwitchPreserved": true,
+          "readonlySwitchPreserved": true,
+          "rtlCaseObservedDirection": "rtl",
+          "dialogOpenCloseCycles": 3,
+          "noStyleClasses": true,
+          "portalRemovedOnUnmount": true,
+          "pass": true
+        },
+        {
+          "framework": "svelte",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 5981,
+          "portalAbsentOnServer": true,
+          "noStyleClasses": true,
+          "pass": true
+        },
+        {
+          "framework": "svelte",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "portalMountedUnderBody": true,
+          "initiallyHidden": true,
+          "switchInteractive": true,
+          "controlledSwitchInteractive": true,
+          "disabledSwitchPreserved": true,
+          "readonlySwitchPreserved": true,
+          "rtlCaseObservedDirection": "rtl",
+          "dialogOpenCloseCycles": 3,
+          "noStyleClasses": true,
+          "portalRemovedOnUnmount": true,
+          "pass": true
+        }
+      ],
+      "limitations": [
+        "happy-dom verifies DOM hydration and click behavior, not rendered CSS, keyboard navigation, focus trapping, geometry, animations or browser accessibility. CSS build and visual checks are separate."
+      ],
+      "pass": true
+    },
+    "showcaseSSRHydration": {
+      "cases": [
+        {
+          "framework": "react",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 748,
+          "singleComponentSSRWithoutBrowserGlobals": true,
+          "pass": true
+        },
+        {
+          "framework": "react",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "switchInputClickInteractive": true,
+          "validatedMessageChangesComponent": true,
+          "dialogOpenCloseReopen": true,
+          "documentThemeUpdatesForBodyPortal": true,
+          "noStylingClasses": true,
+          "componentChangeCleansPortal": true,
+          "themeAndListenerCleanup": true,
+          "pass": true
+        },
+        {
+          "framework": "vue",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 775,
+          "singleComponentSSRWithoutBrowserGlobals": true,
+          "pass": true
+        },
+        {
+          "framework": "vue",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "switchInputClickInteractive": true,
+          "validatedMessageChangesComponent": true,
+          "dialogOpenCloseReopen": true,
+          "documentThemeUpdatesForBodyPortal": true,
+          "noStylingClasses": true,
+          "componentChangeCleansPortal": true,
+          "themeAndListenerCleanup": true,
+          "pass": true
+        },
+        {
+          "framework": "solid",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 852,
+          "singleComponentSSRWithoutBrowserGlobals": true,
+          "pass": true
+        },
+        {
+          "framework": "solid",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "switchInputClickInteractive": true,
+          "validatedMessageChangesComponent": true,
+          "dialogOpenCloseReopen": true,
+          "documentThemeUpdatesForBodyPortal": true,
+          "noStylingClasses": true,
+          "componentChangeCleansPortal": true,
+          "themeAndListenerCleanup": true,
+          "pass": true
+        },
+        {
+          "framework": "svelte",
+          "mode": "ssr",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "htmlBytes": 1004,
+          "singleComponentSSRWithoutBrowserGlobals": true,
+          "pass": true
+        },
+        {
+          "framework": "svelte",
+          "mode": "hydrate",
+          "domPresentAtStart": false,
+          "errors": [],
+          "warnings": [],
+          "serverNodesRetained": true,
+          "switchInputClickInteractive": true,
+          "validatedMessageChangesComponent": true,
+          "dialogOpenCloseReopen": true,
+          "documentThemeUpdatesForBodyPortal": true,
+          "noStylingClasses": true,
+          "componentChangeCleansPortal": true,
+          "themeAndListenerCleanup": true,
+          "pass": true
+        }
+      ],
+      "limitations": [
+        "happy-dom tests DOM behavior, not CSS rendering, visual parity, keyboard navigation or focus trapping. The Showcase imports no styling JS; application entry loads CSS separately."
+      ],
+      "pass": true
+    },
+    "unoCSS": {
+      "pass": true,
+      "cases": [
+        {
+          "framework": "react",
+          "pass": true,
+          "cssOnlyPackageAndUnoCSSBuiltTogether": true
+        },
+        {
+          "framework": "vue",
+          "pass": true,
+          "cssOnlyPackageAndUnoCSSBuiltTogether": true
+        },
+        {
+          "framework": "solid",
+          "pass": true,
+          "cssOnlyPackageAndUnoCSSBuiltTogether": true
+        },
+        {
+          "framework": "svelte",
+          "pass": true,
+          "cssOnlyPackageAndUnoCSSBuiltTogether": true
+        }
+      ],
+      "limitations": [
+        "Combined builds and generated selectors are checked. Effective cascade and visual states require browser verification."
+      ]
+    },
+    "productionHostDOM": {
+      "test": "production Astro Comparison island hydration",
+      "checks": [
+        "All five SSR iframe nodes hydrate in place; four independent view/file tab sets, exact source bytes, line counts, clipboard and keyboard navigation",
+        "Independent five-way themes and global theme controls; component navigation resets each source file while retaining mixed view states and every iframe; unique accessible IDs"
+      ],
+      "errors": [],
+      "warnings": [],
+      "limitations": [
+        "Happy DOM does not prove rendering, actual iframe readiness, focus trapping, or real browser navigation. Iframe ready messages are simulated; page scripts and iframe loads are disabled. Disabled Happy DOM iframes have null contentWindow, so independent real-window readiness is only covered by the browser suite."
+      ],
+      "metadata": {
+        "component-url": "/_astro/main.DFZSNuDg.js",
+        "renderer-url": "/_astro/client.CPdq839H.js",
+        "component-export": "default"
+      },
+      "pass": true
+    }
+  },
+  "browser": {
+    "status": "blocked",
+    "assertionsExecuted": 0,
+    "reason": "Chromium failed at process_singleton_posix.cc: socket() failed: Operation not permitted, before loading a page, on normal and elevated local launches.",
+    "visualParityVerified": false
+  },
+  "sources": [
+    {
+      "path": "examples/css-only/react/Example.tsx",
+      "sha256": "a7a3187c2c48e10fccf93c6f5c24b3d29c4554669003f2c70db1260c22910e62"
+    },
+    {
+      "path": "examples/css-only/react/SwitchExample.tsx",
+      "sha256": "80b19f4fa71543894de7a0331e2befb96bb50509aa26b14e2d121646177cf7fc"
+    },
+    {
+      "path": "examples/css-only/react/DialogExample.tsx",
+      "sha256": "eb3eb465ab7871bf7c62b05f8e6c3a7c6b27e0538a13d6a4af2c2137e7ae1270"
+    },
+    {
+      "path": "examples/css-only/vue/Example.vue",
+      "sha256": "29c10df51f0b6cd55816e4cca1c24f9d204bab440ed2f54a7fb90bcddccabf10"
+    },
+    {
+      "path": "examples/css-only/vue/SwitchExample.vue",
+      "sha256": "afdd2c4d9bbf0172465f932b1e416aa269710db3c8cc81e402ecf3b6a5da1415"
+    },
+    {
+      "path": "examples/css-only/vue/DialogExample.vue",
+      "sha256": "ede648ecedf588a103eb7d1ba1a9b7987720e752078d614d7bd87465f01d724c"
+    },
+    {
+      "path": "examples/css-only/solid/Example.tsx",
+      "sha256": "76a5a8d444abc5bbfad4ff68244afd7705985db507b418df10bbc27f15d54585"
+    },
+    {
+      "path": "examples/css-only/solid/SwitchExample.tsx",
+      "sha256": "e3ca6c319e642899f57ce2be61c53cda280f9bbad0637b4a23ee5f300653a45e"
+    },
+    {
+      "path": "examples/css-only/solid/DialogExample.tsx",
+      "sha256": "ab37fd7d8e847f50a091ebafc70682457639fde6b017de7d77542ed7a917101e"
+    },
+    {
+      "path": "examples/css-only/svelte/Example.svelte",
+      "sha256": "d4720455adb8a107c82a6586a9be8e5485d0a7e8dac93265af31fcf903837bf7"
+    },
+    {
+      "path": "examples/css-only/svelte/SwitchExample.svelte",
+      "sha256": "ed0b200eb48ff7ad907595e61cc77cc45bd27ca2fd1499aa6feaaa2cabdcf38c"
+    },
+    {
+      "path": "examples/css-only/svelte/DialogExample.svelte",
+      "sha256": "36b32e5f80deef751acfff0fe2aa64d4e97b857811480f60f1691ae971f9c7f3"
+    }
+  ]
+}

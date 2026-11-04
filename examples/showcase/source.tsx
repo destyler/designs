@@ -8,10 +8,6 @@ import solidSwitch from '../css-only/solid/SwitchExample.tsx?raw'
 import solidDialog from '../css-only/solid/DialogExample.tsx?raw'
 import svelteSwitch from '../css-only/svelte/SwitchExample.svelte?raw'
 import svelteDialog from '../css-only/svelte/DialogExample.svelte?raw'
-import reactStyles from '../css-only/react/styles.ts?raw'
-import vueStyles from '../css-only/vue/styles.ts?raw'
-import solidStyles from '../css-only/solid/styles.ts?raw'
-import svelteStyles from '../css-only/svelte/styles.ts?raw'
 import packageCss from '../../packages/css-only/styles.css?raw'
 import { tokenizeSource } from '../shadcn/components/source-view'
 import type { Example } from './main'
@@ -20,8 +16,7 @@ export const frameworks = { react: 'React', vue: 'Vue', solid: 'Solid', svelte: 
 export type Framework = keyof typeof frameworks
 const extensions = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
 const sources = { react: { switch: reactSwitch, dialog: reactDialog }, vue: { switch: vueSwitch, dialog: vueDialog }, solid: { switch: solidSwitch, dialog: solidDialog }, svelte: { switch: svelteSwitch, dialog: svelteDialog } }
-const imports = { react: reactStyles, vue: vueStyles, solid: solidStyles, svelte: svelteStyles }
-const fileIds = ['component', 'styles', 'css'] as const
+const fileIds = ['component', 'css'] as const
 type FileId = typeof fileIds[number]
 type SourceFile = { name: string; path: string; code: string; language: string; kind: string; note: string; downloadable?: boolean }
 
@@ -34,7 +29,6 @@ export function SourceInspector({ framework, example }: { framework: Framework; 
   const componentName = example === 'switch' ? 'Switch' : 'Dialog'
   const files: Record<FileId, SourceFile> = {
     component: { name: `${componentName}Example.${extensions[framework]}`, path: `examples/css-only/${framework}/${componentName}Example.${extensions[framework]}`, code: sources[framework][example], language: extensions[framework] === 'tsx' ? 'TypeScript JSX' : frameworks[framework], kind: framework, note: `The exact ${frameworks[framework]} ${componentName} component rendered in Preview.` },
-    styles: { name: 'styles.ts', path: `examples/css-only/${framework}/styles.ts`, code: imports[framework], language: 'TypeScript', kind: 'typescript', note: 'The exact CSS-only entry imported by this running consumer. No styling runtime or build plugin.' },
     css: { name: 'styles.css', path: 'packages/css-only/styles.css', code: packageCss, language: 'CSS', kind: 'css', downloadable: true, note: 'The exact distributed stylesheet. Native data-scope/data-part/state selectors, with no generated classes or page layout CSS.' },
   }
   const selected = files[file]

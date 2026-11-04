@@ -1,7 +1,6 @@
 import { mount } from 'svelte'
 import Example from './Example.svelte'
 import Showcase from './Showcase.svelte'
-import './styles'
 import '../shared/fixture.css'
 const showcase = new URLSearchParams(location.search).has('showcase')
 const target = document.querySelector('#app')!

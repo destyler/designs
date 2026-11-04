@@ -1,3 +1,4 @@
+import '@destyler/designs-css-only-poc/styles.css'
 import { createSignal, onMount, Show } from 'solid-js'
 import { Portal } from 'solid-js/web'
 import { Dialog } from '@destyler-ui/solid/dialog'

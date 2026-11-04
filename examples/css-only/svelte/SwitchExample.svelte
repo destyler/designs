@@ -1,4 +1,5 @@
 <script lang="ts">
+  import '@destyler/designs-css-only-poc/styles.css'
   import { Switch } from '@destyler-ui/svelte/switch'
 
   let checked = $state(false)

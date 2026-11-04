@@ -1,4 +1,5 @@
 <script lang="ts">
+  import '@destyler/designs-css-only-poc/styles.css'
   import { onMount } from 'svelte'
   import { Dialog } from '@destyler-ui/svelte/dialog'
 

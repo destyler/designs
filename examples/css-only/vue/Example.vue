@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '@destyler/designs-css-only-poc/styles.css'
 import { onMounted, ref } from 'vue'
 import { Switch, Dialog, LocaleProvider } from '@destyler-ui/vue'
 const mounted = ref(false)

@@ -1,4 +1,5 @@
 <script lang="ts">
+import '@destyler/designs-css-only-poc/styles.css'
 import { onMount } from 'svelte'
 import { Switch } from '@destyler-ui/svelte/switch'
 import { LocaleProvider } from '@destyler-ui/svelte/locale'

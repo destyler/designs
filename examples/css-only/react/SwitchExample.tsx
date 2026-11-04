@@ -1,3 +1,4 @@
+import '@destyler/designs-css-only-poc/styles.css'
 import { useState } from 'react'
 import { Switch } from '@destyler-ui/react'
 

@@ -1,3 +1,4 @@
+import '@destyler/designs-css-only-poc/styles.css'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Switch, Dialog, LocaleProvider } from '@destyler-ui/react'

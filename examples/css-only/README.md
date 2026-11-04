@@ -1,6 +1,8 @@
 # Four native CSS-only consumers
 
-Each `Example.*` imports real published `@destyler-ui/*@0.0.1-beta.21` primitives. None supplies style classes, class maps or style objects. `main.*` imports its real `styles.ts` entry, which adds the one designs CSS import; separate `shared/fixture.*` files only provide page layout and demo theme controls. Native data attributes are ordinary CSS selectors, not an UnoCSS Attributify dependency.
+Each `Example.*` imports real published `@destyler-ui/*@0.0.1-beta.21` primitives. None supplies style classes, class maps or style objects. Every framework's `Example.*`, `SwitchExample.*` and `DialogExample.*` directly imports `@destyler/designs-css-only-poc/styles.css`. React and Solid use a module import, Vue uses `<script setup>`, and Svelte uses `<script>`. No separate `styles.ts` entry is needed. Separate `shared/fixture.*` files only provide page layout and demo theme controls. Native data attributes are ordinary CSS selectors, not an UnoCSS Attributify dependency.
+
+These imports are still document-wide static CSS, not scoped component styles or a styling runtime. The bundler resolves repeated imports of the same stylesheet. Import location does not add component-level isolation or change body-portal theme inheritance; the separate preview documents still provide isolation. SSR and hydration use each framework's ordinary compiler, with the same mounted-portal behavior as before.
 
 The normal Vite configs have **only the framework plugin**. The CSS import resolves to the static package stylesheet. `scripts/verify-css-only.mjs` instead packs the package, installs it offline into a fresh directory, and builds all four consumers from that installed CSS. The bare Vite proof uses no plugins at all and emits no styling JavaScript.
 
@@ -21,7 +23,7 @@ node scripts/verify-css-only-ssr.mjs
 node scripts/verify-css-only-unocss.mjs
 ```
 
-Production fixtures are `dist/css-only/{react,vue,solid,svelte,reference}/`. The root build now includes them, and the Astro five-panel comparison embeds each framework's `?showcase=1` mode. That mode renders only the selected `SwitchExample` or `DialogExample`; the IDE shows those exact files, the actual `styles.ts` import entry, and package CSS. The component code has no design classes. The documented standalone route retains broader verification cases.
+Production fixtures are `dist/css-only/{react,vue,solid,svelte,reference}/`. The root build now includes them, and the Astro five-panel comparison embeds each framework's `?showcase=1` mode. That mode renders only the selected `SwitchExample` or `DialogExample`; the IDE shows those exact files and package CSS. All four framework panels use the same two tabs. Each displayed component includes its CSS import, so copying it does not require a separate import file. The component code has no design classes. The documented standalone route retains broader verification cases.
 
 For a browser-capable environment, serve `dist/` with the project's normal static server, or use a deployed preview:
 

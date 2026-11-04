@@ -1,7 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import { Example } from './Example'
 import { Showcase } from './Showcase'
-import './styles'
 import '../shared/fixture.css'
 const showcase = new URLSearchParams(location.search).has('showcase')
 const target = document.querySelector('#app')!

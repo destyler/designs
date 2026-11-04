@@ -1,7 +1,7 @@
 // Packs and installs CSS into a clean consumer, then builds with zero style plugins.
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { readFile, writeFile, mkdir, mkdtemp, stat } from 'node:fs/promises'
+import { readFile, writeFile, mkdir, mkdtemp, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -29,6 +29,12 @@ assert.ok(bare.output.some(file => file.fileName.endsWith('.css')))
 const styleJS = bare.output.filter(file => file.type === 'chunk').map(file => file.code).join('')
 assert.equal(styleJS.trim(), '', 'CSS-only import should produce zero style JavaScript')
 run(process.execPath, ['scripts/build-css-only-consumers.mjs', 'build'], root, { CSS_ONLY_PACKAGE_CSS: installedCSS })
+for (const framework of ['react', 'vue', 'solid', 'svelte']) {
+  const assets = join(root, 'dist/css-only', framework, 'assets')
+  const stylesheets = (await readdir(assets)).filter(file => file.endsWith('.css'))
+  const outputCSS = (await Promise.all(stylesheets.map(file => readFile(join(assets, file), 'utf8')))).join('\n')
+  assert.equal((outputCSS.match(/@layer\s+destyler\s*\{/g) || []).length, 1, `${framework}: component imports emit the package CSS once`)
+}
 for (const [tool, args] of [
   ['vue-tsc/bin/vue-tsc.js', ['--noEmit', '-p', 'examples/css-only/tsconfig.json']],
   ['typescript/bin/tsc', ['--noEmit', '-p', 'examples/css-only/solid/tsconfig.json']],
@@ -48,7 +54,7 @@ const report = {
   generatedAt: new Date().toISOString(), pass: true,
   package: { filename: packed.filename, integrity: packed.integrity, files: packed.files.map(file => file.path), tarballBytes: (await stat(join(out, packed.filename))).size, runtimeDependencies: 0, peerDependencies: 0, javascriptBytes: 0 },
   css: { authored: size(css), minified: size(minified) },
-  verification: { unitTests: 5, isolatedOfflineInstall: true, bareViteWithoutPlugins: true, plainImportJavaScriptBytes: styleJS.length, packedCSSUsedByAllFourConsumers: true, builds: ['react', 'vue', 'solid', 'svelte', 'pinned-shadcn-reference'], types: ['react', 'vue', 'solid', 'svelte'], unoGeneratedOverride: true },
+  verification: { unitTests: 5, isolatedOfflineInstall: true, bareViteWithoutPlugins: true, plainImportJavaScriptBytes: styleJS.length, packedCSSUsedByAllFourConsumers: true, componentImportsDeduplicated: true, builds: ['react', 'vue', 'solid', 'svelte', 'pinned-shadcn-reference'], types: ['react', 'vue', 'solid', 'svelte'], unoGeneratedOverride: true },
   limitations: ['CSS computed styles, keyboard, focus trap/return, animation and visual parity require the separate browser suite.', 'UnoCSS generation is verified here; effective cascade is asserted only by browser suite.'],
 }
 await writeFile(join(out, 'verification.json'), JSON.stringify(report, null, 2) + '\n')
