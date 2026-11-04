@@ -61,7 +61,7 @@ function App() {
     <a href="#main-content" className="skip-link">Skip to preview</a>
     <header className="site-header">
       <a href="/" className="wordmark"><Mark/><strong>destyler</strong><span className="wordmark-divider">/</span><span>designs</span></a>
-      <nav aria-label="Site navigation"><span className="header-label">The component lab</span><a href={repository} className="repository-link"><CodeXml size={16}/><span>GitHub</span><ArrowUpRight size={13}/></a></nav>
+      <nav aria-label="Site navigation"><a href="/vanilla-extract/react/" className="header-label">vanilla-extract PoC</a><a href={repository} className="repository-link"><CodeXml size={16}/><span>GitHub</span><ArrowUpRight size={13}/></a></nav>
     </header>
     <div className="site-layout">
       <aside className="sidebar" aria-label="Component library">

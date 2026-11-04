@@ -11,12 +11,16 @@
     "check": "node scripts/check.mjs",
     "dev": "vite --host 127.0.0.1",
     "start:legacy": "node scripts/serve.mjs",
-    "build": "node scripts/copy-notices.mjs && vite build",
+    "build": "npm run build:designs && node scripts/copy-notices.mjs && vite build && npm run build:consumers",
     "preview": "vite preview --host 127.0.0.1",
     "check:types": "vue-tsc --noEmit",
     "sync:shadcn": "node scripts/extract-shadcn-recipes.mjs",
     "test:browser": "node scripts/test-shadcn-browser.mjs",
-    "test:dom": "node scripts/smoke-shadcn-dom.mjs"
+    "test:dom": "node scripts/smoke-shadcn-dom.mjs",
+    "build:designs": "node scripts/build-vanilla-extract.mjs",
+    "build:consumers": "node scripts/vanilla-extract-consumers.mjs build react && node scripts/vanilla-extract-consumers.mjs build vue",
+    "test:designs": "node scripts/verify-vanilla-extract.mjs",
+    "test:designs:browser": "node scripts/test-vanilla-extract-browser.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.1-beta.21",
@@ -33,15 +37,21 @@
     "vue": "3.5.22"
   },
   "devDependencies": {
+    "@tailwindcss/node": "4.3.4",
     "@tailwindcss/vite": "4.3.4",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "@vanilla-extract/css": "1.21.3",
+    "@vanilla-extract/rollup-plugin": "1.5.4",
     "@vitejs/plugin-react": "5.0.4",
     "@vitejs/plugin-vue": "6.0.1",
+    "@vue/server-renderer": "3.5.22",
     "happy-dom": "21.0.4",
     "playwright": "1.56.1",
+    "rollup-plugin-esbuild": "6.2.1",
     "tailwindcss": "4.3.4",
     "typescript": "5.9.3",
+    "unocss": "66.12.0",
     "vite": "7.1.12",
     "vue-tsc": "3.1.1"
   }

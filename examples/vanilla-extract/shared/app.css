@@ -1,0 +1,31 @@
+@layer fixture-reset, destyler, theme, base, components, utilities;
+@layer fixture-reset {
+  [data-engine="tailwind"] :where(*, ::before, ::after) { box-sizing: border-box; border: 0 solid; }
+  [data-engine="tailwind"] :where(button, input, select) { font: inherit; color: inherit; }
+  [data-engine="tailwind"] button { background: transparent; }
+  [data-engine="tailwind"] p { margin: 0; }
+}
+/* Fixture layout only. No Switch or Dialog appearance is supplied here. */
+
+body { margin: 0; background: #f3f4f6; color: #18181b; font: 14px/1.5 system-ui, sans-serif; }
+.fixture-controls button, .fixture-controls select { font: inherit; }
+.fixture-controls button { cursor: pointer; }
+a { color: #6d28d9; }
+.fixture-page { max-width: 1120px; padding: 48px 24px; margin: auto; }
+.fixture-kicker { color: #6d28d9; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+h1 { margin: 12px 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.15; letter-spacing: -.04em; }
+.fixture-intro { max-width: 700px; color: #52525b; }
+.fixture-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; margin-top: 32px; }
+.fixture-panel { box-sizing: border-box; background: var(--dy-background); color: var(--dy-foreground); border: 1px solid var(--dy-border); border-radius: 16px; padding: 24px; min-width: 0; }
+.fixture-panel h2 { margin: 0 0 6px; font-size: 20px; letter-spacing: -.02em; }
+.fixture-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--dy-border); margin-bottom: 24px; }
+.fixture-controls select { border: 1px solid var(--dy-border); border-radius: 6px; padding: 5px; background: var(--dy-background); color: var(--dy-foreground); }
+.fixture-controls label { display: flex; gap: 6px; align-items: center; }
+.fixture-switches { display: grid; gap: 22px; margin: 24px 0; }
+.fixture-switch-root { display: inline-flex; align-items: center; gap: 12px; cursor: pointer; }
+.fixture-hint { color: var(--dy-muted-foreground); font-size: 12px; }
+.fixture-token { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--dy-border); font: 11px/1.6 ui-monospace, monospace; overflow-wrap: anywhere; }
+.fixture-portal { color: var(--dy-foreground); font: 14px/1.5 system-ui, sans-serif; }
+.fixture-note { margin-top: 24px; color: #52525b; font-size: 12px; }
+@media (max-width: 720px) { .fixture-grid { grid-template-columns: 1fr; } .fixture-page { padding: 28px 16px; } }
+

@@ -1,0 +1,13 @@
+{
+  "name": "@destyler/designs-vanilla-extract-poc",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experimental precompiled Switch/Dialog design for unstyled Destyler primitives",
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./styles.css": "./dist/styles.css"
+  },
+  "sideEffects": ["**/*.css"]
+}

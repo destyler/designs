@@ -1,0 +1,20 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark, .dark *));
+@theme inline {
+ --color-background: var(--dy-background);
+ --color-foreground: var(--dy-foreground);
+ --color-primary: var(--dy-primary);
+ --color-primary-foreground: var(--dy-primary-foreground);
+ --color-input: var(--dy-input);
+ --color-ring: var(--dy-ring);
+ --color-border: var(--dy-border);
+ --color-muted-foreground: var(--dy-muted-foreground);
+ --color-accent: var(--dy-input);
+ --color-accent-foreground: var(--dy-foreground);
+ --radius-sm: calc(var(--dy-radius) * .6);
+ --radius-md: calc(var(--dy-radius) * .8);
+ --radius-lg: var(--dy-radius);
+}

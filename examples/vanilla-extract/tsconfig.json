@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "moduleResolution": "Bundler", "jsx": "react-jsx",
+    "strict": true, "skipLibCheck": true, "esModuleInterop": true,
+    "allowImportingTsExtensions": true, "noEmit": true,
+    "baseUrl": "../..", "paths": { "@destyler/designs-vanilla-extract-poc": ["packages/vanilla-extract/dist/index.d.ts"] },
+    "types": ["vite/client"]
+  },
+  "include": ["react/**/*.tsx", "vue/**/*.ts", "vue/**/*.vue", "shared/**/*.ts"]
+}
