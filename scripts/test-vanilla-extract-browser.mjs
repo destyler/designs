@@ -5,7 +5,18 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4173'
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}) })
 const evidence = []
 const properties = ['width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor', 'borderRadius', 'boxShadow', 'opacity']
-const snapshot = (locator, keys = properties) => locator.evaluate((el, keys) => Object.fromEntries(keys.map(key => [key, key === 'boxShadow' ? getComputedStyle(el)[key].replace(/rgba\(0, 0, 0, 0\) 0px 0px 0px 0px, ?/g, '') : getComputedStyle(el)[key]])), keys)
+// Compare rendered geometry, not equivalent serializer choices such as
+// 9999px versus calc(infinity * 1px), or transparent zero-size shadow layers.
+const snapshot = (locator, keys = properties) => locator.evaluate((el, keys) => {
+  const style = getComputedStyle(el)
+  return Object.fromEntries(keys.map(key => {
+    if (key === 'borderRadius') return [key, String(Math.min(
+      parseFloat(style.borderRadius), parseFloat(style.width) / 2, parseFloat(style.height) / 2,
+    ))]
+    if (key === 'boxShadow') return [key, style.boxShadow.replace(/rgba\(0, 0, 0, 0\) 0px 0px 0px 0px, ?/g, '')]
+    return [key, style[key]]
+  }))
+}, keys)
 try {
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
@@ -23,8 +34,15 @@ try {
         if (name !== 'disabled') {
           const focused = []
           for (const [index, panel] of panels.entries()) {
+            // Programmatic focus + Space can leave focus-visible false. Enter
+            // via a real Tab first so this assertion actually covers the ring.
+            const preceding = name === 'updates'
+              ? panel.getByLabel('UnoCSS override', { exact: true })
+              : panel.getByRole('switch', { name: 'Updates', exact: true })
+            await preceding.press('Tab')
             await panel.locator(`[data-case="${name}"] [role="switch"]`).press('Space')
             await page.waitForTimeout(220)
+            assert.equal(await controls[index].evaluate(el => el.hasAttribute('data-focus-visible')), true)
             focused.push(await snapshot(controls[index]))
           }
           assert.deepEqual(focused[0], focused[1], `${framework} ${name} keyboard checked + focus styles`)

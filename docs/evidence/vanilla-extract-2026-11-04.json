@@ -1,0 +1,336 @@
+{
+  "observedOn": "2026-11-04",
+  "applicationCommit": "11d87bfbb5193191227caf97b3ea297ad2ad2452",
+  "productionURL": "https://destyler-designs-prototype.vercel.app/",
+  "frameworkPackages": {
+    "react": {
+      "package": "@destyler-ui/react",
+      "version": "0.0.1-beta.21",
+      "source": "https://github.com/destyler/ui/tree/main/packages/react"
+    },
+    "vue": {
+      "package": "@destyler-ui/vue",
+      "version": "0.0.1-beta.21",
+      "source": "https://github.com/destyler/ui/tree/main/packages/vue"
+    },
+    "solid": {
+      "package": "@destyler-ui/solid",
+      "version": "0.0.1-beta.21",
+      "source": "https://github.com/destyler/ui/tree/main/packages/solid"
+    },
+    "svelte": {
+      "package": "@destyler-ui/svelte",
+      "version": "0.0.1-beta.21",
+      "source": "https://github.com/destyler/ui/tree/main/packages/svelte"
+    }
+  },
+  "distributionPassed": true,
+  "inlineSSRHydrationCases": 16,
+  "actualPanelSSRHydrationCases": 8,
+  "browser": {
+    "engine": "Cloud Chrome",
+    "method": "Interactive browser checks and read-only computed-style inspection, separate from standalone Playwright CLI",
+    "styleParity": [
+      {
+        "framework": "svelte",
+        "dark": false,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "svelte",
+        "dark": true,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "react",
+        "dark": false,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "react",
+        "dark": true,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "vue",
+        "dark": false,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "vue",
+        "dark": true,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "solid",
+        "dark": false,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      },
+      {
+        "framework": "solid",
+        "dark": true,
+        "renderedControlsEqual": true,
+        "dialogsEqual": true
+      }
+    ],
+    "focusParity": [
+      {
+        "framework": "react",
+        "dark": false,
+        "states": [
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "react",
+        "dark": true,
+        "states": [
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "vue",
+        "dark": false,
+        "states": [
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "vue",
+        "dark": true,
+        "states": [
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "solid",
+        "dark": false,
+        "states": [
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "solid",
+        "dark": true,
+        "states": [
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "svelte",
+        "dark": false,
+        "states": [
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.705 0.015 286.067)",
+            "focus": true,
+            "shadow": "oklab(0.705 0.00415141 -0.0144141 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      },
+      {
+        "framework": "svelte",
+        "dark": true,
+        "states": [
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          },
+          {
+            "border": "oklch(0.552 0.016 285.938)",
+            "focus": true,
+            "shadow": "oklab(0.552 0.00439355 -0.015385 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+          }
+        ],
+        "equal": true
+      }
+    ],
+    "responsive": [
+      {
+        "framework": "react",
+        "layout": {
+          "baselineCSS": false,
+          "client": 390,
+          "dialogWidth": 358,
+          "portalInBody": true,
+          "scroll": 390,
+          "viewport": 390
+        }
+      },
+      {
+        "framework": "vue",
+        "layout": {
+          "baselineCSS": false,
+          "client": 390,
+          "dialogWidth": 358,
+          "portalInBody": true,
+          "scroll": 390,
+          "viewport": 390
+        }
+      },
+      {
+        "framework": "solid",
+        "layout": {
+          "baselineCSS": false,
+          "client": 390,
+          "dialogWidth": 358,
+          "portalInBody": false,
+          "scroll": 390,
+          "viewport": 390,
+          "portalWrapperGrandparent": "BODY",
+          "portalOutsideMain": true
+        }
+      },
+      {
+        "framework": "svelte",
+        "layout": {
+          "baselineCSS": false,
+          "client": 390,
+          "dialogWidth": 358,
+          "portalInBody": true,
+          "scroll": 390,
+          "viewport": 390
+        }
+      }
+    ],
+    "responsiveNotes": [
+      "Solid Portal adds an extra body child wrapper; portal is outside main.",
+      "Narrow views are actual 390px frames, not phone/touch emulation."
+    ],
+    "interactionChecks": [
+      "Keyboard Space changes enabled Switch state; disabled Switch remains disabled and checked.",
+      "Dialog opens, closes with Escape or Done, reopens after exit completes; Tab stays in the Dialog and dismissal returns focus.",
+      "Dark theme and explicit primary/radius token overrides reach body-portaled Dialogs.",
+      "UnoCSS override makes trigger square with 32px inline padding.",
+      "Isolated consumers do not load baseline CSS."
+    ],
+    "console": "Observed log sample contained browser-extension metadata errors; these are not application-source errors. This is not an exhaustive zero-error claim."
+  },
+  "sizes": {
+    "stylePackage": {
+      "javascript": {
+        "rawBytes": 712,
+        "gzipBytes": 322
+      },
+      "css": {
+        "rawBytes": 5500,
+        "gzipBytes": 1463
+      },
+      "combined": {
+        "rawBytes": 6212,
+        "gzipBytes": 1715
+      },
+      "packedTarballBytes": 5169
+    },
+    "tailwindSwitchDialogBaseline": {
+      "scope": "Switch, Dialog, Button and Label existing generated recipes only; shared --dy-* tokens; no Tailwind preflight",
+      "generatedCSS": {
+        "rawBytes": 17673,
+        "gzipBytes": 3208
+      },
+      "classMapJSON": {
+        "rawBytes": 2806,
+        "gzipBytes": 943
+      },
+      "recipeMapJavascript": {
+        "path": "artifacts/vanilla-extract/baseline-classes.js",
+        "rawBytes": 2831,
+        "gzipBytes": 965
+      },
+      "caveats": [
+        "classMapJSON is serialized recipe strings, not a separately emitted JS module.",
+        "CSS includes Tailwind utility/property and animation support required by selected recipes.",
+        "Tokens and minimal scoped baseline reset live in shared fixture/package CSS and are excluded here.",
+        "Full consumer JS includes the framework, published Destyler primitives, both engines, and fixture UI; it is not styling runtime overhead."
+      ],
+      "productionCSS": {
+        "path": "dist/vanilla-extract/react/assets/baseline-CxBOBq4I.css",
+        "rawBytes": 15112,
+        "gzipBytes": 3058
+      }
+    }
+  },
+  "limits": [
+    "Only Switch and Dialog proof; not a whole-library migration.",
+    "SSR/hydration interaction automation uses happy-dom, with separate real Chrome layout/focus verification.",
+    "No Safari/Firefox, touch-device or exhaustive pixel-diff testing.",
+    "Narrow layout uses real 390px iframe viewports, not device emulation.",
+    "Standalone Playwright suite was not executed successfully in this executor: browser process IPC is unavailable.",
+    "Initially open SSR dialogs, arbitrary inherited token propagation, and exhaustive animation interruption are not proven.",
+    "Full style CSS is imported; no per-component CSS tree-shaking claim.",
+    "Tailwind baseline has extra variants/animation helpers and excludes shared theme/reset overhead; size is not strict feature-equivalent savings."
+  ]
+}

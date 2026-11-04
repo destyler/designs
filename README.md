@@ -62,7 +62,7 @@ The source checks independently assert byte-identical vendor files, deterministi
 
 ## Deliberately limited scope
 
-- This is a runnable vertical slice, **not a complete shadcn port**. Default component variants only; React and Vue only. Solid, Svelte, SSR/hydration and a general migration CLI are not implemented here.
+- This is a runnable vertical slice, **not a complete shadcn port**. The original comparison covers default component variants in React and Vue. The separate Switch/Dialog proof below also covers Solid, Svelte, and SSR/hydration; a general migration CLI is not implemented.
 - The example's Tailwind reset is page-wide. Generated theme tokens are scoped to `[data-design="shadcn"]`; this is not yet a distributable zero-global-CSS package.
 - Portals receive the owned color mode; arbitrary local CSS-variable overrides are not synchronized by these new adapters. The earlier independent synchronizer remains a separate experiment.
 - The production bundle includes two frameworks plus the upstream reference, so it is larger than a single-framework application. The installed Destyler aggregate export also produces an upstream date-package build warning; no date component is used here.
