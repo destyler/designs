@@ -5,10 +5,12 @@ import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import { Window } from 'happy-dom'
 
+const frameworks = { react: 'React', vue: 'Vue', solid: 'Solid', svelte: 'Svelte' }
+const sides = ['reference', ...Object.keys(frameworks)]
 const report = { test: 'production Astro Comparison island hydration', checks: [], errors: [], warnings: [], limitations: ['Happy DOM does not prove rendering, actual iframe readiness, focus trapping, or real browser navigation. Iframe ready messages are simulated; page scripts and iframe loads are disabled.'] }
 const win = new Window({ url: 'http://localhost:4173/#switch', settings: { disableCSSFileLoading: true, disableComputedStyleRendering: true, disableIframePageLoading: true, disableJavaScriptEvaluation: true, disableJavaScriptFileLoading: true } })
 for (const key of Object.getOwnPropertyNames(win)) {
-  if (['window', 'document', 'navigator', 'location', 'parent', 'history'].includes(key) || /^(HTML.*Element|SVG.*Element|Document|DocumentFragment|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|KeyboardEvent|MessageEvent|HashChangeEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)) {
+  if (['window', 'document', 'navigator', 'location', 'parent', 'history', 'localStorage'].includes(key) || /^(HTML.*Element|SVG.*Element|Document|DocumentFragment|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|KeyboardEvent|MessageEvent|HashChangeEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)) {
     try { Object.defineProperty(globalThis, key, { configurable: true, writable: true, value: win[key] }) } catch {}
   }
 }
@@ -46,95 +48,105 @@ try {
   const renderer = await load(metadata['renderer-url'])
   const props = JSON.parse(island.getAttribute('props') || '{}')
   assert.deepEqual(props, {}, 'Comparison requires no encoded Astro props')
-  const reference = frame('reference'), initialDestyler = frame('destyler'), heading = q('h1')
+  const nodes = Object.fromEntries(sides.map(side => [side, frame(side)])), heading = q('h1')
   let clipboard = ''
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { clipboard = text } } })
+  // A stale preference must not hide any of the four implementations.
+  win.localStorage.setItem('destyler-designs-framework', 'vue')
   await renderer.default(island)(component[metadata['component-export']], props, {}, { client: 'load' })
   await pause()
-  assert.equal(frame('reference'), reference)
-  assert.equal(frame('destyler'), initialDestyler)
+  const preserved = () => {
+    assert.equal(document.querySelectorAll('iframe.framework-frame').length, 5)
+    for (const side of sides) assert.equal(frame(side), nodes[side], `${side}: iframe identity persists`)
+  }
+  preserved()
   assert.equal(q('h1'), heading)
-  await handshake('reference'); await handshake('destyler')
-  report.checks.push('Production renderer and bundled component hydrate existing SSR heading and both iframe nodes without replacement')
-  await click('[aria-label="Toggle shadcn/ui color mode"]')
-  assert.equal(q('[aria-label="Toggle shadcn/ui color mode"]').getAttribute('aria-pressed'), 'true')
-  assert.equal(q('[aria-label="Toggle Destyler color mode"]').getAttribute('aria-pressed'), 'false')
-  const extensions = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
-  let previous = initialDestyler, previousFramework = 'react'
-  for (const name of ['react', 'vue', 'solid', 'svelte', 'react', 'vue']) {
-    const select = q('[aria-label="Destyler framework"]')
-    select.value = name; select.dispatchEvent(new win.Event('change', { bubbles: true })); await pause()
-    const destyler = frame('destyler')
-    assert.equal(frame('reference'), reference, 'Framework preserves reference iframe')
-    if (name !== previousFramework) assert.notEqual(destyler, previous, 'Only right iframe changes on framework selection')
-    await handshake('destyler')
-    assert.equal(document.querySelectorAll('iframe.framework-frame').length, 2)
-    assert.match(destyler.src, new RegExp(`/vanilla-extract/${name}/`))
-    await click('#code-tab')
-    assert.equal(q('#preview-panel').hidden, true)
-    assert.equal(q('#code-panel').hidden, false)
-    assert.equal(document.querySelectorAll('[aria-label="Source files"] [role="tab"]').length, 6)
+  assert.equal(q('[aria-label="Destyler framework"]'), null)
+  for (const side of sides) await handshake(side)
+  const card = name => q(`[data-demo="${name}"]`)
+  const view = (name, code) => {
+    assert.equal(q(`#${name}-preview-panel`).hidden, code)
+    assert.equal(q(`#${name}-code-panel`).hidden, !code)
+    assert.equal(q(`#${name}-${code ? 'code' : 'preview'}-tab`).getAttribute('aria-selected'), 'true')
+  }
+  const extension = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
+  const sources = async (name, example) => {
     const files = {
-      component: `examples/vanilla-extract/${name}/Showcase.${extensions[name]}`,
+      component: `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
       styles: 'packages/vanilla-extract/src/styles.css.ts',
       css: 'packages/vanilla-extract/dist/styles.css',
-      exports: 'packages/vanilla-extract/dist/index.js',
-      shared: 'examples/vanilla-extract/shared/showcase.ts',
-      layout: 'examples/vanilla-extract/shared/showcase.css',
     }
+    assert.equal(card(name).querySelectorAll(`[aria-label="${frameworks[name]} source files"] [role="tab"]`).length, 3)
+    assert.ok(card(name).querySelector(`[data-source-framework="${name}"]`))
     for (const [id, path] of Object.entries(files)) {
-      await click(`#source-tab-${id}`)
+      const others = Object.keys(frameworks).filter(other => other !== name).map(other => [other, card(other).querySelector('.source-file-path').textContent])
+      await click(`#${name}-source-tab-${id}`)
       const expected = await readFile(path, 'utf8')
-      assert.equal(q('[data-testid="css-source"]').textContent, expected, `${name}/${id}: exact current source`)
-      assert.equal(q('.source-file-path').textContent, path)
-      await click('[aria-label="Copy source"]')
+      assert.equal(card(name).querySelector('[data-testid="css-source"]').textContent, expected, `${name}/${example}/${id}: exact bytes`)
+      assert.equal(card(name).querySelector('.source-file-path').textContent, path)
+      assert.equal(card(name).querySelectorAll('.source-line-numbers span').length, expected.split('\n').length)
+      await click(`[data-demo="${name}"] [aria-label="Copy source"]`)
       assert.equal(clipboard, expected)
-      assert.equal(q('.source-copy-status').textContent, 'Copied')
-      assert.equal(document.querySelectorAll('.source-line-numbers span').length, expected.split('\n').length)
-      assert.equal(frame('reference'), reference)
-      assert.equal(frame('destyler'), destyler)
+      assert.equal(card(name).querySelector('.source-copy-status').textContent, 'Copied')
+      for (const [other, oldPath] of others) assert.equal(card(other).querySelector('.source-file-path').textContent, oldPath, 'File selection is local')
+      preserved()
     }
-    for (const [from, arrow, to] of [['layout','ArrowRight','component'], ['component','ArrowLeft','layout'], ['layout','Home','component'], ['component','End','layout']]) {
-      await key(`#source-tab-${from}`, arrow)
-      assert.equal(document.activeElement, q(`#source-tab-${to}`))
-      assert.equal(q(`#source-tab-${to}`).getAttribute('aria-selected'), 'true')
-      assert.equal(document.querySelectorAll('[id^="source-tab-"][tabindex="0"]').length, 1)
+  }
+  for (const name of Object.keys(frameworks)) {
+    assert.match(frame(name).src, new RegExp(`/vanilla-extract/${name}/`))
+    await click(`#${name}-code-tab`)
+    for (const other of Object.keys(frameworks)) view(other, other === name)
+    await sources(name, 'switch')
+    for (const [from, arrow, to] of [['css','ArrowRight','component'], ['component','ArrowLeft','css'], ['css','Home','component'], ['component','End','css']]) {
+      await key(`#${name}-source-tab-${from}`, arrow)
+      assert.equal(document.activeElement, q(`#${name}-source-tab-${to}`))
+      assert.equal(q(`#${name}-source-tab-${to}`).getAttribute('aria-selected'), 'true')
+      assert.equal(card(name).querySelectorAll('.source-file-tabs [tabindex="0"]').length, 1)
     }
     for (const [from, arrow, to] of [['code','ArrowLeft','preview'], ['preview','End','code'], ['code','Home','preview']]) {
-      await key(`#${from}-tab`, arrow)
-      assert.equal(document.activeElement, q(`#${to}-tab`))
-      assert.equal(q(`#${to}-tab`).getAttribute('aria-selected'), 'true')
+      await key(`#${name}-${from}-tab`, arrow)
+      assert.equal(document.activeElement, q(`#${name}-${to}-tab`))
+      view(name, to === 'code')
+      for (const other of Object.keys(frameworks).filter(other => other !== name)) view(other, false)
     }
-    assert.equal(q('#preview-panel').hidden, false)
-    assert.equal(frame('destyler'), destyler)
-    assert.equal(frame('reference'), reference)
-    assert.equal(q('[aria-label="Toggle shadcn/ui color mode"]').getAttribute('aria-pressed'), 'true')
-    previous = destyler; previousFramework = name
   }
-  report.checks.push('Repeated React/Vue/Solid/Svelte selection changes only right frame; preview/code preserves frames; all six source tabs match exact bytes, copy, line counts and keyboard focus')
-  await click('[aria-label="Toggle Destyler color mode"]')
-  assert.equal(q('[aria-label="Toggle Destyler color mode"]').getAttribute('aria-pressed'), 'true')
-  assert.equal(q('[aria-label="Toggle shadcn/ui color mode"]').getAttribute('aria-pressed'), 'true')
-  await click('[aria-label="Toggle shadcn/ui color mode"]')
-  assert.equal(q('[aria-label="Toggle Destyler color mode"]').getAttribute('aria-pressed'), 'true')
-  assert.equal(q('[aria-label="Toggle shadcn/ui color mode"]').getAttribute('aria-pressed'), 'false')
-  await click('[aria-label="All light"]')
-  for (const label of ['Toggle shadcn/ui color mode', 'Toggle Destyler color mode']) assert.equal(q(`[aria-label="${label}"]`).getAttribute('aria-pressed'), 'false')
-  await click('[aria-label="All dark"]')
-  for (const label of ['Toggle shadcn/ui color mode', 'Toggle Destyler color mode']) assert.equal(q(`[aria-label="${label}"]`).getAttribute('aria-pressed'), 'true')
-  const right = frame('destyler')
-  for (const component of ['dialog', 'switch', 'dialog', 'switch']) {
-    win.location.hash = `#${component}`
+  report.checks.push('All five SSR iframe nodes hydrate in place; four independent view/file tab sets, exact source bytes, line counts, clipboard and keyboard navigation')
+  const themeLabel = side => `Toggle ${side === 'reference' ? 'shadcn/ui' : frameworks[side]} color mode`
+  const dark = side => q(`[aria-label="${themeLabel(side)}"]`).getAttribute('aria-pressed')
+  for (const side of sides) {
+    await click(`[aria-label="${themeLabel(side)}"]`)
+    for (const other of sides) assert.equal(dark(other), other === side ? 'true' : 'false')
+    await click(`[aria-label="${themeLabel(side)}"]`)
+  }
+  for (const [label, expected] of [['All dark', 'true'], ['All light', 'false']]) {
+    await click(`[aria-label="${label}"]`)
+    for (const side of sides) assert.equal(dark(side), expected)
+  }
+  await click('#react-code-tab'); await click('#solid-code-tab')
+  for (const example of ['dialog', 'switch', 'dialog', 'switch']) {
+    win.location.hash = `#${example}`
     win.dispatchEvent(new win.HashChangeEvent('hashchange'))
     await pause()
-    assert.equal(q('.comparison-grid').dataset.example, component)
-    assert.equal(q('h1').textContent.toLowerCase(), component)
-    assert.equal(frame('reference'), reference)
-    assert.equal(frame('destyler'), right)
-    assert.match(frame('reference').title.toLowerCase(), new RegExp(component))
-    assert.match(frame('destyler').title.toLowerCase(), new RegExp(component))
+    assert.equal(q('.comparison-grid').dataset.example, example)
+    for (const name of Object.keys(frameworks)) {
+      view(name, ['react', 'solid'].includes(name))
+      assert.equal(q(`#${name}-source-tab-component`).getAttribute('aria-selected'), 'true')
+      assert.equal(card(name).querySelector('[data-testid="css-source"]').textContent, await readFile(`examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`, 'utf8'))
+      await sources(name, example)
+    }
+    assert.equal(q('h1').textContent.toLowerCase(), example)
+    for (const side of sides) assert.match(frame(side).title.toLowerCase(), new RegExp(example))
+    preserved()
   }
-  report.checks.push('Independent theme controls and all-light/all-dark; hashchange to dialog and back preserves iframe nodes and updates titles')
+  const ids = [...document.querySelectorAll('[id]')].map(node => node.id)
+  assert.equal(new Set(ids).size, ids.length, 'No duplicate accessibility IDs')
+  for (const node of document.querySelectorAll('[aria-controls], [aria-labelledby], [aria-describedby]')) {
+    for (const attr of ['aria-controls', 'aria-labelledby', 'aria-describedby']) {
+      for (const id of (node.getAttribute(attr) || '').split(/\s+/).filter(Boolean)) assert.ok(document.getElementById(id), `${attr} resolves: ${id}`)
+    }
+  }
+  assert.equal(win.localStorage.getItem('destyler-designs-framework'), 'vue', 'No framework preference writes')
+  report.checks.push('Independent five-way themes and global theme controls; component navigation resets each source file while retaining mixed view states and every iframe; unique accessible IDs')
   assert.deepEqual(report.errors, [], 'No hydration/runtime errors')
   assert.deepEqual(report.warnings, [], 'No hydration warnings')
   report.pass = true

@@ -84,119 +84,136 @@ const navigate = async component => {
   await page.getByRole('navigation', { name: 'Examples', exact: true }).getByRole('link', { name: component === 'switch' ? 'Switch' : 'Dialog', exact: true }).click()
   await until(() => page.locator('.comparison-grid').getAttribute('data-example'), component, 'Component navigation')
 }
-const selectFramework = async name => {
-  await page.getByLabel('Destyler framework', { exact: true }).selectOption(name)
-  await until(() => page.locator('[data-demo="destyler"]').getAttribute('data-framework'), name, 'Framework selection')
-  await ready('destyler')
-  assert.equal(await page.locator('iframe.framework-frame').count(), 2)
-  assert.match(await frameElement('destyler').getAttribute('src'), new RegExp(`/vanilla-extract/${name}/`))
-}
 const theme = async (side, value) => until(() => frame(side).locator('main').getAttribute('data-theme'), value, `${side}: theme`)
 const screenshot = async name => {
   const path = `${output}/${name}.png`
   await page.screenshot({ path, fullPage: true })
   evidence.screenshots.push(path)
 }
+const frameworks = { react: 'React', vue: 'Vue', solid: 'Solid', svelte: 'Svelte' }
+const sides = ['reference', ...Object.keys(frameworks)]
+const extension = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
+const card = name => page.locator(`[data-demo="${name}"]`)
+const view = async (name, code) => {
+  assert.equal(await page.locator(`#${name}-preview-panel`).isVisible(), !code)
+  assert.equal(await page.locator(`#${name}-code-panel`).isVisible(), code)
+}
+const inspectFiles = async (name, example) => {
+  const files = {
+    component: `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
+    styles: 'packages/vanilla-extract/src/styles.css.ts',
+    css: 'packages/vanilla-extract/dist/styles.css',
+  }
+  assert.equal(await card(name).getByRole('tablist', { name: `${frameworks[name]} source files`, exact: true }).getByRole('tab').count(), 3)
+  for (const [id, path] of Object.entries(files)) {
+    await page.locator(`#${name}-source-tab-${id}`).click()
+    const expected = await readFile(path, 'utf8')
+    await until(() => card(name).locator('[data-testid="css-source"]').textContent(), expected, `${name}/${example}/${id}: exact bytes`)
+    assert.equal(await card(name).locator('.source-file-path').textContent(), path)
+    await card(name).getByLabel('Copy source', { exact: true }).click()
+    await until(() => page.evaluate(() => navigator.clipboard.readText()), expected, `${name}/${id}: clipboard`)
+    evidence.sourceFiles.push({ framework: name, component: example, tab: id, path, bytes: Buffer.byteLength(expected) })
+  }
+}
 try {
   await page.goto(`${baseURL}/#switch`)
-  await ready('reference'); await ready('destyler')
-  const referenceNode = await frameElement('reference').elementHandle()
-  const referenceRuntime = `persistent-${Date.now()}`
-  await frame('reference').locator('body').evaluate((el, value) => { el.ownerDocument.defaultView.__previewTest = value }, referenceRuntime)
-  await switchTest('reference')
-  await frame('reference').getByRole('switch', { name: 'Airplane mode' }).click()
-  await page.getByLabel('Toggle shadcn/ui color mode', { exact: true }).click()
-  await theme('reference', 'dark'); await theme('destyler', 'light')
-  const preservedReference = async () => {
-    assert.equal(await referenceNode.evaluate(el => el.isConnected), true, 'Reference iframe node preserved')
-    assert.equal(await frame('reference').locator('body').evaluate(el => el.ownerDocument.defaultView.__previewTest), referenceRuntime, 'Reference runtime preserved')
-    assert.equal(await state(frame('reference').getByRole('switch', { name: 'Airplane mode' })), true, 'Reference switch state preserved')
-    await theme('reference', 'dark')
+  assert.equal(await page.locator('iframe.framework-frame').count(), 5)
+  assert.equal(await page.getByLabel('Destyler framework', { exact: true }).count(), 0)
+  const nodes = {}, runtime = `persistent-${Date.now()}`
+  for (const side of sides) {
+    await ready(side)
+    nodes[side] = await frameElement(side).elementHandle()
+    await frame(side).locator('body').evaluate((el, value) => { el.ownerDocument.defaultView.__previewTest = value }, `${runtime}-${side}`)
+    await switchTest(side)
   }
-  const extension = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
-  for (const name of ['react', 'vue', 'solid', 'svelte', 'react', 'vue']) {
-    await selectFramework(name)
-    await switchTest('destyler')
-    await preservedReference()
-    const destylerNode = await frameElement('destyler').elementHandle()
-    await page.locator('#code-tab').click()
-    assert.equal(await page.locator('#preview-panel').isVisible(), false)
-    assert.equal(await page.locator('#code-panel').isVisible(), true)
-    assert.equal(await page.locator('[aria-label="Source files"] [role="tab"]').count(), 6)
-    const files = {
-      component: `examples/vanilla-extract/${name}/Showcase.${extension[name]}`,
-      styles: 'packages/vanilla-extract/src/styles.css.ts',
-      css: 'packages/vanilla-extract/dist/styles.css',
-      exports: 'packages/vanilla-extract/dist/index.js',
-      shared: 'examples/vanilla-extract/shared/showcase.ts',
-      layout: 'examples/vanilla-extract/shared/showcase.css',
+  const preserved = async () => {
+    assert.equal(await page.locator('iframe.framework-frame').count(), 5)
+    for (const side of sides) {
+      assert.equal(await nodes[side].evaluate(el => el.isConnected), true, `${side}: iframe node persists`)
+      assert.equal(await frame(side).locator('body').evaluate(el => el.ownerDocument.defaultView.__previewTest), `${runtime}-${side}`, `${side}: runtime persists`)
     }
-    for (const [id, path] of Object.entries(files)) {
-      await page.locator(`#source-tab-${id}`).click()
-      const expected = await readFile(path, 'utf8')
-      await until(() => page.locator('[data-testid="css-source"]').textContent(), expected, `${name}/${id}: exact source bytes`)
-      await page.getByLabel('Copy source', { exact: true }).click()
-      await until(() => page.evaluate(() => navigator.clipboard.readText()), expected, `${name}/${id}: clipboard`)
-      evidence.sourceFiles.push({ framework: name, tab: id, path, bytes: Buffer.byteLength(expected) })
+  }
+  await frame('reference').getByRole('switch', { name: 'Airplane mode' }).click()
+  for (const name of Object.keys(frameworks)) {
+    await page.locator(`#${name}-code-tab`).click()
+    for (const other of Object.keys(frameworks)) await view(other, other === name)
+    await inspectFiles(name, 'switch')
+    for (const [from, key, to] of [['css','ArrowRight','component'], ['component','ArrowLeft','css'], ['css','Home','component'], ['component','End','css']]) {
+      await page.locator(`#${name}-source-tab-${from}`).press(key)
+      assert.equal(await page.locator(`#${name}-source-tab-${to}`).getAttribute('aria-selected'), 'true')
+      assert.equal(await focused(page.locator(`#${name}-source-tab-${to}`)), true)
     }
-    for (const [from, key, to] of [['layout', 'ArrowRight', 'component'], ['component', 'ArrowLeft', 'layout'], ['layout', 'Home', 'component'], ['component', 'End', 'layout']]) {
-      await page.locator(`#source-tab-${from}`).press(key)
-      assert.equal(await page.locator(`#source-tab-${to}`).getAttribute('aria-selected'), 'true')
-      assert.equal(await focused(page.locator(`#source-tab-${to}`)), true)
+    for (const [from, key, to] of [['code','ArrowLeft','preview'], ['preview','End','code'], ['code','Home','preview']]) {
+      await page.locator(`#${name}-${from}-tab`).press(key)
+      assert.equal(await focused(page.locator(`#${name}-${to}-tab`)), true)
+      await view(name, to === 'code')
+      for (const other of Object.keys(frameworks).filter(other => other !== name)) await view(other, false)
     }
-    await preservedReference()
-    await page.locator('#code-tab').press('ArrowLeft')
-    assert.equal(await focused(page.locator('#preview-tab')), true)
-    assert.equal(await destylerNode.evaluate(el => el.isConnected), true, 'Code view retains iframe node')
-    await page.locator('#preview-tab').press('End')
-    assert.equal(await focused(page.locator('#code-tab')), true)
-    await page.locator('#code-tab').press('Home')
-    await page.getByLabel('Toggle Destyler color mode', { exact: true }).click()
-    await theme('destyler', 'dark'); await theme('reference', 'dark')
-    await page.getByLabel('Toggle Destyler color mode', { exact: true }).click()
-    await theme('destyler', 'light')
+    await preserved()
+    assert.equal(await state(frame('reference').getByRole('switch', { name: 'Airplane mode' })), true, 'Reference state preserved through code operations')
     evidence.frameworks.push(name)
   }
-  evidence.checks.push('All framework switches: click and Space; exact source, clipboard and keyboard tabs; stable reference runtime/state/theme')
-  await screenshot('desktop-switch')
-  await navigate('dialog')
-  await dialogTest('reference')
-  for (const name of ['react', 'vue', 'solid', 'svelte', 'react']) {
-    await selectFramework(name)
-    await dialogTest('destyler')
+  for (const side of sides) {
+    const label = `Toggle ${side === 'reference' ? 'shadcn/ui' : frameworks[side]} color mode`
+    await page.getByLabel(label, { exact: true }).click()
+    for (const other of sides) await theme(other, other === side ? 'dark' : 'light')
+    await page.getByLabel(label, { exact: true }).click()
   }
-  evidence.checks.push('Reference and all frameworks: dialog open/reopen, Escape, Close, outside click and focus restoration')
+  evidence.checks.push('Five simultaneously live frameworks, independent view/file/theme controls, exact sources and clipboard, keyboard navigation, preserved reference state and every iframe runtime')
+  await screenshot('desktop-switch')
+  await page.locator('#react-code-tab').click()
+  await page.locator('#solid-code-tab').click()
+  for (const example of ['dialog', 'switch', 'dialog']) {
+    await navigate(example)
+    for (const name of Object.keys(frameworks)) {
+      await view(name, ['react', 'solid'].includes(name))
+      await until(() => page.locator(`#${name}-source-tab-component`).getAttribute('aria-selected'), 'true', 'Component navigation resets every source')
+      const path = `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`
+      assert.equal(await card(name).locator('[data-testid="css-source"]').textContent(), await readFile(path, 'utf8'))
+    }
+    await preserved()
+  }
+  for (const name of Object.keys(frameworks)) {
+    await page.locator(`#${name}-code-tab`).click()
+    await inspectFiles(name, 'dialog')
+    await page.locator(`#${name}-preview-tab`).click()
+  }
+  for (const side of sides) await dialogTest(side)
+  evidence.checks.push('All five real dialogs open/reopen, Escape/Close/outside dismiss, restore focus; component navigation preserves mixed views and resets all component sources')
   await page.getByLabel('All dark', { exact: true }).click()
-  await theme('reference', 'dark'); await theme('destyler', 'dark')
-  await frame('destyler').getByRole('button', { name: 'Open dialog' }).click()
+  for (const side of sides) await theme(side, 'dark')
+  await frame('react').getByRole('button', { name: 'Open dialog' }).click()
   await screenshot('desktop-dialog-dark')
-  await frame('destyler').getByRole('dialog').press('Escape')
+  await frame('react').getByRole('dialog').press('Escape')
   await navigate('switch')
   await page.goBack()
   await until(() => page.locator('.comparison-grid').getAttribute('data-example'), 'dialog', 'Back restores dialog route')
   await page.goForward()
   await until(() => page.locator('.comparison-grid').getAttribute('data-example'), 'switch', 'Forward restores switch route')
+  await preserved()
   await page.getByLabel('All light', { exact: true }).click()
-  await theme('reference', 'light'); await theme('destyler', 'light')
+  for (const side of sides) await theme(side, 'light')
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 })
     for (const component of ['switch', 'dialog']) {
       await navigate(component)
-      for (const side of ['reference', 'destyler']) {
+      for (const side of sides) {
         assert.equal(await frame(side).locator('body').evaluate(el => el.ownerDocument.documentElement.scrollWidth <= el.ownerDocument.defaultView.innerWidth), true, `${width}/${side}: no canvas overflow`)
       }
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${component}: no host overflow`)
       await screenshot(`mobile-${width}-${component}`)
     }
-    await page.locator('#code-tab').click()
-    for (const id of ['component', 'styles', 'css', 'exports', 'shared', 'layout']) {
-      await page.locator(`#source-tab-${id}`).click()
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${id}: code does not overflow host`)
+    for (const name of Object.keys(frameworks)) {
+      await page.locator(`#${name}-code-tab`).click()
+      for (const id of ['component', 'styles', 'css']) {
+        await page.locator(`#${name}-source-tab-${id}`).click()
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}/${name}/${id}: code does not overflow host`)
+      }
+      await screenshot(`mobile-${width}-${name}-code`)
+      await page.locator(`#${name}-preview-tab`).click()
     }
-    await screenshot(`mobile-${width}-code`)
-    await page.locator('#preview-tab').click()
   }
-  evidence.checks.push('Independent light/dark modes, real Back/Forward, desktop plus 390px/320px preview/code overflow and screenshots')
+  evidence.checks.push('Global themes, real Back/Forward, desktop and 390px/320px preview/code overflow with actual screenshots')
   assert.deepEqual(evidence.errors, [], 'No console, runtime or hydration errors')
   evidence.status = 'passed'
 } catch (error) {

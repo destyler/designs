@@ -1,27 +1,24 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro'
 import Comparison from '../../examples/showcase/main'
-import { ArrowUpRight, Check, CodeXml, PanelTop, ToggleRight } from 'lucide-react'
-const frameworks = ['React', 'Vue', 'Solid', 'Svelte']
+import { ArrowUpRight, CodeXml } from 'lucide-react'
 ---
 <SiteLayout>
   <div class="site-shell unified-showcase">
     <a href="#main-content" class="skip-link">Skip to comparison</a>
     <header class="site-header">
-      <a href="/" class="wordmark"><span class="destyler-mark" aria-hidden="true"><i></i><i></i><i></i></span><strong>destyler</strong><span class="wordmark-divider">/</span><span>designs</span></a>
-      <nav aria-label="Site navigation"><a href="/vanilla-extract/react/" class="header-label">Style playground</a><a href="https://github.com/destyler/designs/tree/main" class="repository-link"><CodeXml size={16}/><span>GitHub</span><ArrowUpRight size={13}/></a></nav>
+      <a href="/" class="wordmark"><strong>destyler</strong><span class="wordmark-divider">/</span><span>designs</span></a>
+      <nav aria-label="Site navigation"><a href="https://ui.destyler.org/" class="header-label">UI documentation <ArrowUpRight size={13}/></a><a href="https://github.com/destyler/designs/tree/main" class="repository-link"><CodeXml size={16}/><span>GitHub</span><ArrowUpRight size={13}/></a></nav>
     </header>
     <div class="site-layout">
       <aside class="sidebar" aria-label="Component library">
-        <div class="library-choice"><span class="shadcn-mark" aria-hidden="true">╱╱</span><div><strong>shadcn/ui</strong><span>New York collection</span></div></div>
-        <nav class="component-navigation" aria-label="Examples"><div class="nav-group"><p>Components<span>02</span></p><a href="#switch" aria-current="page"><ToggleRight size={17}/><span>Switch</span><span class="nav-number" aria-hidden="true">01</span></a><a href="#dialog"><PanelTop size={17}/><span>Dialog</span><span class="nav-number" aria-hidden="true">02</span></a></div></nav>
-        <div class="sidebar-scope"><span class="scope-dot"></span>Two components. Four frameworks.<p>More components will appear as their style adapters are ready.</p></div>
-        <div class="sidebar-bottom"><span class="sidebar-eyebrow">BUILT ON YOUR FRAMEWORK</span><div class="framework-availability">{frameworks.map(label => <span><Check size={12}/>{label}</span>)}</div><a href="/vanilla-extract/react/">Explore style engines <ArrowUpRight size={13}/></a></div>
+        <nav class="component-navigation" aria-label="Examples"><div class="nav-group"><p>Components</p><a href="#switch" aria-current="page">Switch</a><a href="#dialog">Dialog</a></div></nav>
+        <p class="sidebar-note">Styled with shadcn/ui.<br/>Built with Destyler UI.</p>
       </aside>
       <main id="main-content" class="main-content" tabindex="-1">
         <Comparison client:load />
-        <noscript><p class="noscript-note">JavaScript is needed for live previews, framework switching and the source editor. The original Switch is rendered in the left canvas.</p></noscript>
-        <footer class="site-footer"><span>destyler <span>/</span> designs</span><div><a href="/examples/shadcn/">Earlier comparison <ArrowUpRight size={12}/></a><a href="/THIRD_PARTY_NOTICES.txt">Licenses <ArrowUpRight size={12}/></a></div></footer>
+        <noscript><p class="noscript-note">Enable JavaScript to interact with the previews and switch frameworks.</p></noscript>
+        <footer class="site-footer"><span>destyler designs</span><a href="/THIRD_PARTY_NOTICES.txt">Licenses <ArrowUpRight size={12}/></a></footer>
       </main>
     </div>
   </div>
