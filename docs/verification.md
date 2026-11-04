@@ -1,3 +1,5 @@
+Current unified four-framework showcase: see [unified-showcase-verification.md](./unified-showcase-verification.md). The reports below describe earlier versions.
+
 # Verification · 2026-11-04
 
 ## Component lab refinement (current)

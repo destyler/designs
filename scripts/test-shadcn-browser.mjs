@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { chromium } from 'playwright'
 import { mkdir, readFile } from 'node:fs/promises'
 
-const baseURL = process.env.BASE_URL || 'http://127.0.0.1:4173/examples/shadcn/'
+const baseURL = process.env.BASE_URL || 'http://127.0.0.1:4173/examples/shadcn'
 const browser = await chromium.launch({ headless:true, ...(process.env.CHROMIUM_PATH ? {executablePath:process.env.CHROMIUM_PATH}: {}) })
 const context = await browser.newContext({viewport:{width:1440,height:1100}})
 const page = await context.newPage()
