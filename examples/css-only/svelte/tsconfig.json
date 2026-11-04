@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "./*.svelte",
+    "./main.ts",
+    "./svelte.config.js",
+    "../shared/styles.ts"
+  ]
+}

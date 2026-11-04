@@ -1,0 +1,102 @@
+/* Switch and Dialog design based on pinned shadcn New York v4 (MIT).
+ * Distributed as CSS only. No JavaScript, runtime or consumer compiler required.
+ * Selectors only target Destyler's native anatomy. No document-wide reset.
+ * Imported CSS opts ALL switch/dialog anatomy in. See README for theme/portal limits.
+ */
+@layer destyler {
+  :where(:root, [data-theme="light"]) {
+    --dy-background: oklch(1 0 0);
+    --dy-foreground: oklch(0.141 0.005 285.823);
+    --dy-primary: oklch(0.21 0.006 285.885);
+    --dy-primary-foreground: oklch(0.985 0 0);
+    --dy-input: oklch(0.92 0.004 286.32);
+    --dy-ring: oklch(0.705 0.015 286.067);
+    --dy-border: oklch(0.92 0.004 286.32);
+    --dy-muted-foreground: oklch(0.552 0.016 285.938);
+    --dy-radius: 0.625rem;
+    --dy-color-scheme: light;
+    --dy-track-opacity: 100%;
+  }
+  :where([data-theme="dark"]) {
+    --dy-background: oklch(0.141 0.005 285.823);
+    --dy-foreground: oklch(0.985 0 0);
+    --dy-primary: oklch(0.92 0.004 286.32);
+    --dy-primary-foreground: oklch(0.21 0.006 285.885);
+    --dy-input: oklch(1 0 0 / 15%);
+    --dy-ring: oklch(0.552 0.016 285.938);
+    --dy-border: oklch(1 0 0 / 10%);
+    --dy-muted-foreground: oklch(0.705 0.015 286.067);
+    --dy-radius: 0.625rem;
+    --dy-color-scheme: dark;
+    --dy-track-opacity: 80%;
+  }
+  :where([data-scope="switch"][data-part="root"]) {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    color: var(--dy-foreground); box-sizing: border-box;
+  }
+  :where([data-scope="switch"][data-part="control"]) {
+    display: inline-flex; flex-shrink: 0; align-items: center; box-sizing: border-box;
+    width: 2rem; height: 1.15rem; border: 1px solid transparent; border-radius: 9999px;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none;
+    background: color-mix(in oklab, var(--dy-input) var(--dy-track-opacity), transparent);
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  :where([data-scope="switch"][data-part="control"][data-state="checked"]) { background: var(--dy-primary); }
+  :where([data-scope="switch"][data-part="control"][data-focus-visible]) {
+    border-color: var(--dy-ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--dy-ring) 50%, transparent), 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  :where([data-scope="switch"][data-part="control"][data-disabled], [data-scope="switch"][data-part="label"][data-disabled]) { cursor: not-allowed; opacity: 0.5; }
+  :where([data-scope="switch"][data-part="control"][data-size="sm"]) { width: 1.5rem; height: 0.875rem; }
+  :where([data-scope="switch"][data-part="thumb"]) {
+    display: block; pointer-events: none; box-sizing: border-box;
+    width: 1rem; height: 1rem; border-radius: 9999px;
+    color-scheme: var(--dy-color-scheme); background: light-dark(var(--dy-background), var(--dy-foreground)); translate: 0 0;
+    transition: translate 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  :where([data-scope="switch"][data-part="control"][data-size="sm"] [data-scope="switch"][data-part="thumb"]) { width: 0.75rem; height: 0.75rem; }
+  :where([data-scope="switch"][data-part="thumb"][data-state="checked"]) { translate: calc(100% - 2px) 0; background: light-dark(var(--dy-background), var(--dy-primary-foreground)); }
+  :where([data-scope="switch"][data-part="thumb"][data-state="checked"][dir="rtl"]) { translate: calc(-100% + 2px) 0; }
+  :where([data-scope="switch"][data-part="label"]) { display: flex; align-items: center; font-size: 0.875rem; line-height: 1; font-weight: 500; user-select: none; }
+  :where([data-scope="dialog"][data-part="trigger"], [data-scope="dialog"][data-part="close-trigger"]) {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; gap: 0.5rem; box-sizing: border-box; margin: 0;
+    border: 0 solid transparent; border-radius: calc(var(--dy-radius) * 0.8);
+    font-family: inherit; font-size: 0.875rem; font-weight: 500; line-height: 1.25rem;
+    white-space: nowrap; height: 2.25rem; padding: 0.5rem 1rem; cursor: pointer;
+    background: var(--dy-primary); color: var(--dy-primary-foreground); outline: none;
+    transition: background-color 150ms, box-shadow 150ms;
+  }
+  :where([data-scope="dialog"][data-part="trigger"]:hover, [data-scope="dialog"][data-part="close-trigger"]:hover) { background: color-mix(in oklab, var(--dy-primary) 90%, transparent); }
+  :where([data-scope="dialog"][data-part="trigger"]:focus-visible, [data-scope="dialog"][data-part="close-trigger"]:focus-visible) {
+    border-color: var(--dy-ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--dy-ring) 50%, transparent), 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  :where([data-scope="dialog"][data-part="trigger"]:disabled, [data-scope="dialog"][data-part="close-trigger"]:disabled) { pointer-events: none; opacity: 0.5; }
+  :where([data-scope="dialog"][data-part="backdrop"]) { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / 0.5); animation-duration: 150ms; animation-timing-function: ease; }
+  :where([data-scope="dialog"][data-part="backdrop"][data-state="open"]) { animation-name: dy-css-only-fade-in; }
+  :where([data-scope="dialog"][data-part="backdrop"][data-state="closed"]) { animation-name: dy-css-only-fade-out; }
+  :where([data-scope="dialog"][data-part="content"]) {
+    position: fixed; top: 50%; left: 50%; z-index: 50; display: grid;
+    box-sizing: border-box; width: 100%; max-width: calc(100% - 2rem); translate: -50% -50%;
+    gap: 1rem; border-radius: var(--dy-radius); border: 1px solid var(--dy-border);
+    background: var(--dy-background); color: var(--dy-foreground); padding: 1.5rem; margin: 0;
+    font-family: inherit; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    outline: none; animation-duration: 200ms; animation-timing-function: ease;
+  }
+  :where([data-scope="dialog"][data-part="content"][data-state="open"]) { animation-name: dy-css-only-enter; }
+  :where([data-scope="dialog"][data-part="content"][data-state="closed"]) { animation-name: dy-css-only-exit; }
+  :where([data-scope="dialog"][data-part="title"]) { margin: 0; font-size: 1.125rem; line-height: 1; font-weight: 600; }
+  :where([data-scope="dialog"][data-part="description"]) { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--dy-muted-foreground); }
+  /* Hidden must win within this layer even though content establishes display:grid.
+     No broad reset touches the primitive's inline visually-hidden input styles. */
+  :where([data-scope="dialog"][hidden]) { display: none; }
+  @media (min-width: 640px) { :where([data-scope="dialog"][data-part="content"]) { max-width: 32rem; } }
+  @media (prefers-reduced-motion: reduce) {
+    :where([data-scope="switch"][data-part="control"], [data-scope="switch"][data-part="thumb"], [data-scope="dialog"][data-part="trigger"], [data-scope="dialog"][data-part="close-trigger"]) { transition-duration: 0s; }
+    :where([data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]) { animation-duration: 0.01ms; }
+  }
+  @keyframes dy-css-only-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes dy-css-only-fade-out { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes dy-css-only-enter { from { opacity: 0; scale: 0.95; } to { opacity: 1; scale: 1; } }
+  @keyframes dy-css-only-exit { from { opacity: 1; scale: 1; } to { opacity: 0; scale: 0.95; } }
+}

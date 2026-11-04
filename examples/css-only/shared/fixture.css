@@ -1,0 +1,4 @@
+/* Fixture layout only. Deliberately no primitive/reset selectors. */
+[data-fixture] { font: 16px/1.5 system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 1rem; }
+[data-fixture-controls] { display: flex; flex-wrap: wrap; gap: 1rem; margin-block: 1rem; }
+[data-cases] { display: flex; flex-direction: column; gap: 1.5rem; margin-block: 2rem; }

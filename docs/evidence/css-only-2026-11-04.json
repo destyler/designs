@@ -1,0 +1,230 @@
+{
+  "testedAt": "2026-11-04T07:49:56.364Z",
+  "baseCommit": "b1e7b3f0702c672d92dcaf24e16c8908e7fc22ff",
+  "unitTests": {
+    "passed": 39,
+    "failed": 0,
+    "skipped": 0
+  },
+  "packageAndBuild": {
+    "generatedAt": "2026-11-04T07:47:53.570Z",
+    "pass": true,
+    "package": {
+      "filename": "destyler-designs-css-only-poc-0.0.0.tgz",
+      "integrity": "sha512-fJVqvMa694QAnOFekkFZpGG3GOSi8iVT8n5qAjoPJObGnCDfcXKZBewezzI8AoF/J3vR4sOcOS1RBHfGyhZQ7w==",
+      "files": [
+        "README.md",
+        "SHADCN-LICENSE",
+        "THIRD_PARTY_NOTICES.txt",
+        "package.json",
+        "styles.css"
+      ],
+      "tarballBytes": 5203,
+      "runtimeDependencies": 0,
+      "peerDependencies": 0,
+      "javascriptBytes": 0
+    },
+    "css": {
+      "authored": {
+        "rawBytes": 7420,
+        "gzipBytes": 1878
+      },
+      "minified": {
+        "rawBytes": 5863,
+        "gzipBytes": 1450
+      }
+    },
+    "verification": {
+      "unitTests": 4,
+      "isolatedOfflineInstall": true,
+      "bareViteWithoutPlugins": true,
+      "plainImportJavaScriptBytes": 0,
+      "packedCSSUsedByAllFourConsumers": true,
+      "builds": [
+        "react",
+        "vue",
+        "solid",
+        "svelte",
+        "pinned-shadcn-reference"
+      ],
+      "types": [
+        "react",
+        "vue",
+        "solid",
+        "svelte"
+      ],
+      "unoGeneratedOverride": true
+    },
+    "limitations": [
+      "CSS computed styles, keyboard, focus trap/return, animation and visual parity require the separate browser suite.",
+      "UnoCSS generation is verified here; effective cascade is asserted only by browser suite."
+    ]
+  },
+  "ssrHydration": {
+    "cases": [
+      {
+        "framework": "react",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4347,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "react",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4695,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4964,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 5981,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      }
+    ],
+    "limitations": [
+      "happy-dom verifies DOM hydration and click behavior, not rendered CSS, keyboard navigation, focus trapping, geometry, animations or browser accessibility. CSS build and visual checks are separate."
+    ],
+    "pass": true
+  },
+  "unocss": {
+    "pass": true,
+    "cases": [
+      {
+        "framework": "react",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "vue",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "solid",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "svelte",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      }
+    ],
+    "limitations": [
+      "Combined builds and generated selectors are checked. Effective cascade and visual states require browser verification."
+    ]
+  },
+  "browser": {
+    "status": "blocked",
+    "passed": false,
+    "reason": "Installed Chromium exits with socket() failed: Operation not permitted. No successful browser test run.",
+    "script": "scripts/test-css-only-browser.mjs",
+    "syntaxChecked": true
+  },
+  "deployment": {
+    "performed": false,
+    "existingShowcaseMigrated": false
+  }
+}

@@ -1,0 +1,23 @@
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@import "../../../vendor/shadcn/zinc.css";
+@source "./main.tsx";
+@source "../../../vendor/shadcn/new-york-v4/ui/switch.tsx";
+@source "../../../vendor/shadcn/new-york-v4/ui/dialog.tsx";
+@source "../../../vendor/shadcn/new-york-v4/ui/button.tsx";
+@custom-variant dark (&:is(.dark, .dark *));
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+@layer base {
+  * { border-color: var(--border); }
+}

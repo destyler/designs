@@ -1,0 +1,10 @@
+CSS-only Switch and Dialog proof
+
+Switch, Dialog surface, primary Button design and Zinc theme values are derived
+from shadcn/ui (MIT), commit 4aaea19d9cff3e0908e12a8c1d504b8c5ec34610:
+https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui
+Copyright (c) 2023 shadcn. Full license: SHADCN-LICENSE.
+
+This package distributes only the adapted stylesheet, not React, Radix, or
+Destyler runtime code. Framework and headless UI dependencies are installed by
+the consuming application under their respective licenses.

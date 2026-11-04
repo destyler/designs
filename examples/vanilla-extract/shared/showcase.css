@@ -15,7 +15,9 @@ html:has(.showcase-stage), body:has(.showcase-stage) {
   box-sizing: border-box;
   min-height: 100vh;
   padding: 24px;
-  background: var(--dy-background);
+  background-color: var(--dy-background);
+  background-image: radial-gradient(color-mix(in srgb, var(--dy-foreground) 13%, transparent) .65px, transparent .65px);
+  background-size: 20px 20px;
 }
 .showcase-stage *, .showcase-portal * { box-sizing: border-box; }
 .showcase-sr-only {

@@ -1,0 +1,20 @@
+{
+  "name": "@destyler/designs-css-only-poc",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Precompiled CSS for native Destyler Switch and Dialog anatomy",
+  "license": "MIT",
+  "files": [
+    "styles.css",
+    "README.md",
+    "SHADCN-LICENSE",
+    "THIRD_PARTY_NOTICES.txt"
+  ],
+  "exports": {
+    "./styles.css": "./styles.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}

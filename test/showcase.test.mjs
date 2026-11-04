@@ -9,21 +9,23 @@ test('root showcases only real four-framework Switch/Dialog while preserving ear
   assert.match(await read('src/pages/index.astro'), /<Comparison client:load/)
   assert.match(await read('examples/shadcn/index.html'), /main\.tsx/)
   assert.match(main, /two-component prototype, not a complete component collection/)
-  assert.match(main, /href=\{`\/vanilla-extract\/\$\{framework\}\//)
+  assert.match(main, /href=\{`\/css-only\/\$\{framework\}\//)
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     const extension = framework === 'vue' ? 'vue' : framework === 'svelte' ? 'svelte' : 'tsx'
-    const adapter = await read(`examples/vanilla-extract/${framework}/Showcase.${extension}`)
-    assert.match(adapter, /@destyler\/designs-vanilla-extract-poc/)
+    const adapter = await read(`examples/css-only/${framework}/Showcase.${extension}`)
+    assert.doesNotMatch(adapter, /designs-vanilla-extract|\b(?:className|class)\s*=/)
+    assert.match(adapter, /data-showcase/)
     for (const component of ['Switch', 'Dialog']) {
-      const componentSource = await read(`examples/vanilla-extract/${framework}/${component}Example.${extension}`)
+      const componentSource = await read(`examples/css-only/${framework}/${component}Example.${extension}`)
       assert.ok(componentSource.includes(`@destyler-ui/${framework}`), `${framework}: published primitive import`)
       assert.ok(componentSource.includes(`<${component}.Root`))
       assert.ok(adapter.includes(`<${component}Example`), `${framework}: renders the displayed file`)
-      assert.ok(source.includes(`../vanilla-extract/${framework}/${component}Example.${extension}?raw`))
+      assert.ok(source.includes(`../css-only/${framework}/${component}Example.${extension}?raw`))
       assert.doesNotMatch(componentSource, component === 'Switch' ? /Dialog/ : /Switch/)
-      assert.doesNotMatch(componentSource, /connectShowcase|initialShowcaseState|postMessage|showcase-stage/)
+      assert.doesNotMatch(componentSource, /connectShowcase|initialShowcaseState|postMessage|showcase-stage|colorMode|\b(?:className|class|style)\s*=|designs-vanilla-extract/)
+      assert.doesNotMatch(componentSource, /import\s*\{[^}]*\b(?:classes|themes)\b/)
     }
-    await access(new URL(`../examples/vanilla-extract/${framework}/vite.config.ts`, import.meta.url))
+    await access(new URL(`../examples/css-only/${framework}/vite.config.ts`, import.meta.url))
   }
 })
 
@@ -39,9 +41,14 @@ test('reference is above four independently stateful framework cards', () => {
   assert.doesNotMatch(main, /<FrameworkPreview reference[^>]*key=/)
 })
 
-test('code uses exact package CSS and style definitions rather than the host page stylesheet', () => {
-  assert.match(source, /packages\/vanilla-extract\/dist\/styles\.css\?raw/)
-  assert.match(source, /packages\/vanilla-extract\/src\/styles\.css\.ts\?raw/)
+test('code uses exact CSS package and framework CSS imports rather than host page styles', async () => {
+  assert.match(source, /packages\/css-only\/styles\.css\?raw/)
+  for (const framework of ['react', 'vue', 'solid', 'svelte']) {
+    assert.ok(source.includes(`../css-only/${framework}/styles.ts?raw`))
+    const styles = await read(`examples/css-only/${framework}/styles.ts`)
+    assert.match(styles, /import ['"]@destyler\/designs-css-only-poc\/styles\.css['"]/)
+    assert.doesNotMatch(styles, /classes|themes|vanilla-extract/)
+  }
   assert.match(source, /navigator\.clipboard\.writeText\(selected\.code\)/)
   assert.doesNotMatch(source, /document\.querySelectorAll|fetch\(/)
 })
@@ -49,7 +56,7 @@ test('code uses exact package CSS and style definitions rather than the host pag
 test('frame messages validate both source window and origin in each direction', async () => {
   assert.match(main, /event\.origin !== location\.origin/)
   assert.match(main, /event\.source !== frame\.current\?\.contentWindow/)
-  const shared = await read('examples/vanilla-extract/shared/showcase.ts')
+  const shared = await read('examples/css-only/shared/showcase.ts')
   assert.match(shared, /event\.origin !== window\.location\.origin/)
   assert.match(shared, /event\.source !== window\.parent/)
   assert.match(shared, /\['switch', 'dialog'\]\.includes\(value\.component\)/)
@@ -58,14 +65,16 @@ test('frame messages validate both source window and origin in each direction', 
 })
 
 
-test('IDE file tabs identify actual files, support keyboard navigation and separate generated output', () => {
+test('IDE file tabs identify actual files and support keyboard navigation', () => {
   assert.match(source, /role="tablist" aria-label=\{`\$\{frameworks\[framework\]\} source files`\}/)
   assert.match(source, /aria-selected=\{file === id\}/)
   assert.match(source, /tabIndex=\{file === id \? 0 : -1\}/)
   assert.match(source, /ArrowLeft.*ArrowRight.*Home.*End/)
   assert.match(source, /className="source-file-path"/)
   assert.match(source, /className="source-line-numbers" aria-hidden="true"/)
-  assert.match(source, /selected.generated \? <button onClick=\{download\}/)
+  assert.doesNotMatch(source, /generated: true|Generated component stylesheet|Compiled by vanilla-extract/)
+  assert.match(source, /selected.downloadable \? <button onClick=\{download\}/)
+  assert.match(source, /Distributed CSS/)
   assert.doesNotMatch(source, /<select/)
   assert.doesNotMatch(main, /showCode && <SourceInspector/)
 })
@@ -86,11 +95,11 @@ test('component-only compositions retain real primitives without application fix
   assert.match(reference, /vendor\/shadcn\/new-york-v4\/ui\/dialog/)
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     const extension = framework === 'vue' ? 'vue' : framework === 'svelte' ? 'svelte' : 'tsx'
-    const adapter = await read(`examples/vanilla-extract/${framework}/Showcase.${extension}`)
+    const adapter = await read(`examples/css-only/${framework}/Showcase.${extension}`)
     assert.equal((adapter.match(/<SwitchExample/g) || []).length, 1)
     assert.equal((adapter.match(/<DialogExample/g) || []).length, 1)
     assert.doesNotMatch(adapter, /Notifications|Marketing|Settings|showcase-card|showcase-row/)
-    assert.match(await read(`examples/vanilla-extract/${framework}/DialogExample.${extension}`), /Open dialog/)
+    assert.match(await read(`examples/css-only/${framework}/DialogExample.${extension}`), /Open dialog/)
   }
   assert.doesNotMatch(reference, /Notifications|Marketing|Settings|<Card/)
 })
@@ -107,7 +116,7 @@ test('source follows the selected component and hides preview plumbing', () => {
 test('all frameworks remain visible without framework selection or persistence', () => {
   assert.doesNotMatch(main, /localStorage|selectFramework|<select|Destyler framework/)
   assert.match(main, /Object.keys\(frameworks\)/)
-  assert.match(main, /reference: false, react: false, vue: false, solid: false, svelte: false/)
+  assert.match(main, /reference: true, react: true, vue: true, solid: true, svelte: true/)
   assert.match(source, /data-source-framework=\{framework\}/)
   for (const suffix of ['source-tab-', 'source-file-panel', 'source-file-note']) {
     assert.ok(source.includes('${framework}-' + suffix), `${suffix}: framework-qualified ID`)

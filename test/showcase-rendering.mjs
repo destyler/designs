@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 import { join } from 'node:path'
 import { runInThisContext } from 'node:vm'
-const [framework, mode, dir, stylesEntry, resultPath] = process.argv.slice(2)
+const [framework, mode, dir, resultPath] = process.argv.slice(2)
 const result = { framework, mode, domPresentAtStart: typeof window !== 'undefined', errors: [], warnings: [] }
 const originalError = console.error, originalWarn = console.warn
 console.error = (...args) => result.errors.push(args.map(String).join(' '))
@@ -26,12 +26,14 @@ try {
     document.body.innerHTML = `<div id="app">${await readFile(htmlPath, 'utf8')}</div>`
   }
   const compiled = await import(pathToFileURL(join(dir, `${framework}-${mode}.mjs`)))
-  const { classes, themes } = await import(pathToFileURL(stylesEntry))
   if (mode === 'ssr') {
     assert.equal(typeof window, 'undefined')
+    assert.equal(typeof document, 'undefined')
     const html = await compiled.run()
     assert.match(html, /data-part="control"/)
     assert.match(html, /Airplane mode/)
+    assert.match(html, /data-showcase/)
+    assert.doesNotMatch(html, /\bclass="[^"\s][^"]*"/, 'No styling classes in actual Showcase SSR')
     assert.doesNotMatch(html, /Notifications|Marketing|showcase-card|showcase-status|data-portal-owner/)
     assert.equal((html.match(/role="switch"/g) || []).length, 1)
     await writeFile(htmlPath, html)
@@ -48,6 +50,9 @@ try {
     assert.equal(originalControl, target.querySelector('[data-scope="switch"][data-part="control"]'))
     assert.equal(originalInput, target.querySelector('input[role="switch"]'))
     result.serverNodesRetained = true
+    const noClasses = () => assert.ok([...document.querySelectorAll('#app [class], [data-portal-owner][class], [data-portal-owner] [class]')].every(node => !node.getAttribute('class')?.trim()), 'Showcase and native components need no design classes')
+    noClasses()
+    assert.equal(document.documentElement.dataset.theme, 'light')
     assert.equal(target.querySelectorAll('[role="switch"]').length, 1)
     assert.equal(originalInput.checked, false)
     originalInput.click(); await pause(); assert.equal(originalInput.checked, true)
@@ -61,33 +66,49 @@ try {
     assert.ok(target.querySelector('input[role="switch"]'), 'Wrong source ignored')
     send({ ...dialogDark, component: 'unknown' }); await pause()
     assert.ok(target.querySelector('input[role="switch"]'), 'Invalid component ignored')
+    send({ ...dialogDark, theme: 'invalid' }); await pause()
+    assert.ok(target.querySelector('input[role="switch"]'), 'Invalid theme ignored')
     send(dialogDark); await pause()
     assert.equal(target.querySelector('input[role="switch"]'), null)
     assert.equal(target.querySelector('main').dataset.theme, 'dark')
     result.validatedMessageChangesComponent = true
     const portal = document.querySelector(`[data-portal-owner="${framework}"]`)
     assert.ok(portal && document.body.contains(portal) && !target.contains(portal))
-    assert.ok(themes.dark.split(' ').every(c => portal.classList.contains(c)))
+    assert.equal(document.documentElement.dataset.theme, 'dark')
+    noClasses()
+    const assertClosed = () => {
+      const closedParts = portal.querySelectorAll('[data-part="content"], [data-part="backdrop"]')
+      assert.equal(closedParts.length, 2)
+      for (const node of closedParts) {
+        assert.equal(node.dataset.state, 'closed')
+        assert.equal(node.hidden, true)
+      }
+    }
+    assertClosed()
     const trigger = target.querySelector('[data-part="trigger"]')
     assert.equal(trigger.textContent, 'Open dialog')
     for (let iteration = 0; iteration < 2; iteration++) {
       trigger.click(); await pause()
       const content = portal.querySelector('[data-part="content"][data-state="open"]')
       assert.ok(content)
-      assert.ok(content.classList.contains(classes.dialogContent))
+      assert.equal(content.hidden, false)
+      assert.equal(content.dataset.demoDialog, framework)
+      noClasses()
       assert.equal(content.querySelector('[data-part="title"]').textContent, 'Dialog title')
       assert.equal(content.querySelector('[data-part="description"]').textContent, 'This is a dialog description.')
       const close = content.querySelector('[data-part="close-trigger"]')
       assert.equal(close.textContent, 'Close')
       close.click(); await pause()
       assert.equal(portal.querySelector('[data-part="content"][data-state="open"]'), null)
+      assertClosed()
     }
     result.dialogOpenCloseReopen = true
     send({ ...dialogDark, theme: 'light' }); await pause()
     assert.equal(target.querySelector('main').dataset.theme, 'light')
-    assert.equal(portal.dataset.theme, 'light')
-    assert.ok(themes.light.split(' ').every(c => portal.classList.contains(c)))
-    result.themePropagatesToBodyPortal = true
+    assert.equal(document.documentElement.dataset.theme, 'light')
+    noClasses()
+    result.documentThemeUpdatesForBodyPortal = true
+    result.noStylingClasses = true
     send({ type: 'destyler:showcase', component: 'switch', theme: 'light' }); await pause()
     assert.equal(target.querySelectorAll('[role="switch"]').length, 1)
     assert.equal(document.querySelector('[data-portal-owner]'), null)
@@ -95,6 +116,10 @@ try {
     result.componentChangeCleansPortal = true
     await cleanup(); cleanup = undefined; await pause()
     assert.equal(document.querySelector('[data-portal-owner]'), null)
+    assert.equal(document.documentElement.getAttribute('data-theme'), null, 'Unmount restores original document theme')
+    send(dialogDark); await pause()
+    assert.equal(document.documentElement.getAttribute('data-theme'), null, 'Disposed showcase no longer processes messages')
+    result.themeAndListenerCleanup = true
   }
   assert.deepEqual(result.errors, [], 'Console errors during SSR/hydration')
   assert.deepEqual(result.warnings, [], 'Console warnings during SSR/hydration')

@@ -9,9 +9,9 @@
     "test": "node --test test/*.test.mjs",
     "test:http": "node scripts/smoke-http.mjs",
     "check": "node scripts/check.mjs",
-    "dev": "npm run build:designs && npm run build:consumers && astro dev --host 127.0.0.1",
+    "dev": "npm run build:designs && npm run build:consumers && npm run build:css-consumers && astro dev --host 127.0.0.1",
     "start:legacy": "node scripts/serve.mjs",
-    "build": "npm run build:designs && node scripts/copy-notices.mjs && astro build && vite build && npm run build:consumers",
+    "build": "npm run build:designs && node scripts/copy-notices.mjs && astro build && vite build && npm run build:consumers && npm run build:css-consumers",
     "preview": "astro preview --host 127.0.0.1",
     "check:types": "vue-tsc --noEmit && tsc --noEmit -p examples/vanilla-extract/solid/tsconfig.json && svelte-check --tsconfig ./examples/vanilla-extract/svelte/tsconfig.json",
     "sync:shadcn": "node scripts/extract-shadcn-recipes.mjs",
@@ -25,7 +25,10 @@
     "check:astro": "astro check --tsconfig tsconfig.astro.json",
     "test:showcase:browser": "node scripts/test-astro-showcase-browser.mjs",
     "test:showcase:rendering": "node scripts/verify-showcase-rendering.mjs",
-    "test:showcase:dom": "node scripts/test-astro-host-dom.mjs"
+    "test:showcase:dom": "node scripts/test-astro-host-dom.mjs",
+    "build:css-consumers": "node scripts/build-css-only-consumers.mjs build",
+    "check:css-types": "vue-tsc --noEmit -p examples/css-only/tsconfig.json && tsc --noEmit -p examples/css-only/solid/tsconfig.json && svelte-check --tsconfig ./examples/css-only/svelte/tsconfig.json",
+    "test:css": "node scripts/verify-css-only.mjs && node scripts/verify-css-only-ssr.mjs && node scripts/verify-css-only-unocss.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.1-beta.21",

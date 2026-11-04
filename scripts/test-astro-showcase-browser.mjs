@@ -42,6 +42,10 @@ const cleanCanvas = async side => {
   const text = await frame(side).locator('body').innerText()
   assert.doesNotMatch(text, /Notifications|Settings|Marketing|Product updates|preferences|notifications enabled/i, `${side}: no unrelated demo layout`)
   assert.equal(await frame(side).locator('.showcase-card,.showcase-status,.showcase-stack').count(), 0)
+  if (side !== 'reference') {
+    assert.equal(await frame(side).locator('main[data-showcase]').count(), 1)
+    assert.equal(await frame(side).locator('[data-scope][class]:not([class=""]), main[data-showcase][class]:not([class=""]), [data-portal-owner][class]:not([class=""])').count(), 0, 'CSS-only anatomy has no design classes')
+  }
 }
 const switchTest = async side => {
   const root = frame(side)
@@ -67,6 +71,7 @@ const dialogTest = async side => {
     const dialog = root.getByRole('dialog', { name: 'Dialog title', exact: true })
     await dialog.waitFor({ state: 'visible' })
     assert.equal(await root.getByRole('dialog').count(), 1)
+    await cleanCanvas(side)
     assert.ok((await dialog.innerText()).includes('This is a dialog description.'))
     assert.equal(await page.getByRole('dialog').count(), 0, 'Dialog is contained in iframe')
     if (close === 'Escape') await dialog.press('Escape')
@@ -84,7 +89,10 @@ const navigate = async component => {
   await page.getByRole('navigation', { name: 'Examples', exact: true }).getByRole('link', { name: component === 'switch' ? 'Switch' : 'Dialog', exact: true }).click()
   await until(() => page.locator('.comparison-grid').getAttribute('data-example'), component, 'Component navigation')
 }
-const theme = async (side, value) => until(() => frame(side).locator('main').getAttribute('data-theme'), value, `${side}: theme`)
+const theme = async (side, value) => {
+  await until(() => frame(side).locator('main').getAttribute('data-theme'), value, `${side}: theme`)
+  if (side !== 'reference') await until(() => frame(side).locator('html').getAttribute('data-theme'), value, `${side}: document theme for portals`)
+}
 const screenshot = async name => {
   const path = `${output}/${name}.png`
   await page.screenshot({ path, fullPage: true })
@@ -100,9 +108,9 @@ const view = async (name, code) => {
 }
 const inspectFiles = async (name, example) => {
   const files = {
-    component: `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
-    styles: 'packages/vanilla-extract/src/styles.css.ts',
-    css: 'packages/vanilla-extract/dist/styles.css',
+    component: `examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
+    styles: `examples/css-only/${name}/styles.ts`,
+    css: 'packages/css-only/styles.css',
   }
   assert.equal(await card(name).getByRole('tablist', { name: `${frameworks[name]} source files`, exact: true }).getByRole('tab').count(), 3)
   for (const [id, path] of Object.entries(files)) {
@@ -153,6 +161,8 @@ try {
     assert.equal(await state(frame('reference').getByRole('switch', { name: 'Airplane mode' })), true, 'Reference state preserved through code operations')
     evidence.frameworks.push(name)
   }
+  for (const side of sides) await theme(side, 'dark')
+  await page.getByLabel('All light', { exact: true }).click()
   for (const side of sides) {
     const label = `Toggle ${side === 'reference' ? 'shadcn/ui' : frameworks[side]} color mode`
     await page.getByLabel(label, { exact: true }).click()
@@ -168,7 +178,7 @@ try {
     for (const name of Object.keys(frameworks)) {
       await view(name, ['react', 'solid'].includes(name))
       await until(() => page.locator(`#${name}-source-tab-component`).getAttribute('aria-selected'), 'true', 'Component navigation resets every source')
-      const path = `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`
+      const path = `examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`
       assert.equal(await card(name).locator('[data-testid="css-source"]').textContent(), await readFile(path, 'utf8'))
     }
     await preserved()

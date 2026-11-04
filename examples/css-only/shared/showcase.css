@@ -1,0 +1,22 @@
+/* Documentation canvas only. The package owns all primitive appearance/reset.
+   Each iframe owns a document theme, so native body portals inherit it directly. */
+html:has([data-showcase]), body:has([data-showcase]) {
+  margin: 0;
+  min-height: 100%;
+}
+body:has([data-showcase]) {
+  font-family: 'Geist Variable', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--dy-foreground);
+}
+[data-showcase] {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 24px;
+  background-color: var(--dy-background);
+  background-image: radial-gradient(color-mix(in srgb, var(--dy-foreground) 13%, transparent) .65px, transparent .65px);
+  background-size: 20px 20px;
+}

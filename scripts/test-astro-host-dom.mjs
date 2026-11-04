@@ -7,7 +7,7 @@ import { Window } from 'happy-dom'
 
 const frameworks = { react: 'React', vue: 'Vue', solid: 'Solid', svelte: 'Svelte' }
 const sides = ['reference', ...Object.keys(frameworks)]
-const report = { test: 'production Astro Comparison island hydration', checks: [], errors: [], warnings: [], limitations: ['Happy DOM does not prove rendering, actual iframe readiness, focus trapping, or real browser navigation. Iframe ready messages are simulated; page scripts and iframe loads are disabled.'] }
+const report = { test: 'production Astro Comparison island hydration', checks: [], errors: [], warnings: [], limitations: ['Happy DOM does not prove rendering, actual iframe readiness, focus trapping, or real browser navigation. Iframe ready messages are simulated; page scripts and iframe loads are disabled. Disabled Happy DOM iframes have null contentWindow, so independent real-window readiness is only covered by the browser suite.'] }
 const win = new Window({ url: 'http://localhost:4173/#switch', settings: { disableCSSFileLoading: true, disableComputedStyleRendering: true, disableIframePageLoading: true, disableJavaScriptEvaluation: true, disableJavaScriptFileLoading: true } })
 for (const key of Object.getOwnPropertyNames(win)) {
   if (['window', 'document', 'navigator', 'location', 'parent', 'history', 'localStorage'].includes(key) || /^(HTML.*Element|SVG.*Element|Document|DocumentFragment|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|KeyboardEvent|MessageEvent|HashChangeEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)) {
@@ -62,6 +62,16 @@ try {
   preserved()
   assert.equal(q('h1'), heading)
   assert.equal(q('[aria-label="Destyler framework"]'), null)
+  for (const side of sides) {
+    const iframe = frame(side)
+    assert.equal(iframe.getAttribute('aria-busy'), 'true')
+    win.dispatchEvent(new win.MessageEvent('message', { origin: 'https://untrusted.invalid', source: iframe.contentWindow, data: { type: 'destyler:ready' } }))
+    await pause()
+    assert.equal(iframe.getAttribute('aria-busy'), 'true', 'Foreign-origin readiness ignored')
+    win.dispatchEvent(new win.MessageEvent('message', { origin: win.location.origin, source: win, data: { type: 'destyler:ready' } }))
+    await pause()
+    assert.equal(iframe.getAttribute('aria-busy'), 'true', 'Wrong-window readiness ignored')
+  }
   for (const side of sides) await handshake(side)
   const card = name => q(`[data-demo="${name}"]`)
   const view = (name, code) => {
@@ -72,9 +82,9 @@ try {
   const extension = { react: 'tsx', vue: 'vue', solid: 'tsx', svelte: 'svelte' }
   const sources = async (name, example) => {
     const files = {
-      component: `examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
-      styles: 'packages/vanilla-extract/src/styles.css.ts',
-      css: 'packages/vanilla-extract/dist/styles.css',
+      component: `examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`,
+      styles: `examples/css-only/${name}/styles.ts`,
+      css: 'packages/css-only/styles.css',
     }
     assert.equal(card(name).querySelectorAll(`[aria-label="${frameworks[name]} source files"] [role="tab"]`).length, 3)
     assert.ok(card(name).querySelector(`[data-source-framework="${name}"]`))
@@ -93,7 +103,7 @@ try {
     }
   }
   for (const name of Object.keys(frameworks)) {
-    assert.match(frame(name).src, new RegExp(`/vanilla-extract/${name}/`))
+    assert.match(frame(name).src, new RegExp(`/css-only/${name}/`))
     await click(`#${name}-code-tab`)
     for (const other of Object.keys(frameworks)) view(other, other === name)
     await sources(name, 'switch')
@@ -114,6 +124,11 @@ try {
   const themeLabel = side => `Toggle ${side === 'reference' ? 'shadcn/ui' : frameworks[side]} color mode`
   const dark = side => q(`[aria-label="${themeLabel(side)}"]`).getAttribute('aria-pressed')
   for (const side of sides) {
+    assert.equal(dark(side), 'true', `${side}: dark by default`)
+    assert.match(frame(side).src, /theme=dark/)
+  }
+  await click('[aria-label="All light"]')
+  for (const side of sides) {
     await click(`[aria-label="${themeLabel(side)}"]`)
     for (const other of sides) assert.equal(dark(other), other === side ? 'true' : 'false')
     await click(`[aria-label="${themeLabel(side)}"]`)
@@ -131,7 +146,7 @@ try {
     for (const name of Object.keys(frameworks)) {
       view(name, ['react', 'solid'].includes(name))
       assert.equal(q(`#${name}-source-tab-component`).getAttribute('aria-selected'), 'true')
-      assert.equal(card(name).querySelector('[data-testid="css-source"]').textContent, await readFile(`examples/vanilla-extract/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`, 'utf8'))
+      assert.equal(card(name).querySelector('[data-testid="css-source"]').textContent, await readFile(`examples/css-only/${name}/${example === 'switch' ? 'Switch' : 'Dialog'}Example.${extension[name]}`, 'utf8'))
       await sources(name, example)
     }
     assert.equal(q('h1').textContent.toLowerCase(), example)

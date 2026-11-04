@@ -24,13 +24,13 @@ try {
   for (const [name, label, extension] of [['react', 'React', 'tsx'], ['vue', 'Vue', 'vue'], ['solid', 'Solid', 'tsx'], ['svelte', 'Svelte', 'svelte']]) {
     const card = grid.querySelector(`.implementations-grid [data-demo="${name}"]`)
     assert.ok(card, `${name}: simultaneous implementation card`)
-    assert.ok(card.querySelector('iframe').src.includes(`/vanilla-extract/${name}/`))
+    assert.ok(card.querySelector('iframe').src.includes(`/css-only/${name}/`))
     assert.equal(card.querySelectorAll(`[aria-label="${label} source files"] [role="tab"]`).length, 3)
-    assert.equal(card.querySelector('[data-testid="css-source"]').textContent, await read(`examples/vanilla-extract/${name}/SwitchExample.${extension}`))
+    assert.equal(card.querySelector('[data-testid="css-source"]').textContent, await read(`examples/css-only/${name}/SwitchExample.${extension}`))
     assert.equal(card.querySelector(`#${name}-code-panel`).hidden, true)
     assert.equal(card.querySelector(`#${name}-preview-panel`).hidden, false)
     assert.match(card.querySelector(`#${name}-source-tab-component`).textContent, new RegExp(`SwitchExample.${extension}`))
-    assert.match(card.querySelector(`#${name}-source-tab-styles`).textContent, /styles.css.ts/)
+    assert.match(card.querySelector(`#${name}-source-tab-styles`).textContent, /styles\.ts/)
     assert.match(card.querySelector(`#${name}-source-tab-css`).textContent, /styles.css/)
   }
   const ids = [...document.querySelectorAll('[id]')].map(node => node.id)

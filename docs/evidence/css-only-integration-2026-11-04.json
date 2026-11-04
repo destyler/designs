@@ -1,0 +1,390 @@
+{
+  "testedAt": "2026-11-04T08:06:39.178Z",
+  "basis": {
+    "cssOnlyCommit": "96235b541999904a92759273f7877a08b97024d6",
+    "visualCommit": "32d809d65ea26efb92d6ee7dc41a56a7b1f3f6ac"
+  },
+  "unitTests": {
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0
+  },
+  "types": {
+    "existingFourFrameworks": true,
+    "cssOnlyFourFrameworks": true,
+    "astro": {
+      "files": 14,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0
+    }
+  },
+  "fullProductionBuild": {
+    "passed": true,
+    "telemetryDisabledForCloud": true,
+    "buildsCurrentCSSOnlyAndPreservedConsumers": true,
+    "rootRemSizePreserved": true
+  },
+  "package": {
+    "generatedAt": "2026-11-04T08:03:04.623Z",
+    "pass": true,
+    "package": {
+      "filename": "destyler-designs-css-only-poc-0.0.0.tgz",
+      "integrity": "sha512-fJVqvMa694QAnOFekkFZpGG3GOSi8iVT8n5qAjoPJObGnCDfcXKZBewezzI8AoF/J3vR4sOcOS1RBHfGyhZQ7w==",
+      "files": [
+        "README.md",
+        "SHADCN-LICENSE",
+        "THIRD_PARTY_NOTICES.txt",
+        "package.json",
+        "styles.css"
+      ],
+      "tarballBytes": 5203,
+      "runtimeDependencies": 0,
+      "peerDependencies": 0,
+      "javascriptBytes": 0
+    },
+    "css": {
+      "authored": {
+        "rawBytes": 7420,
+        "gzipBytes": 1878
+      },
+      "minified": {
+        "rawBytes": 5863,
+        "gzipBytes": 1450
+      }
+    },
+    "verification": {
+      "unitTests": 5,
+      "isolatedOfflineInstall": true,
+      "bareViteWithoutPlugins": true,
+      "plainImportJavaScriptBytes": 0,
+      "packedCSSUsedByAllFourConsumers": true,
+      "builds": [
+        "react",
+        "vue",
+        "solid",
+        "svelte",
+        "pinned-shadcn-reference"
+      ],
+      "types": [
+        "react",
+        "vue",
+        "solid",
+        "svelte"
+      ],
+      "unoGeneratedOverride": true
+    },
+    "limitations": [
+      "CSS computed styles, keyboard, focus trap/return, animation and visual parity require the separate browser suite.",
+      "UnoCSS generation is verified here; effective cascade is asserted only by browser suite."
+    ]
+  },
+  "showcaseSSRHydration": {
+    "cases": [
+      {
+        "framework": "react",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 748,
+        "singleComponentSSRWithoutBrowserGlobals": true,
+        "pass": true
+      },
+      {
+        "framework": "react",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "switchInputClickInteractive": true,
+        "validatedMessageChangesComponent": true,
+        "dialogOpenCloseReopen": true,
+        "documentThemeUpdatesForBodyPortal": true,
+        "noStylingClasses": true,
+        "componentChangeCleansPortal": true,
+        "themeAndListenerCleanup": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 775,
+        "singleComponentSSRWithoutBrowserGlobals": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "switchInputClickInteractive": true,
+        "validatedMessageChangesComponent": true,
+        "dialogOpenCloseReopen": true,
+        "documentThemeUpdatesForBodyPortal": true,
+        "noStylingClasses": true,
+        "componentChangeCleansPortal": true,
+        "themeAndListenerCleanup": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 852,
+        "singleComponentSSRWithoutBrowserGlobals": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "switchInputClickInteractive": true,
+        "validatedMessageChangesComponent": true,
+        "dialogOpenCloseReopen": true,
+        "documentThemeUpdatesForBodyPortal": true,
+        "noStylingClasses": true,
+        "componentChangeCleansPortal": true,
+        "themeAndListenerCleanup": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 1004,
+        "singleComponentSSRWithoutBrowserGlobals": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "switchInputClickInteractive": true,
+        "validatedMessageChangesComponent": true,
+        "dialogOpenCloseReopen": true,
+        "documentThemeUpdatesForBodyPortal": true,
+        "noStylingClasses": true,
+        "componentChangeCleansPortal": true,
+        "themeAndListenerCleanup": true,
+        "pass": true
+      }
+    ],
+    "limitations": [
+      "happy-dom tests DOM behavior, not CSS rendering, visual parity, keyboard navigation or focus trapping. The Showcase imports no styling JS; application entry loads CSS separately."
+    ],
+    "pass": true
+  },
+  "extendedSSRHydration": {
+    "cases": [
+      {
+        "framework": "react",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4347,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "react",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4695,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "vue",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 4964,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "solid",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "ssr",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "htmlBytes": 5981,
+        "portalAbsentOnServer": true,
+        "noStyleClasses": true,
+        "pass": true
+      },
+      {
+        "framework": "svelte",
+        "mode": "hydrate",
+        "domPresentAtStart": false,
+        "errors": [],
+        "warnings": [],
+        "serverNodesRetained": true,
+        "portalMountedUnderBody": true,
+        "initiallyHidden": true,
+        "switchInteractive": true,
+        "controlledSwitchInteractive": true,
+        "disabledSwitchPreserved": true,
+        "readonlySwitchPreserved": true,
+        "rtlCaseObservedDirection": "rtl",
+        "dialogOpenCloseCycles": 3,
+        "noStyleClasses": true,
+        "portalRemovedOnUnmount": true,
+        "pass": true
+      }
+    ],
+    "limitations": [
+      "happy-dom verifies DOM hydration and click behavior, not rendered CSS, keyboard navigation, focus trapping, geometry, animations or browser accessibility. CSS build and visual checks are separate."
+    ],
+    "pass": true
+  },
+  "productionHostHydration": {
+    "test": "production Astro Comparison island hydration",
+    "checks": [
+      "All five SSR iframe nodes hydrate in place; four independent view/file tab sets, exact source bytes, line counts, clipboard and keyboard navigation",
+      "Independent five-way themes and global theme controls; component navigation resets each source file while retaining mixed view states and every iframe; unique accessible IDs"
+    ],
+    "errors": [],
+    "warnings": [],
+    "limitations": [
+      "Happy DOM does not prove rendering, actual iframe readiness, focus trapping, or real browser navigation. Iframe ready messages are simulated; page scripts and iframe loads are disabled. Disabled Happy DOM iframes have null contentWindow, so independent real-window readiness is only covered by the browser suite."
+    ],
+    "metadata": {
+      "component-url": "/_astro/main.DDsjrukB.js",
+      "renderer-url": "/_astro/client.CPdq839H.js",
+      "component-export": "default"
+    },
+    "pass": true
+  },
+  "unocss": {
+    "pass": true,
+    "cases": [
+      {
+        "framework": "react",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "vue",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "solid",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      },
+      {
+        "framework": "svelte",
+        "pass": true,
+        "cssOnlyPackageAndUnoCSSBuiltTogether": true
+      }
+    ],
+    "limitations": [
+      "Combined builds and generated selectors are checked. Effective cascade and visual states require browser verification."
+    ]
+  },
+  "otherChecks": {
+    "staticAstroDOM": true,
+    "legacyProductionDOM": true,
+    "httpSmokeRoutes": 8,
+    "javascriptSyntax": true,
+    "gitDiffCheck": true
+  },
+  "browser": {
+    "status": "not-run",
+    "reason": "Earlier Chromium launch was blocked by socket permissions. No retry for integration.",
+    "scripts": [
+      "scripts/test-astro-showcase-browser.mjs",
+      "scripts/test-css-only-browser.mjs"
+    ],
+    "syntaxChecked": true,
+    "unocssTestAssetRequired": false
+  },
+  "publication": {
+    "pushed": false,
+    "deployed": false,
+    "released": false
+  }
+}
