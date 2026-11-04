@@ -5,15 +5,19 @@ const read = path => readFile(new URL(`../${path}`,import.meta.url),'utf8')
 const app = await read('examples/shadcn/main.tsx')
 const inspector = await read('examples/shadcn/components/StyleInspector.tsx')
 
-test('comparison exposes an accessible framework selector and explicit inspector disclosure',()=>{
+test('comparison exposes an accessible framework selector and exclusive Preview/Code tabs',()=>{
   assert.match(app,/aria-label="Examples"/)
   for(const name of ['switch','checkbox','tabs','dialog','settings']) assert.ok(app.includes(name))
   assert.match(app,/Solid and Svelte are not yet implemented/)
   assert.match(app,/aria-label="Destyler framework"/)
   assert.match(app,/value="react"/)
   assert.match(app,/value="vue"/)
-  assert.match(app,/aria-expanded=/)
-  assert.match(app,/aria-controls="css-inspector"/)
+  assert.match(app,/role="tablist"/)
+  assert.match(app,/id="preview-tab"/)
+  assert.match(app,/id="code-tab"/)
+  assert.match(app,/aria-controls="preview-panel"/)
+  assert.match(app,/aria-controls="code-panel"/)
+  assert.match(app,/id="preview-panel"[^>]*hidden=\{showCode\}/)
 })
 
 test('source inspector imports actual source files instead of maintaining example snippets',async()=>{

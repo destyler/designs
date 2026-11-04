@@ -43,11 +43,47 @@ for(const name of ['reference','react','vue','react','vue']) {
   assert.equal(tab.getAttribute('aria-selected'),'true',`${name}: tab changes`)
   const first=root.querySelectorAll('[role=tab]')[0]; first.dispatchEvent(new window.MouseEvent('mousedown',{bubbles:true,button:0})); first.click(); await settle()
 }
-const inspectorToggle=[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='View CSS')
-assert.ok(inspectorToggle,'CSS inspector toggle mounts')
-assert.equal(inspectorToggle.getAttribute('aria-expanded'),'false')
+const inspectorToggle=[...document.querySelectorAll('[role="tab"]')].find(el=>el.textContent.trim()==='Code')
+const previewToggle=[...document.querySelectorAll('[role="tab"]')].find(el=>el.textContent.trim()==='Preview')
+assert.ok(inspectorToggle && previewToggle,'Preview/Code tabs mount')
+assert.equal(inspectorToggle.getAttribute('aria-selected'),'false')
+const retainedPanels=[...document.querySelectorAll('.demo-panel')]
 inspectorToggle.click(); await settle()
-assert.ok(document.querySelector('#css-inspector [data-testid="css-source"]'),'CSS inspector source renders on demand')
+assert.equal(inspectorToggle.getAttribute('aria-selected'),'true')
+assert.deepEqual([...document.querySelectorAll('.demo-panel')],retainedPanels,'Code preserves mounted preview instances')
+const inspector=document.querySelector('#css-inspector')
+assert.ok(inspector,'Code source renders on demand')
+const sourceText=()=>inspector.querySelector('[data-testid="css-source"]').textContent
+const sourceTabs=[...inspector.querySelectorAll('[role="tab"]')]
+const tokensTab=sourceTabs.find(tab=>tab.textContent==='Theme tokens')
+tokensTab.click(); await settle()
+assert.equal(sourceText(),await readFile('examples/shadcn/styles/tokens.css','utf8'),'Token view contains the actual source bytes')
+for(const [key,expectedIndex] of [['Home',0],['ArrowLeft',sourceTabs.length-1],['Home',0],['End',sourceTabs.length-1],['ArrowRight',0]]) {
+  const selected=sourceTabs.find(tab=>tab.getAttribute('aria-selected')==='true')
+  selected.focus()
+  selected.dispatchEvent(new window.KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}))
+  await settle()
+  assert.equal(sourceTabs[expectedIndex].getAttribute('aria-selected'),'true',`Inspector ${key}: selection moves`)
+  assert.equal(document.activeElement,sourceTabs[expectedIndex],`Inspector ${key}: focus moves`)
+  assert.equal(inspector.querySelector('[role="tabpanel"]').getAttribute('aria-labelledby'),sourceTabs[expectedIndex].id,'Source panel label tracks the selected tab')
+  assert.equal(sourceTabs.filter(tab=>tab.tabIndex===0).length,1,'Only the active source tab is tabbable')
+}
+previewToggle.click(); await settle()
+assert.equal(previewToggle.getAttribute('aria-selected'),'true','Preview tab restores the preview')
+assert.equal(inspectorToggle.getAttribute('aria-selected'),'false','Preview resets Code selection')
+assert.deepEqual([...document.querySelectorAll('.demo-panel')],retainedPanels,'Returning to Preview retains component state')
+for(const [from,key,to] of [[previewToggle,'ArrowRight',inspectorToggle],[inspectorToggle,'ArrowLeft',previewToggle],[previewToggle,'End',inspectorToggle],[inspectorToggle,'Home',previewToggle]]) {
+  from.focus()
+  from.dispatchEvent(new window.KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}))
+  await settle()
+  assert.equal(to.getAttribute('aria-selected'),'true',`View tab ${key}: selection moves`)
+  assert.equal(document.activeElement,to,`View tab ${key}: focus moves`)
+  assert.equal(to.tabIndex,0,'Selected view is tabbable')
+  assert.equal(from.tabIndex,-1,'Inactive view is excluded from tab sequence')
+  assert.equal(document.getElementById('preview-panel').hidden,to===inspectorToggle,'Code hides the preview panel')
+  assert.equal(document.getElementById(to.getAttribute('aria-controls')).getAttribute('aria-labelledby'),to.id,'View panel is labelled by its tab')
+}
+
 // Focused examples exercise production-mounted primitives in both frameworks.
 async function selectFramework(name) {
   framework.value=name
@@ -107,7 +143,7 @@ for(const name of ['react','vue']) {
   await navigate('dialog')
   for(const owner of ['reference',name]) {
     const root=document.querySelector(`[data-demo="${owner}"]`)
-    const trigger=[...root.querySelectorAll('button')].find(button=>button.textContent==='Review preferences')
+    const trigger=[...root.querySelectorAll('button')].find(button=>button.textContent.trim()==='Review preferences')
     assert.ok(trigger,`${owner}: dialog trigger mounts`)
     for(const closeMethod of ['done','escape']) {
       trigger.click(); await settle()
@@ -117,7 +153,7 @@ for(const name of ['react','vue']) {
       assert.match(dialog.textContent,/Your preferences/)
       assert.match(dialog.textContent,/Marketing: off · Updates: on · Tips: on/)
       assert.ok(dialog.closest('[data-design="shadcn"]'),`${owner}: portal owns design theme`)
-      if(closeMethod==='done') [...dialog.querySelectorAll('button')].find(button=>button.textContent==='Done').click()
+      if(closeMethod==='done') [...dialog.querySelectorAll('button')].find(button=>button.textContent.trim()==='Done').click()
       else dialog.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}))
       await settle()
       const closed=document.querySelector(`[data-demo-dialog="${owner}"]`)
@@ -141,6 +177,13 @@ window.history.replaceState(null,'','/')
 window.dispatchEvent(new window.HashChangeEvent('hashchange'))
 await settle()
 assert.equal(document.querySelector('.comparison-grid').dataset.example,'switch','Back to the hash-free homepage restores default example')
+await navigate('tabs')
+for(const hash of ['#main-content','#not-a-component']) {
+  window.location.hash=hash
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'))
+  await settle()
+  assert.equal(document.querySelector('.comparison-grid').dataset.example,'tabs','Non-example anchors preserve the current example')
+}
 console.log('PASS: production bundle covers settings compatibility, focused controls/tabs/dialogs, React/Vue switching, portal cleanup, hash navigation, and CSS inspector in Happy DOM. Not a real-browser or visual test.')
 await window.happyDOM.abort()
 process.exit(0)

@@ -20,8 +20,8 @@ const waitSelected = async (root, name) => {
 const background = locator => locator.evaluate(el=>getComputedStyle(el).getPropertyValue('--background').trim())
 const activeFramework = async name => {
   await page.getByLabel('Destyler framework',{exact:true}).selectOption(name)
-  await panel(name).waitFor({state:'visible',timeout:5000})
-  await panel(name).getByRole('switch',{name:'Marketing emails'}).waitFor()
+  await panel(name).waitFor({state:'attached',timeout:5000})
+  await panel(name).locator('[role="switch"]').first().waitFor({state:'attached'})
   assert.equal(await page.locator('.demo-panel').count(),2,'Exactly two demos are mounted')
   assert.equal(await panel('reference').count(),1,'Reference stays mounted')
   const inactive=name==='react'?'vue':'react'
@@ -65,7 +65,25 @@ const exerciseControls = async name => {
 }
 try {
   await page.goto(baseURL + '/#settings')
-  await page.getByRole('heading',{name:'Settings.'}).waitFor()
+  await page.getByRole('heading',{name:/^Settings\.?$/}).waitFor()
+  // Exercise native same-document history, not just synthetic hashchange events.
+  const examples = page.getByRole('navigation',{name:'Examples',exact:true})
+  await examples.getByRole('link',{name:'Checkbox',exact:true}).click()
+  await page.locator('.comparison-grid[data-example="checkbox"]').waitFor()
+  await examples.getByRole('link',{name:'Tabs',exact:true}).click()
+  await page.locator('.comparison-grid[data-example="tabs"]').waitFor()
+  await page.goBack()
+  await page.locator('.comparison-grid[data-example="checkbox"]').waitFor()
+  assert.equal(await examples.getByRole('link',{name:'Checkbox',exact:true}).getAttribute('aria-current'),'page')
+  await page.goForward()
+  await page.locator('.comparison-grid[data-example="tabs"]').waitFor()
+  const skip = page.getByRole('link',{name:'Skip to preview',exact:true})
+  await skip.focus()
+  await skip.press('Enter')
+  assert.equal(await page.locator('.comparison-grid').getAttribute('data-example'),'tabs','Skip link does not reset the selected component')
+  assert.equal(await page.locator('#main-content').evaluate(el=>document.activeElement===el),true,'Skip link moves keyboard focus to main content')
+  await examples.getByRole('link',{name:'Settings',exact:true}).click()
+  await page.locator('.comparison-grid[data-example="settings"]').waitFor()
   await activeFramework('react')
   const referenceNode=await panel('reference').elementHandle()
   await exerciseControls('reference')
@@ -94,12 +112,15 @@ try {
   }
   await page.screenshot({path:'artifacts/shadcn-dark.png',fullPage:true})
 
-  const toggle=page.getByRole('button',{name:'View CSS',exact:true})
-  assert.equal(await toggle.getAttribute('aria-expanded'),'false')
+  const toggle=page.getByRole('tab',{name:'Code',exact:true})
+  assert.equal(await toggle.getAttribute('aria-selected'),'false')
   assert.equal(await page.locator('#css-inspector').isVisible(),false)
   await toggle.press('Enter')
   const inspector=page.locator('#css-inspector')
   await inspector.waitFor({state:'visible'})
+  assert.equal(await toggle.getAttribute('aria-selected'),'true')
+  assert.equal(await panel('vue').isVisible(),false,'Code replaces the visible preview')
+  assert.equal(await page.locator('.demo-panel').count(),2,'Code keeps preview state mounted')
   const source=inspector.locator('[data-testid="css-source"]')
   for(const name of ['Theme tokens','Component classes','Compiled CSS','Vue adapter']) {
     const tab=inspector.getByRole('tab',{name,exact:true})
@@ -125,7 +146,7 @@ try {
       if(urls.length===1) assert.equal(await inspector.getByRole('link',{name:'Download CSS'}).getAttribute('href'),urls[0])
     } else {
       const file=await inspector.locator('.code-filename').innerText()
-      const link=inspector.getByRole('link',{name:'Open source on GitHub'})
+      const link=inspector.getByRole('link',{name:'Open full source on GitHub'})
       assert.equal(await link.getAttribute('href'),`https://github.com/destyler/designs/blob/prototype/cloud-scoped-themes/examples/shadcn/${file}`)
       if(name!=='Component classes') assert.equal(await source.textContent(),await readFile(`examples/shadcn/${file}`,'utf8'),`${file}: displayed source equals actual file`)
     }
@@ -161,10 +182,10 @@ try {
   await activeFramework('react')
   await inspector.getByRole('tab',{name:'React adapter',exact:true}).click()
   assert.equal(await inspector.getByRole('tab',{name:'Vue adapter',exact:true}).count(),0)
-  assert.match(await source.innerText(),/react|React/)
+  assert.equal(await source.textContent(),await readFile('examples/shadcn/adapters/ReactDemo.tsx','utf8'),'React adapter view is the running source file')
   await activeFramework('vue')
   await inspector.getByRole('tab',{name:'Vue adapter',exact:true}).click()
-  assert.match(await source.innerText(),/vue|Vue/)
+  assert.equal(await source.textContent(),await readFile('examples/shadcn/adapters/VueDemo.vue','utf8'),'Vue adapter view is the running source file')
   await inspector.getByRole('tab',{name:'Theme tokens',exact:true}).click()
   const copy=inspector.getByRole('button',{name:'Copy source',exact:true})
   let clipboardSupported=true
@@ -184,6 +205,9 @@ try {
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${name}/${tab}: no mobile page overflow`)
     }
   }
+  await inspector.getByRole('button',{name:'Return to preview',exact:true}).click()
+  await inspector.waitFor({state:'detached'})
+  assert.equal(await page.getByRole('tab',{name:'Preview',exact:true}).evaluate(el=>document.activeElement===el),true,'Closing source restores disclosure focus')
   await page.screenshot({path:'artifacts/shadcn-mobile.png',fullPage:true})
   assert.deepEqual(errors,[])
   console.log('PASS: two-column conditional mounting, repeated React/Vue switching, keyboard controls, repeated dialog close/focus, owner-themed portals, independent themes, CSS inspector/copy, mobile overflow, and browser errors.')
