@@ -1,5 +1,7 @@
 # Vanilla-extract distribution verification
 
+The measured 2026-11-04 snapshot and beta.21 browser evidence below remain historical. See [the 2026-11-06 upgrade report](ui-0.0.4-upgrade-verification.md) for the separate UI 0.0.4/core 0.3.4 non-browser rerun; earlier browser evidence does not validate the upgraded dependencies.
+
 Run from the repository root after installing development dependencies:
 
 ```sh

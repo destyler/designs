@@ -1,6 +1,6 @@
 # CSS-only Switch + Dialog proof
 
-A private, unpublished proof for `@destyler-ui/react`, `/vue`, `/solid` and `/svelte` **0.0.1-beta.21**. Keep using those headless primitives. Add one application import:
+A private, unpublished proof for `@destyler-ui/react`, `/vue`, `/solid` and `/svelte` **0.0.4**, with core **0.3.4** resolved in the repository lockfile. Keep using those headless primitives. Add one application import:
 
 ```ts
 import '@destyler/designs-css-only-poc/styles.css'

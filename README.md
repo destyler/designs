@@ -50,6 +50,8 @@ Colors, spacing, typography, borders, radii, shadows and transition values are e
 
 ## Checks
 
+The 2026-11-06 dependency-upgrade candidate pins all four `@destyler-ui/*` packages to **0.0.4** and resolves the 72 installed `@destyler/*` packages to **0.3.4**. These UI packages require **Node >=22.22.3**. The existing Switch/Dialog page and preserved examples are unchanged. See [the dated upgrade verification](docs/ui-0.0.4-upgrade-verification.md) for the exact scope, checks and remaining browser limits.
+
 ```sh
 npm test                 # Source hash/recipe/token contracts and legacy tests
 npm run check            # JavaScript syntax

@@ -1,5 +1,7 @@
 # CSS-only Switch/Dialog proof verification
 
+Historical proof record. The beta.21 results below are not new-version acceptance. The [2026-11-06 upgrade report](ui-0.0.4-upgrade-verification.md) records the separate UI 0.0.4/core 0.3.4 checks.
+
 This records the initial independent proof. The subsequent Astro integration is documented in [css-only-integration-verification.md](css-only-integration-verification.md).
 
 Verified 2026-11-04 in an independent cloud checkout based on `b1e7b3f`. No UI headless code, existing showcase files, main branch, or deployment was changed. The production site is **not migrated by this commit**.
