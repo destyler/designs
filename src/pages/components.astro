@@ -1,0 +1,67 @@
+---
+import '@fontsource-variable/geist'
+import catalog from '../../examples/all-components/shared/catalog.json'
+import '../../examples/all-components/gallery.css'
+const labels: Record<string, string> = { 'qr-code': 'QR Code', 'otp-input': 'OTP Input' }
+const title = (name: string) => labels[name] || name.split('-').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
+const frameworks = ['react', 'vue', 'solid', 'svelte']
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="description" content="Explore 46 Destyler component families across React, Vue, Solid and Svelte. A new reconstruction using UI 0.0.4." />
+    <title>Checkbox · Destyler component gallery</title>
+  </head>
+  <body>
+    <a class="gallery-skip" href="#gallery-main">Skip to examples</a>
+    <header class="gallery-header">
+      <a href="/" class="gallery-brand"><span class="gallery-mark" aria-hidden="true">d.</span><strong>destyler</strong><span class="gallery-divider">/</span><span>designs</span></a>
+      <div class="gallery-header-meta"><span class="gallery-dot"></span>Component library <span class="gallery-version">UI 0.0.4</span></div>
+      <a class="gallery-github" href="https://github.com/destyler/designs/pull/1">Dependency baseline ↗</a>
+    </header>
+    <div class="gallery-layout">
+      <aside class="gallery-sidebar" aria-label="Component library">
+        <div class="gallery-sidebar-heading">COMPONENTS <span>{catalog.families.length}</span></div>
+        <label class="gallery-search"><span class="visually-hidden">Find a component</span><span aria-hidden="true">⌕</span><input id="component-search" type="search" placeholder="Find a component…" autocomplete="off" /></label>
+        <nav aria-label="Choose a component" id="component-navigation">
+          {catalog.families.map((family, index) => <a href={`#${family}`} data-component={family} aria-current={family === 'checkbox' ? 'page' : undefined}><span class="gallery-index">{String(index + 1).padStart(2, '0')}</span><span>{title(family)}</span><span class="gallery-nav-arrow" aria-hidden="true">↗</span></a>)}
+        </nav>
+        <p id="component-empty" hidden>No components match your search.</p>
+        <div class="gallery-sidebar-note">One collection.<br/><strong>Four real frameworks.</strong><p>Plain CSS. Native primitives.</p></div>
+      </aside>
+      <main id="gallery-main" tabindex="-1">
+        <div class="gallery-eyebrow"><span>COMPONENT LAB</span><span id="selected-index">06 / 46</span></div>
+        <section class="gallery-intro" aria-labelledby="component-title">
+          <div><h1 id="component-title">Checkbox</h1><p id="component-description">The same component family, implemented with each framework’s native Destyler primitives.</p></div>
+          <div class="gallery-global-mode" role="group" aria-label="All preview themes"><button type="button" data-all-theme="light" aria-pressed="false">Light</button><button type="button" data-all-theme="dark" aria-pressed="true">Dark</button></div>
+        </section>
+        <div class="gallery-rebuild-note"><span>RECONSTRUCTED</span><p>A new local reconstruction based on the released UI examples. This is not the missing v7 candidate; visual and assistive-technology acceptance are still pending.</p></div>
+        <section class="gallery-grid" aria-label="Four framework implementations">
+          {frameworks.map((framework, index) => <article class="gallery-card" data-framework={framework} data-theme="dark">
+            <header class="gallery-card-heading"><div><span class="gallery-framework-dot" data-framework={framework}></span><h2>{title(framework)}</h2><span class="gallery-card-number">0{index + 1}</span></div><button class="gallery-theme-toggle" type="button" aria-label={`Use light theme in ${title(framework)}`} aria-pressed="true">Dark ◐</button></header>
+            <div class="gallery-card-toolbar"><div class="gallery-view-tabs" role="tablist" aria-label={`${title(framework)} view`}><button id={`${framework}-preview-tab`} type="button" role="tab" aria-selected="true" aria-controls={`${framework}-preview-panel`} tabindex="0" data-view="preview">Preview</button><button id={`${framework}-code-tab`} type="button" role="tab" aria-selected="false" aria-controls={`${framework}-code-panel`} tabindex="-1" data-view="code">Code</button></div><a class="gallery-open-frame" href={`/all-components/${framework}/?component=checkbox&theme=dark`} target="_blank" rel="noopener" aria-label={`Open ${title(framework)} example separately`}>Open ↗</a></div>
+            <div id={`${framework}-preview-panel`} class="gallery-preview-panel" role="tabpanel" aria-labelledby={`${framework}-preview-tab`}>
+              <iframe src={`/all-components/${framework}/?component=checkbox&theme=dark`} title={`${title(framework)} Checkbox example`} loading="eager"></iframe>
+              <p class="gallery-frame-status" role="status">Loading example…</p>
+            </div>
+            <div id={`${framework}-code-panel`} class="gallery-code-panel" role="tabpanel" aria-labelledby={`${framework}-code-tab`} hidden>
+              <div class="gallery-source-toolbar"><label><span class="visually-hidden">Source file</span><select class="gallery-source-select"><option>Loading source…</option></select></label><button class="gallery-copy" type="button">Copy</button></div>
+              <pre tabindex="0" aria-label={`${title(framework)} example source`}><code>Choose Code to load the source.</code></pre><p class="gallery-copy-status" role="status"></p>
+            </div>
+            <footer class="gallery-card-footer"><span>@destyler-ui/{framework}</span><span>0.0.4</span></footer>
+          </article>)}
+        </section>
+        <div class="gallery-bottom-note"><p>Examples run in separate documents, so each framework keeps its own state and overlays. Switching a component or theme restarts that example.</p><a href="/">Open the original Switch / Dialog comparison ↗</a></div>
+        <noscript><p>Enable JavaScript to choose a family or inspect source. The Checkbox examples above remain available in their own documents.</p></noscript>
+        <footer class="gallery-footer"><span>46 FAMILIES × 4 FRAMEWORKS</span><span>NEW RECONSTRUCTION · NOT YET PUBLISHED</span></footer>
+      </main>
+    </div>
+    <script>
+      import { initializeGallery } from '../../examples/all-components/gallery'
+      initializeGallery(document, window)
+    </script>
+  </body>
+</html>

@@ -9,9 +9,9 @@
     "test": "node --test test/*.test.mjs",
     "test:http": "node scripts/smoke-http.mjs",
     "check": "node scripts/check.mjs",
-    "dev": "npm run build:designs && npm run build:consumers && npm run build:css-consumers && astro dev --host 127.0.0.1",
+    "dev": "npm run build:all-components:sources && npm run build:designs && npm run build:consumers && npm run build:css-consumers && npm run build:all-components:frames && astro dev --host 127.0.0.1",
     "start:legacy": "node scripts/serve.mjs",
-    "build": "npm run build:designs && node scripts/copy-notices.mjs && astro build && vite build && npm run build:consumers && npm run build:css-consumers",
+    "build": "npm run build:all-components:sources && npm run build:designs && node scripts/copy-notices.mjs && astro build && vite build && npm run build:consumers && npm run build:css-consumers && npm run build:all-components:frames",
     "preview": "astro preview --host 127.0.0.1",
     "check:types": "vue-tsc --noEmit && tsc --noEmit -p examples/vanilla-extract/solid/tsconfig.json && svelte-check --tsconfig ./examples/vanilla-extract/svelte/tsconfig.json",
     "sync:shadcn": "node scripts/extract-shadcn-recipes.mjs",
@@ -29,7 +29,12 @@
     "build:css-consumers": "node scripts/build-css-only-consumers.mjs build",
     "check:css-types": "vue-tsc --noEmit -p examples/css-only/tsconfig.json && tsc --noEmit -p examples/css-only/solid/tsconfig.json && svelte-check --tsconfig ./examples/css-only/svelte/tsconfig.json",
     "test:css": "node scripts/verify-css-only.mjs && node scripts/verify-css-only-ssr.mjs && node scripts/verify-css-only-unocss.mjs",
-    "test:reference:browser": "node scripts/test-reference-browser.mjs"
+    "test:reference:browser": "node scripts/test-reference-browser.mjs",
+    "build:all-components:sources": "node scripts/export-all-component-sources.mjs",
+    "build:all-components:frames": "node scripts/build-all-components.mjs",
+    "check:all-components": "tsc -p examples/all-components/tsconfig.json && tsc -p examples/all-components/react/tsconfig.json && vue-tsc --noEmit -p examples/all-components/vue/tsconfig.json && tsc -p examples/all-components/solid/tsconfig.json && svelte-check --tsconfig examples/all-components/svelte/tsconfig.json",
+    "test:all-components:host": "node scripts/test-all-components-host.mjs",
+    "test:all-components": "node scripts/verify-all-components.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.4",

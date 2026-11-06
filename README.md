@@ -97,3 +97,7 @@ No repository-wide license is assigned here. The owner must select a license for
 A separate Switch/Dialog-only package and standalone React/Vue/Solid/Svelte + UnoCSS consumers now live under [`packages/vanilla-extract`](packages/vanilla-extract/README.md) and [`examples/vanilla-extract`](examples/vanilla-extract/README.md). Run `npm run build` to build the Astro comparison site plus `/vanilla-extract/react/`, `/vanilla-extract/vue/`, `/vanilla-extract/solid/`, and `/vanilla-extract/svelte/`. The consumers compare the existing Tailwind recipes against precompiled vanilla-extract CSS, without either compiler plugin in their Vite config. They expose independent themes, explicit token overrides, UnoCSS overrides, and body portals.
 
 This is an opt-in proof, not a migration or a published package. [`docs/vanilla-extract-verification.md`](docs/vanilla-extract-verification.md) distinguishes package/SSR/hydration results from actual-browser coverage.
+
+## Reconstructed all-component gallery
+
+A new `/components/` gallery covers 46 component families across React, Vue, Solid and Svelte using UI 0.0.4. It is a new reconstruction, not the missing earlier candidate. The original Switch/Dialog comparison remains at `/`. See [source, build commands, verification and remaining acceptance limits](docs/all-components-reconstruction.md).
