@@ -6,6 +6,7 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const out = join(root, 'artifacts/all-components')
 await mkdir(out, { recursive: true })
 const commands = [
+  'examples/all-components/shadcn/verify.mjs',
   'examples/all-components/react/verify.mjs',
   'examples/all-components/vue/verify-ssr-hydration.mjs',
   'examples/all-components/solid/check-hydration.mjs',

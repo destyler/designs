@@ -1,8 +1,11 @@
 import catalog from './shared/catalog.json'
+import shadcnCoverage from './shared/shadcn-coverage.json'
 
 type SourceFile = { name: string; code: string }
 type SourceResponse = { files: SourceFile[] }
-const labels: Record<string, string> = { 'qr-code': 'QR Code', 'otp-input': 'OTP Input' }
+type ReferenceCoverage = { status: 'direct' | 'composed' | 'none'; explanation: string; sourceUrls: string[] }
+const coverage: Record<string, ReferenceCoverage> = shadcnCoverage as Record<string, ReferenceCoverage>
+const labels: Record<string, string> = { shadcn: 'shadcn/ui', 'qr-code': 'QR Code', 'otp-input': 'OTP Input' }
 export const componentTitle = (family: string) => labels[family] || family.split('-').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
 
 export function initializeGallery(doc: Document, win: Window) {
@@ -55,11 +58,16 @@ export function initializeGallery(doc: Document, win: Window) {
         if (!response.ok) throw new Error(`Source request failed (${response.status})`)
         const value: unknown = await response.json()
         if (!value || typeof value !== 'object' || !('files' in value) || !Array.isArray(value.files) || !value.files.length || !value.files.every(file => file && typeof file.name === 'string' && typeof file.code === 'string')) throw new Error('Invalid source response')
-        sharedCss ??= win.fetch('/all-components/source/theme.css').then(response => {
-          if (!response.ok) throw new Error(`Theme source request failed (${response.status})`)
-          return response.text()
-        }).catch(error => { sharedCss = undefined; throw error })
-        source = { files: [...(value as SourceResponse).files, { name: 'theme.css', code: await sharedCss }] }
+        source = { files: [...(value as SourceResponse).files] }
+        // The reference exports its own shadcn/Tailwind sources. Destyler's shared
+        // theme belongs only to the four implementation cards.
+        if (framework !== 'shadcn') {
+          sharedCss ??= win.fetch('/all-components/source/theme.css').then(response => {
+            if (!response.ok) throw new Error(`Theme source request failed (${response.status})`)
+            return response.text()
+          }).catch(error => { sharedCss = undefined; throw error })
+          source.files.push({ name: 'theme.css', code: await sharedCss })
+        }
         sourceCache.set(key, source)
       }
       if (disposed || card.dataset.sourceKey !== key) return
@@ -137,6 +145,14 @@ export function initializeGallery(doc: Document, win: Window) {
     if (selectionInitialized && selected === next) return
     selected = next
     selectionInitialized = true
+    const reference = coverage[selected]
+    const coveragePanel = doc.querySelector<HTMLElement>('.gallery-reference-coverage')!
+    coveragePanel.dataset.coverage = reference.status
+    doc.querySelector('#shadcn-coverage-status')!.textContent = reference.status
+    doc.querySelector('#shadcn-coverage-explanation')!.textContent = reference.explanation
+    const sourceLink = doc.querySelector<HTMLAnchorElement>('#shadcn-coverage-source')!
+    sourceLink.href = reference.sourceUrls[0]
+    sourceLink.textContent = reference.status === 'none' ? 'Inspect pinned registry ↗' : 'View pinned source ↗'
     doc.querySelector('#component-title')!.textContent = componentTitle(selected)
     doc.title = `${componentTitle(selected)} · Destyler component gallery`
     doc.querySelector('#selected-index')!.textContent = `${String(catalog.families.indexOf(selected) + 1).padStart(2, '0')} / ${catalog.families.length}`

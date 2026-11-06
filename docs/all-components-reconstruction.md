@@ -11,9 +11,9 @@ This is a new reconstruction, not a recovered copy of the earlier unpublished v7
 - New gallery route: `/components/`, with links such as `/components/#calendar`.
 - The existing `/` Switch/Dialog comparison, its components, CSS and dependency lock are preserved.
 
-The gallery provides searchable family navigation, four isolated framework frames, independent light/dark controls, actual example/helper source, and the shared plain CSS. Source is exported from the files that are built, not handwritten excerpts. Embedded illustrations and offline tours avoid external media dependencies.
+The gallery provides searchable family navigation, four isolated framework frames, independent light/dark controls, actual example/helper source, and the shared plain CSS. The follow-up [shadcn reference restoration](./shadcn-gallery-restoration.md) adds an original reference first, with explicit direct/composed/absent coverage for every family. Source is exported from the files that are built, not handwritten excerpts. Embedded illustrations and offline tours avoid external media dependencies.
 
-The new visual treatment derives from the published UI examples and uses Zinc neutral colors. It is not a reconstruction of the exact prior v7 visuals, a complete shadcn reference implementation, or a claim of pixel parity. The existing Switch/Dialog shadcn comparison remains available at `/`.
+The Destyler demonstration treatment derives from the published UI examples and uses Zinc neutral colors. It is not a reconstruction of the exact prior v7 visuals or a claim of shadcn pixel parity. The restored shadcn reference uses untouched original components and separate Tailwind/Zinc styling; it explicitly identifies families without a matching upstream component. The existing Switch/Dialog shadcn comparison remains available at `/`.
 
 ## Running and building
 

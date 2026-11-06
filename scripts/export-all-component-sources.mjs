@@ -40,3 +40,6 @@ assert.equal(exported.length, 184)
 await copyFile(join(sourceRoot, 'shared/theme.css'), join(destination, 'theme.css'))
 await writeFile(join(destination, 'catalog.json'), JSON.stringify({ ...catalog, examples: exported }, null, 2) + '\n')
 console.log(`Exported ${exported.length} actual example source sets and one shared CSS file.`)
+
+// Export the independently styled pinned shadcn references, with explicit coverage.
+await import('./export-shadcn-reference-sources.mjs')

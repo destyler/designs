@@ -1,10 +1,12 @@
 ---
 import '@fontsource-variable/geist'
 import catalog from '../../examples/all-components/shared/catalog.json'
+import shadcnCoverage from '../../examples/all-components/shared/shadcn-coverage.json'
 import '../../examples/all-components/gallery.css'
-const labels: Record<string, string> = { 'qr-code': 'QR Code', 'otp-input': 'OTP Input' }
+const labels: Record<string, string> = { shadcn: 'shadcn/ui', 'qr-code': 'QR Code', 'otp-input': 'OTP Input' }
 const title = (name: string) => labels[name] || name.split('-').map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
-const frameworks = ['react', 'vue', 'solid', 'svelte']
+const frameworks = ['shadcn', 'react', 'vue', 'solid', 'svelte']
+const coverage = shadcnCoverage.checkbox
 ---
 <!doctype html>
 <html lang="en">
@@ -12,7 +14,7 @@ const frameworks = ['react', 'vue', 'solid', 'svelte']
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#09090b" />
-    <meta name="description" content="Explore 46 Destyler component families across React, Vue, Solid and Svelte. A new reconstruction using UI 0.0.4." />
+    <meta name="description" content="Compare 46 Destyler component families in React, Vue, Solid and Svelte with shadcn/ui references and explicit coverage notes." />
     <title>Checkbox · Destyler component gallery</title>
   </head>
   <body>
@@ -30,18 +32,19 @@ const frameworks = ['react', 'vue', 'solid', 'svelte']
           {catalog.families.map((family, index) => <a href={`#${family}`} data-component={family} aria-current={family === 'checkbox' ? 'page' : undefined}><span class="gallery-index">{String(index + 1).padStart(2, '0')}</span><span>{title(family)}</span><span class="gallery-nav-arrow" aria-hidden="true">↗</span></a>)}
         </nav>
         <p id="component-empty" hidden>No components match your search.</p>
-        <div class="gallery-sidebar-note">One collection.<br/><strong>Four real frameworks.</strong><p>Plain CSS. Native primitives.</p></div>
+        <div class="gallery-sidebar-note">One reference.<br/><strong>Four real frameworks.</strong><p>shadcn/ui × Destyler primitives.</p></div>
       </aside>
       <main id="gallery-main" tabindex="-1">
         <div class="gallery-eyebrow"><span>COMPONENT LAB</span><span id="selected-index">06 / 46</span></div>
         <section class="gallery-intro" aria-labelledby="component-title">
-          <div><h1 id="component-title">Checkbox</h1><p id="component-description">The same component family, implemented with each framework’s native Destyler primitives.</p></div>
+          <div><h1 id="component-title">Checkbox</h1><p id="component-description">A shadcn/ui reference, followed by four implementations using each framework’s native Destyler primitives.</p></div>
           <div class="gallery-global-mode" role="group" aria-label="All preview themes"><button type="button" data-all-theme="light" aria-pressed="false">Light</button><button type="button" data-all-theme="dark" aria-pressed="true">Dark</button></div>
         </section>
-        <div class="gallery-rebuild-note"><span>RECONSTRUCTED</span><p>A new local reconstruction based on the released UI examples. This is not the missing v7 candidate; visual and assistive-technology acceptance are still pending.</p></div>
-        <section class="gallery-grid" aria-label="Four framework implementations">
-          {frameworks.map((framework, index) => <article class="gallery-card" data-framework={framework} data-theme="dark">
-            <header class="gallery-card-heading"><div><span class="gallery-framework-dot" data-framework={framework}></span><h2>{title(framework)}</h2><span class="gallery-card-number">0{index + 1}</span></div><button class="gallery-theme-toggle" type="button" aria-label={`Use light theme in ${title(framework)}`} aria-pressed="true">Dark ◐</button></header>
+        <div class="gallery-comparison-note"><span>REFERENCE COVERAGE</span><p>Direct references use a matching shadcn/ui component. Composed references assemble behavior from shadcn/ui parts and application code. Families without an equivalent are labeled explicitly; coverage is not a claim of identical behavior or appearance.</p></div>
+        <section class="gallery-grid" aria-label="shadcn/ui reference and four framework implementations">
+          {frameworks.map((framework, index) => <article class:list={['gallery-card', { 'gallery-card--reference': framework === 'shadcn' }]} data-framework={framework} data-theme="dark">
+            <header class="gallery-card-heading"><div><span class="gallery-framework-dot" data-framework={framework}></span><h2>{title(framework)}</h2><span class="gallery-card-number">{framework === 'shadcn' ? 'REFERENCE' : `0${index}`}</span></div><button class="gallery-theme-toggle" type="button" aria-label={`Use light theme in ${title(framework)}`} aria-pressed="true">Dark ◐</button></header>
+            {framework === 'shadcn' && <div class="gallery-reference-coverage" data-coverage={coverage.status} aria-live="polite"><span id="shadcn-coverage-status" class="gallery-coverage-badge">{coverage.status}</span><p><span id="shadcn-coverage-explanation">{coverage.explanation}</span>{' '}<a id="shadcn-coverage-source" class="gallery-coverage-source" href={coverage.sourceUrls[0]} target="_blank" rel="noopener noreferrer">{coverage.status === 'none' ? 'Inspect pinned registry ↗' : 'View pinned source ↗'}</a></p></div>}
             <div class="gallery-card-toolbar"><div class="gallery-view-tabs" role="tablist" aria-label={`${title(framework)} view`}><button id={`${framework}-preview-tab`} type="button" role="tab" aria-selected="true" aria-controls={`${framework}-preview-panel`} tabindex="0" data-view="preview">Preview</button><button id={`${framework}-code-tab`} type="button" role="tab" aria-selected="false" aria-controls={`${framework}-code-panel`} tabindex="-1" data-view="code">Code</button></div><a class="gallery-open-frame" href={`/all-components/${framework}/?component=checkbox&theme=dark`} target="_blank" rel="noopener" aria-label={`Open ${title(framework)} example separately`}>Open ↗</a></div>
             <div id={`${framework}-preview-panel`} class="gallery-preview-panel" role="tabpanel" aria-labelledby={`${framework}-preview-tab`}>
               <iframe src={`/all-components/${framework}/?component=checkbox&theme=dark`} title={`${title(framework)} Checkbox example`} loading="eager"></iframe>
@@ -51,12 +54,12 @@ const frameworks = ['react', 'vue', 'solid', 'svelte']
               <div class="gallery-source-toolbar"><label><span class="visually-hidden">Source file</span><select class="gallery-source-select"><option>Loading source…</option></select></label><button class="gallery-copy" type="button">Copy</button></div>
               <pre tabindex="0" aria-label={`${title(framework)} example source`}><code>Choose Code to load the source.</code></pre><p class="gallery-copy-status" role="status"></p>
             </div>
-            <footer class="gallery-card-footer"><span>@destyler-ui/{framework}</span><span>0.0.4</span></footer>
+            <footer class="gallery-card-footer"><span>{framework === 'shadcn' ? 'shadcn/ui · Pinned reference' : `@destyler-ui/${framework}`}</span><span>{framework === 'shadcn' ? 'React + Tailwind CSS' : '0.0.4'}</span></footer>
           </article>)}
         </section>
         <div class="gallery-bottom-note"><p>Examples run in separate documents, so each framework keeps its own state and overlays. Switching a component or theme restarts that example.</p><a href="/">Open the original Switch / Dialog comparison ↗</a></div>
         <noscript><p>Enable JavaScript to choose a family or inspect source. The Checkbox examples above remain available in their own documents.</p></noscript>
-        <footer class="gallery-footer"><span>46 FAMILIES × 4 FRAMEWORKS</span><span>NEW RECONSTRUCTION · NOT YET PUBLISHED</span></footer>
+        <footer class="gallery-footer"><span>46 FAMILIES × 4 FRAMEWORKS</span><span>SHADCN/UI REFERENCE + DESTYLER</span></footer>
       </main>
     </div>
     <script>

@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const dist = join(root, 'dist')
 const catalog = JSON.parse(await readFile(join(root, 'examples/all-components/shared/catalog.json'), 'utf8'))
 const origin = 'https://validation.invalid'
-const queue = ['/components/', ...catalog.frameworks.map(framework => `/all-components/${framework}/`)]
+const queue = ['/components/', '/all-components/shadcn/', ...catalog.frameworks.map(framework => `/all-components/${framework}/`)]
 const visited = new Set()
 const report = { pass: false, sources: 0, sourceFiles: 0, assets: [], externalAssets: [], browser: false }
 const win = new Window({ settings: { disableJavaScriptEvaluation: true, disableIframePageLoading: true, disableCSSFileLoading: true } })
@@ -51,6 +51,24 @@ try {
     report.sources++
   }
   assert.equal(report.sources, 184)
+  const coverage = JSON.parse(await readFile(join(root, 'examples/all-components/shared/shadcn-coverage.json'), 'utf8'))
+  report.references = { direct: 0, composed: 0, none: 0, sources: 0, sourceFiles: 0 }
+  for (const family of catalog.families) {
+    const source = JSON.parse(await readFile(join(dist, 'all-components/source/shadcn', family + '.json'), 'utf8'))
+    assert.equal(source.family, family); assert.equal(source.framework, 'shadcn')
+    assert.deepEqual(source.reference, coverage[family])
+    assert.ok(source.files[0].name.endsWith(`/demos/${family}.tsx`))
+    assert.ok(!source.files.some(file => file.name === 'theme.css' || file.name === 'examples/all-components/shared/theme.css'), 'Reference must not use Destyler theme')
+    for (const file of source.files) {
+      const path = resolve(root, file.name)
+      assert.ok(path.startsWith(join(root, 'examples/all-components/shadcn') + sep) || path.startsWith(join(root, 'vendor/shadcn') + sep) || path === join(root, 'examples/shadcn/lib/utils.ts') || path === join(root, 'examples/all-components/shared/shadcn-coverage.json'))
+      assert.equal(file.code, await readFile(path, 'utf8'), `shadcn/${family}/${file.name} exact source`)
+      report.references.sourceFiles++
+    }
+    report.references[source.reference.status]++
+    report.references.sources++
+  }
+  assert.equal(report.references.sources, 46)
   report.pass = true
 } catch (error) { report.error = String(error.stack || error); process.exitCode = 1 }
 finally { await win.happyDOM.close(); await mkdir(join(root, 'artifacts/all-components'), { recursive: true }); await writeFile(join(root, 'artifacts/all-components/assets.json'), JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report, null, 2)) }

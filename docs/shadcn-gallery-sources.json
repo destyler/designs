@@ -1,0 +1,1025 @@
+{
+  "repository": "https://github.com/shadcn-ui/ui",
+  "commit": "4aaea19d9cff3e0908e12a8c1d504b8c5ec34610",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2023 shadcn",
+  "retrievedAt": "2026-11-06",
+  "extends": "docs/shadcn-sources.json",
+  "upstreamDirectory": {
+    "source": "apps/v4/registry/new-york-v4/ui",
+    "url": "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui",
+    "files": [
+      {
+        "name": "_registry.ts",
+        "gitBlobSha": "0514b247508e89fb98a43f36f934a6ac142645c8",
+        "bytes": 14274
+      },
+      {
+        "name": "accordion.tsx",
+        "gitBlobSha": "b83c53e5e3502eb57bbba1cfc4c6fdaeba163339",
+        "bytes": 2038
+      },
+      {
+        "name": "alert-dialog.tsx",
+        "gitBlobSha": "566c463a61b48c79ad544bfdd80434174107c9d5",
+        "bytes": 5440
+      },
+      {
+        "name": "alert.tsx",
+        "gitBlobSha": "86310a66e80c0a370169b9fb4ed49af6bea954fb",
+        "bytes": 1604
+      },
+      {
+        "name": "aspect-ratio.tsx",
+        "gitBlobSha": "57e38fa96f9c0cb767d7b8de0d6dbc171d1b921a",
+        "bytes": 274
+      },
+      {
+        "name": "attachment.tsx",
+        "gitBlobSha": "cf4750525db9ec3b3b5efbd4efcc39620ff0997e",
+        "bytes": 6003
+      },
+      {
+        "name": "avatar.tsx",
+        "gitBlobSha": "561f04be186f94896ec31e618fee6818c7fcc6c8",
+        "bytes": 2906
+      },
+      {
+        "name": "badge.tsx",
+        "gitBlobSha": "1a94cc539326e26227271a0b3599be99e0e55fb6",
+        "bytes": 1766
+      },
+      {
+        "name": "breadcrumb.tsx",
+        "gitBlobSha": "12aa08af155d76bf3335b41ba9b92a593b6354d1",
+        "bytes": 2340
+      },
+      {
+        "name": "bubble.tsx",
+        "gitBlobSha": "da2c99035d566dd72536e61b922eb6ef5ffb3b4b",
+        "bytes": 4689
+      },
+      {
+        "name": "button-group.tsx",
+        "gitBlobSha": "965285725a0a5d3af5d512537846455b808602fe",
+        "bytes": 2203
+      },
+      {
+        "name": "button.tsx",
+        "gitBlobSha": "e3345d985d14c33e3cb9d8c45cf973807326c944",
+        "bytes": 2382
+      },
+      {
+        "name": "calendar.tsx",
+        "gitBlobSha": "215b068893d3fcabf8ec6ed8d14cce99438380b9",
+        "bytes": 7833
+      },
+      {
+        "name": "card.tsx",
+        "gitBlobSha": "6aebd4cf612dfa24d40ffdf357c6f6363e144d6a",
+        "bytes": 1977
+      },
+      {
+        "name": "carousel.tsx",
+        "gitBlobSha": "25134a12616e729ae8c5a1a1f2eec062f8c94109",
+        "bytes": 5557
+      },
+      {
+        "name": "chart.tsx",
+        "gitBlobSha": "f4971bf60d74ac43b48d4c86982a6cacb56bde37",
+        "bytes": 10544
+      },
+      {
+        "name": "checkbox.tsx",
+        "gitBlobSha": "9aaa1baace43e42aba6ee7c3b04adb8ff7e99ea2",
+        "bytes": 1204
+      },
+      {
+        "name": "collapsible.tsx",
+        "gitBlobSha": "2f7a4e7fc64a8874373c1584646a63f28cd63c47",
+        "bytes": 795
+      },
+      {
+        "name": "combobox.tsx",
+        "gitBlobSha": "00e208e0398fd1cfe9394ac28f1d5ffeb90b10d3",
+        "bytes": 9169
+      },
+      {
+        "name": "command.tsx",
+        "gitBlobSha": "1605b2f525140db07b1d0f267721e22c185bd43c",
+        "bytes": 4819
+      },
+      {
+        "name": "context-menu.tsx",
+        "gitBlobSha": "188f89f5b45e4a24d45c1924a35e4d44abed9070",
+        "bytes": 8258
+      },
+      {
+        "name": "dialog.tsx",
+        "gitBlobSha": "ccadf4a85bf6398d52314b112600f796fc97db97",
+        "bytes": 4304
+      },
+      {
+        "name": "direction.tsx",
+        "gitBlobSha": "22e165774bd595fbf41d0c45efef1cf996897983",
+        "bytes": 506
+      },
+      {
+        "name": "drawer.tsx",
+        "gitBlobSha": "4e416683964bdef2c52c5dcd597ab0cb8f4c015b",
+        "bytes": 4245
+      },
+      {
+        "name": "dropdown-menu.tsx",
+        "gitBlobSha": "1f9742d6783223126a3b91e91b7a230243ddf23d",
+        "bytes": 8408
+      },
+      {
+        "name": "empty.tsx",
+        "gitBlobSha": "bfd524fb206070222851692210a62144f44c0611",
+        "bytes": 2386
+      },
+      {
+        "name": "field.tsx",
+        "gitBlobSha": "9107ef025c35eb5b19c023688743e27e3825e70d",
+        "bytes": 6170
+      },
+      {
+        "name": "form.tsx",
+        "gitBlobSha": "c1c77ca6098eef2a4dc6ac8be6ec2ad3100c7237",
+        "bytes": 3758
+      },
+      {
+        "name": "hover-card.tsx",
+        "gitBlobSha": "e1ffdb54ce6aeb5473648f219bb3bdd84e13f821",
+        "bytes": 1516
+      },
+      {
+        "name": "input-group.tsx",
+        "gitBlobSha": "a457945603c5e2fd52190135520fb67ccb6af388",
+        "bytes": 5086
+      },
+      {
+        "name": "input-otp.tsx",
+        "gitBlobSha": "9a71a837dfe4805a21dfa9b3747e4d7296d4ec72",
+        "bytes": 2244
+      },
+      {
+        "name": "input.tsx",
+        "gitBlobSha": "ddb9b315e34245addded54b1848bb32c80c418cc",
+        "bytes": 952
+      },
+      {
+        "name": "item.tsx",
+        "gitBlobSha": "22bc2521ad4fa762b0de948f3f9d53bc217f1069",
+        "bytes": 4487
+      },
+      {
+        "name": "kbd.tsx",
+        "gitBlobSha": "8089ad74a1d99d1f7393e7248f9777c4ff4df02b",
+        "bytes": 853
+      },
+      {
+        "name": "label.tsx",
+        "gitBlobSha": "5aff7469c384001a3f1b49cc5cf8871b10f10386",
+        "bytes": 596
+      },
+      {
+        "name": "marker.tsx",
+        "gitBlobSha": "8bad2ea33f03a73a515b11a39e28fedc4e52ad8b",
+        "bytes": 1854
+      },
+      {
+        "name": "menubar.tsx",
+        "gitBlobSha": "9143baeb5a07224bc4224241d51a00d3c539eb5f",
+        "bytes": 8379
+      },
+      {
+        "name": "message-scroller.tsx",
+        "gitBlobSha": "7b394cddd94f0b1108da44f949613481987436c7",
+        "bytes": 4023
+      },
+      {
+        "name": "message.tsx",
+        "gitBlobSha": "765bb9bfd4d9499d74b76a5331fb18d7c0dc4cf9",
+        "bytes": 2222
+      },
+      {
+        "name": "native-select.tsx",
+        "gitBlobSha": "9ddba6b7fcddda52d9c4fc969cd910b929e7aec7",
+        "bytes": 1985
+      },
+      {
+        "name": "navigation-menu.tsx",
+        "gitBlobSha": "ab18d0d2043e6aadd14135ccc854999c0bf6e70e",
+        "bytes": 6648
+      },
+      {
+        "name": "pagination.tsx",
+        "gitBlobSha": "0e5980373355daf65200d8070ed99ffb839fbf8d",
+        "bytes": 2718
+      },
+      {
+        "name": "popover.tsx",
+        "gitBlobSha": "b62cf5d7c9d0688eb4d6a38de5e6a13bb7a9b317",
+        "bytes": 2347
+      },
+      {
+        "name": "progress.tsx",
+        "gitBlobSha": "ac48e2e5e25d507fcc68df5f95717b8a3df71867",
+        "bytes": 725
+      },
+      {
+        "name": "radio-group.tsx",
+        "gitBlobSha": "2dc7ec59fa0af08a9274410db47b03cb78f629eb",
+        "bytes": 1450
+      },
+      {
+        "name": "resizable.tsx",
+        "gitBlobSha": "709e5fd2f97527364ca1ebf1e8fe82b3f9ca8417",
+        "bytes": 1805
+      },
+      {
+        "name": "scroll-area.tsx",
+        "gitBlobSha": "4542a3e26d68a524dc5e504156eb09dd3440a3f5",
+        "bytes": 1629
+      },
+      {
+        "name": "select.tsx",
+        "gitBlobSha": "8058e266346ddf79b0b156a7c5d07e716d5792ee",
+        "bytes": 6343
+      },
+      {
+        "name": "separator.tsx",
+        "gitBlobSha": "6a553b978c11cf82c93817b2d0dde1db0e555835",
+        "bytes": 684
+      },
+      {
+        "name": "sheet.tsx",
+        "gitBlobSha": "9f7ae5fed9763e9ddbe38692fbf5b3f67224b731",
+        "bytes": 4178
+      },
+      {
+        "name": "sidebar.tsx",
+        "gitBlobSha": "31cafe4cb8aa5127e050d883afb395b626565d2c",
+        "bytes": 21713
+      },
+      {
+        "name": "skeleton.tsx",
+        "gitBlobSha": "a1ceb0545be73aa39a336271ecb69ed6aa69a64d",
+        "bytes": 267
+      },
+      {
+        "name": "slider.tsx",
+        "gitBlobSha": "f1a421ef3f90344dac8b53d92e58ba7d2ae0cd13",
+        "bytes": 1981
+      },
+      {
+        "name": "sonner.tsx",
+        "gitBlobSha": "9b20afe2e10fd9b94d1abc1ae732054b2fb9821c",
+        "bytes": 1034
+      },
+      {
+        "name": "spinner.tsx",
+        "gitBlobSha": "3e0fd0a1d046107cb97bb3028561485c08be65c2",
+        "bytes": 321
+      },
+      {
+        "name": "switch.tsx",
+        "gitBlobSha": "c45932afe4e484c900aa916e81d0e0d67137bedc",
+        "bytes": 1398
+      },
+      {
+        "name": "table.tsx",
+        "gitBlobSha": "47ce10b2a4347c9dcdc96b04c8c855d42edbb2a7",
+        "bytes": 2468
+      },
+      {
+        "name": "tabs.tsx",
+        "gitBlobSha": "6e174747a509f8a906ce9cfb27bc2c7603f2b6b5",
+        "bytes": 3772
+      },
+      {
+        "name": "textarea.tsx",
+        "gitBlobSha": "bf23f6c255978311c3069f5da3fa10c1d896e8cf",
+        "bytes": 749
+      },
+      {
+        "name": "toggle-group.tsx",
+        "gitBlobSha": "a227abc4c6d630498bed98bd83d10c7fbe3360fc",
+        "bytes": 2309
+      },
+      {
+        "name": "toggle.tsx",
+        "gitBlobSha": "0291f01cff0429bbf2fb3575a15867556cc88a89",
+        "bytes": 1555
+      },
+      {
+        "name": "tooltip.tsx",
+        "gitBlobSha": "c8c47cb146e6167c68f74f8a2f2f0c7c2d06ec72",
+        "bytes": 1820
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/accordion.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/accordion.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/accordion.tsx",
+      "sha256": "99de242681eb43121969db02bbb102aeeb1865ef52c7635672508a58c5429085",
+      "gitBlobSha": "b83c53e5e3502eb57bbba1cfc4c6fdaeba163339",
+      "bytes": 2038,
+      "exports": [
+        "Accordion",
+        "AccordionItem",
+        "AccordionTrigger",
+        "AccordionContent"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/aspect-ratio.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/aspect-ratio.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/aspect-ratio.tsx",
+      "sha256": "b1c157886236782cb92d8fbcd4749532aaf6d8aabefd6e157ca40358f902f407",
+      "gitBlobSha": "57e38fa96f9c0cb767d7b8de0d6dbc171d1b921a",
+      "bytes": 274,
+      "exports": [
+        "AspectRatio"
+      ],
+      "imports": [
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/avatar.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/avatar.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/avatar.tsx",
+      "sha256": "0c5c48b8a1dff4fdc5ff9b6cb79cc9cd138682b7d86868068f571befe9675e88",
+      "gitBlobSha": "561f04be186f94896ec31e618fee6818c7fcc6c8",
+      "bytes": 2906,
+      "exports": [
+        "Avatar",
+        "AvatarImage",
+        "AvatarFallback",
+        "AvatarBadge",
+        "AvatarGroup",
+        "AvatarGroupCount"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/breadcrumb.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/breadcrumb.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/breadcrumb.tsx",
+      "sha256": "c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33",
+      "gitBlobSha": "12aa08af155d76bf3335b41ba9b92a593b6354d1",
+      "bytes": 2340,
+      "exports": [
+        "Breadcrumb",
+        "BreadcrumbList",
+        "BreadcrumbItem",
+        "BreadcrumbLink",
+        "BreadcrumbPage",
+        "BreadcrumbSeparator",
+        "BreadcrumbEllipsis"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/calendar.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/calendar.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/calendar.tsx",
+      "sha256": "78ed2cc49dafc5bb5df7b1d4a325e5fc314237386747362e5f0761a2c539a934",
+      "gitBlobSha": "215b068893d3fcabf8ec6ed8d14cce99438380b9",
+      "bytes": 7833,
+      "exports": [
+        "Calendar",
+        "CalendarDayButton"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "react-day-picker",
+        "@/registry/new-york-v4/ui/button"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/carousel.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/carousel.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/carousel.tsx",
+      "sha256": "70ba30941a3adb448166ddcf8557c97734b7be09f6fd69512a6e444084365557",
+      "gitBlobSha": "25134a12616e729ae8c5a1a1f2eec062f8c94109",
+      "bytes": 5557,
+      "exports": [
+        "type CarouselApi",
+        "Carousel",
+        "CarouselContent",
+        "CarouselItem",
+        "CarouselPrevious",
+        "CarouselNext"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "embla-carousel-react",
+        "lucide-react",
+        "@/registry/new-york-v4/ui/button"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/collapsible.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/collapsible.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/collapsible.tsx",
+      "sha256": "c6598e5584f4258b5d9fefadbc5ad6a66888ad58729f4b634a0bb2d9c513188b",
+      "gitBlobSha": "2f7a4e7fc64a8874373c1584646a63f28cd63c47",
+      "bytes": 795,
+      "exports": [
+        "Collapsible",
+        "CollapsibleTrigger",
+        "CollapsibleContent"
+      ],
+      "imports": [
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/combobox.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/combobox.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/combobox.tsx",
+      "sha256": "4f88734887ed6928ec7f3a78dfc814a48fb0e0c3056fd5825b72b59a61da0d8a",
+      "gitBlobSha": "00e208e0398fd1cfe9394ac28f1d5ffeb90b10d3",
+      "bytes": 9169,
+      "exports": [
+        "Combobox",
+        "ComboboxInput",
+        "ComboboxContent",
+        "ComboboxList",
+        "ComboboxItem",
+        "ComboboxGroup",
+        "ComboboxLabel",
+        "ComboboxCollection",
+        "ComboboxEmpty",
+        "ComboboxSeparator",
+        "ComboboxChips",
+        "ComboboxChip",
+        "ComboboxChipsInput",
+        "ComboboxTrigger",
+        "ComboboxValue",
+        "useComboboxAnchor"
+      ],
+      "imports": [
+        "react",
+        "@base-ui/react",
+        "cn",
+        "lucide-react",
+        "@/registry/new-york-v4/ui/button",
+        "@/registry/new-york-v4/ui/input-group"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/dropdown-menu.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/dropdown-menu.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/dropdown-menu.tsx",
+      "sha256": "d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb",
+      "gitBlobSha": "1f9742d6783223126a3b91e91b7a230243ddf23d",
+      "bytes": 8408,
+      "exports": [
+        "DropdownMenu",
+        "DropdownMenuPortal",
+        "DropdownMenuTrigger",
+        "DropdownMenuContent",
+        "DropdownMenuGroup",
+        "DropdownMenuLabel",
+        "DropdownMenuItem",
+        "DropdownMenuCheckboxItem",
+        "DropdownMenuRadioGroup",
+        "DropdownMenuRadioItem",
+        "DropdownMenuSeparator",
+        "DropdownMenuShortcut",
+        "DropdownMenuSub",
+        "DropdownMenuSubTrigger",
+        "DropdownMenuSubContent"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/field.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/field.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/field.tsx",
+      "sha256": "4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0",
+      "gitBlobSha": "9107ef025c35eb5b19c023688743e27e3825e70d",
+      "bytes": 6170,
+      "exports": [
+        "Field",
+        "FieldLabel",
+        "FieldDescription",
+        "FieldError",
+        "FieldGroup",
+        "FieldLegend",
+        "FieldSeparator",
+        "FieldSet",
+        "FieldContent",
+        "FieldTitle"
+      ],
+      "imports": [
+        "react",
+        "class-variance-authority",
+        "cn",
+        "@/registry/new-york-v4/ui/label",
+        "@/registry/new-york-v4/ui/separator"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/hover-card.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/hover-card.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/hover-card.tsx",
+      "sha256": "73f59aa759656501ed615604ac3f2c04ba564acaea4529288fe3a487ad934953",
+      "gitBlobSha": "e1ffdb54ce6aeb5473648f219bb3bdd84e13f821",
+      "bytes": 1516,
+      "exports": [
+        "HoverCard",
+        "HoverCardTrigger",
+        "HoverCardContent"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/input-group.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/input-group.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input-group.tsx",
+      "sha256": "e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526",
+      "gitBlobSha": "a457945603c5e2fd52190135520fb67ccb6af388",
+      "bytes": 5086,
+      "exports": [
+        "InputGroup",
+        "InputGroupAddon",
+        "InputGroupButton",
+        "InputGroupText",
+        "InputGroupInput",
+        "InputGroupTextarea"
+      ],
+      "imports": [
+        "react",
+        "class-variance-authority",
+        "cn",
+        "@/registry/new-york-v4/ui/button",
+        "@/registry/new-york-v4/ui/input",
+        "@/registry/new-york-v4/ui/textarea"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/input-otp.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/input-otp.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input-otp.tsx",
+      "sha256": "9f81898aeaabbb104cc22ffda551a333eb22608c543c4800412e2faaa802e311",
+      "gitBlobSha": "9a71a837dfe4805a21dfa9b3747e4d7296d4ec72",
+      "bytes": 2244,
+      "exports": [
+        "InputOTP",
+        "InputOTPGroup",
+        "InputOTPSlot",
+        "InputOTPSeparator"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "input-otp",
+        "lucide-react"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/input.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/input.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input.tsx",
+      "sha256": "0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+      "gitBlobSha": "ddb9b315e34245addded54b1848bb32c80c418cc",
+      "bytes": 952,
+      "exports": [
+        "Input"
+      ],
+      "imports": [
+        "react",
+        "cn"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/navigation-menu.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/navigation-menu.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/navigation-menu.tsx",
+      "sha256": "fbe81d7c358df0d21e49b03174ef53be7d66226a3dce1a97ff3d4a260ed833a3",
+      "gitBlobSha": "ab18d0d2043e6aadd14135ccc854999c0bf6e70e",
+      "bytes": 6648,
+      "exports": [
+        "NavigationMenu",
+        "NavigationMenuList",
+        "NavigationMenuItem",
+        "NavigationMenuContent",
+        "NavigationMenuTrigger",
+        "NavigationMenuLink",
+        "NavigationMenuIndicator",
+        "NavigationMenuViewport",
+        "navigationMenuTriggerStyle"
+      ],
+      "imports": [
+        "react",
+        "class-variance-authority",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/pagination.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/pagination.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/pagination.tsx",
+      "sha256": "224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653",
+      "gitBlobSha": "0e5980373355daf65200d8070ed99ffb839fbf8d",
+      "bytes": 2718,
+      "exports": [
+        "Pagination",
+        "PaginationContent",
+        "PaginationLink",
+        "PaginationItem",
+        "PaginationPrevious",
+        "PaginationNext",
+        "PaginationEllipsis"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "@/registry/new-york-v4/ui/button"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/popover.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/popover.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/popover.tsx",
+      "sha256": "3f99d3add6c9fa4f03721e81297ee10e1310785ee1d9d9d4c82a114d84ab0757",
+      "gitBlobSha": "b62cf5d7c9d0688eb4d6a38de5e6a13bb7a9b317",
+      "bytes": 2347,
+      "exports": [
+        "Popover",
+        "PopoverTrigger",
+        "PopoverContent",
+        "PopoverAnchor",
+        "PopoverHeader",
+        "PopoverTitle",
+        "PopoverDescription"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/progress.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/progress.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/progress.tsx",
+      "sha256": "e012e1f7e6e66d11229d1233eccf91954edcd9179b418ff1d114dc651b86fd35",
+      "gitBlobSha": "ac48e2e5e25d507fcc68df5f95717b8a3df71867",
+      "bytes": 725,
+      "exports": [
+        "Progress"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/radio-group.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/radio-group.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/radio-group.tsx",
+      "sha256": "cfc4f99ee68be2fbbd70de3ffad82e1462d5e8e0bb0aecfd190a4f5115325862",
+      "gitBlobSha": "2dc7ec59fa0af08a9274410db47b03cb78f629eb",
+      "bytes": 1450,
+      "exports": [
+        "RadioGroup",
+        "RadioGroupItem"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/resizable.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/resizable.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/resizable.tsx",
+      "sha256": "aaf3ea20e8060c75dd86e06fedfca053d49f81071123ba647b5699efcbc010ea",
+      "gitBlobSha": "709e5fd2f97527364ca1ebf1e8fe82b3f9ca8417",
+      "bytes": 1805,
+      "exports": [
+        "ResizableHandle",
+        "ResizablePanel",
+        "ResizablePanelGroup"
+      ],
+      "imports": [
+        "cn",
+        "lucide-react",
+        "react-resizable-panels"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/scroll-area.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/scroll-area.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/scroll-area.tsx",
+      "sha256": "8b73bb9be51300079c7f561bafbe43ee10f6f464cf39c8c1b25123cd4edb94dd",
+      "gitBlobSha": "4542a3e26d68a524dc5e504156eb09dd3440a3f5",
+      "bytes": 1629,
+      "exports": [
+        "ScrollArea",
+        "ScrollBar"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/select.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/select.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/select.tsx",
+      "sha256": "962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+      "gitBlobSha": "8058e266346ddf79b0b156a7c5d07e716d5792ee",
+      "bytes": 6343,
+      "exports": [
+        "Select",
+        "SelectContent",
+        "SelectGroup",
+        "SelectItem",
+        "SelectLabel",
+        "SelectScrollDownButton",
+        "SelectScrollUpButton",
+        "SelectSeparator",
+        "SelectTrigger",
+        "SelectValue"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "lucide-react",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/separator.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/separator.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/separator.tsx",
+      "sha256": "ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc",
+      "gitBlobSha": "6a553b978c11cf82c93817b2d0dde1db0e555835",
+      "bytes": 684,
+      "exports": [
+        "Separator"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/slider.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/slider.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/slider.tsx",
+      "sha256": "6a531f6182de6efec2c25d30a7626b66cbf11cf52d505e47f907124934f7188e",
+      "gitBlobSha": "f1a421ef3f90344dac8b53d92e58ba7d2ae0cd13",
+      "bytes": 1981,
+      "exports": [
+        "Slider"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/sonner.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/sonner.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/sonner.tsx",
+      "sha256": "13ccc9b0fe4248e622f83a1d3b2f0566b72b5e04162d7d0c8db8945ecc71b55f",
+      "gitBlobSha": "9b20afe2e10fd9b94d1abc1ae732054b2fb9821c",
+      "bytes": 1034,
+      "exports": [
+        "Toaster"
+      ],
+      "imports": [
+        "lucide-react",
+        "next-themes",
+        "sonner"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/textarea.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/textarea.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/textarea.tsx",
+      "sha256": "5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce",
+      "gitBlobSha": "bf23f6c255978311c3069f5da3fa10c1d896e8cf",
+      "bytes": 749,
+      "exports": [
+        "Textarea"
+      ],
+      "imports": [
+        "react",
+        "cn"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/toggle-group.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/toggle-group.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/toggle-group.tsx",
+      "sha256": "45186473eaa30a966adf16e2b0aa0d16522425fda0658e2c85b8dcb1b62956ef",
+      "gitBlobSha": "a227abc4c6d630498bed98bd83d10c7fbe3360fc",
+      "bytes": 2309,
+      "exports": [
+        "ToggleGroup",
+        "ToggleGroupItem"
+      ],
+      "imports": [
+        "react",
+        "class-variance-authority",
+        "cn",
+        "radix-ui",
+        "@/registry/new-york-v4/ui/toggle"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/toggle.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/toggle.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/toggle.tsx",
+      "sha256": "28ae7d72730890a3ba6c668fd511c63a358ad26534c2c25d5922748d47e1fa99",
+      "gitBlobSha": "0291f01cff0429bbf2fb3575a15867556cc88a89",
+      "bytes": 1555,
+      "exports": [
+        "Toggle",
+        "toggleVariants"
+      ],
+      "imports": [
+        "react",
+        "class-variance-authority",
+        "cn",
+        "radix-ui"
+      ]
+    },
+    {
+      "path": "vendor/shadcn/new-york-v4/ui/tooltip.tsx",
+      "source": "apps/v4/registry/new-york-v4/ui/tooltip.tsx",
+      "url": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/tooltip.tsx",
+      "sha256": "611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433",
+      "gitBlobSha": "c8c47cb146e6167c68f74f8a2f2f0c7c2d06ec72",
+      "bytes": 1820,
+      "exports": [
+        "Tooltip",
+        "TooltipTrigger",
+        "TooltipContent",
+        "TooltipProvider"
+      ],
+      "imports": [
+        "react",
+        "cn",
+        "radix-ui"
+      ]
+    }
+  ],
+  "additionalDependencies": {
+    "@base-ui/react": {
+      "upstreamSpecifier": "1.6.0",
+      "resolvedVersion": "1.6.0"
+    },
+    "embla-carousel-react": {
+      "upstreamSpecifier": "8.5.2",
+      "resolvedVersion": "8.5.2"
+    },
+    "input-otp": {
+      "upstreamSpecifier": "^1.4.2",
+      "resolvedVersion": "1.4.2"
+    },
+    "next-themes": {
+      "upstreamSpecifier": "0.4.6",
+      "resolvedVersion": "0.4.6"
+    },
+    "react-day-picker": {
+      "upstreamSpecifier": "^9.7.0",
+      "resolvedVersion": "9.8.1"
+    },
+    "react-resizable-panels": {
+      "upstreamSpecifier": "^4",
+      "resolvedVersion": "4.5.8"
+    },
+    "sonner": {
+      "upstreamSpecifier": "^2.0.0",
+      "resolvedVersion": "2.0.7"
+    }
+  },
+  "dependencySources": {
+    "package": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/package.json",
+    "lockfile": "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/pnpm-lock.yaml",
+    "lockfileImporter": "apps/v4"
+  },
+  "importAliases": {
+    "cn": "examples/shadcn/lib/utils.ts",
+    "@/registry/new-york-v4/ui/*": "vendor/shadcn/new-york-v4/ui/*"
+  },
+  "notes": [
+    "This supplemental manifest preserves docs/shadcn-sources.json and all original vendor source bytes unchanged.",
+    "Every added file is unmodified UTF-8 source from the pinned commit, retrieved with the GitHub connector and verified against the Git blob SHA from the pinned directory listing.",
+    "The directory inventory includes every file in the selected new-york-v4/ui registry, not the whole repository or community registries. Absence claims apply to this pinned registry.",
+    "Dependency versions are the exact resolutions for apps/v4 in the same commit pnpm-lock.yaml. Existing repository dependencies are not re-pinned by this manifest.",
+    "Application examples and compositions are separately authored. A direct counterpart describes the same component family and is not a claim of identical APIs, behaviors, accessibility or pixel parity.",
+    "The native Combobox wraps @base-ui/react; most other stateful primitives wrap radix-ui. FieldSet is exported by field.tsx; Sonner exports Toaster and toast actions come from the sonner package.",
+    "Resizable uses the react-resizable-panels v4 Group, Panel and Separator API; v2/v3 examples are not interchangeable.",
+    "All vendor and application source imports are resolved through build aliases without changing upstream source."
+  ],
+  "coverageManifest": "examples/all-components/shared/shadcn-coverage.json",
+  "coverageSummary": {
+    "direct": [
+      "aspect-ratio",
+      "avatar",
+      "breadcrumbs",
+      "calendar",
+      "carousel",
+      "checkbox",
+      "collapse",
+      "collapsible",
+      "combobox",
+      "dialog",
+      "field",
+      "fieldset",
+      "hover-card",
+      "label",
+      "menu",
+      "navigation-menu",
+      "otp-input",
+      "pagination",
+      "popover",
+      "progress",
+      "radio",
+      "scroll-area",
+      "select",
+      "separator",
+      "slider",
+      "splitter",
+      "switch",
+      "tabs",
+      "toast",
+      "toggle",
+      "toggle-group",
+      "tooltip"
+    ],
+    "composed": [
+      "clipboard"
+    ],
+    "none": [
+      "color-picker",
+      "dynamic",
+      "edit",
+      "file-upload",
+      "floating-panel",
+      "number-input",
+      "presence",
+      "qr-code",
+      "signature",
+      "steps",
+      "timer",
+      "tour",
+      "tree"
+    ]
+  },
+  "coverageDefinitions": {
+    "direct": "A genuine upstream component family is rendered. Different names, APIs, behaviors and supporting demo logic are disclosed; this does not claim complete equivalence.",
+    "composed": "The demo adds application-authored behavior around genuine upstream components. It is not an original upstream primitive or an equivalent implementation.",
+    "none": "The selected pinned upstream UI directory contains no equivalent public component family. Show the limitation instead of substituting styled HTML or a different primitive."
+  }
+}
