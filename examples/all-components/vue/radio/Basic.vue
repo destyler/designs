@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Radio } from '@destyler-ui/vue'
 
+const value = ref('')
 const items = ref([
   { label: 'React', value: 'react' },
   { label: 'Solid', value: 'solid' },
@@ -11,13 +12,12 @@ const items = ref([
 </script>
 
 <template>
-  <Radio.Root>
+  <Radio.Root v-model="value">
     <Radio.Label>Framework</Radio.Label>
-    <Radio.Indicator />
     <Radio.Item v-for="item in items" :key="item.value" :value="item.value" :disabled="item.disabled">
-      <Radio.ItemText>{{ item.label }}</Radio.ItemText>
       <Radio.ItemControl />
+      <Radio.ItemText>{{ item.label }}</Radio.ItemText>
       <Radio.ItemHiddenInput />
     </Radio.Item>
-  </Radio.Root>
+  <p role="status" class="parity-status">{{ value || 'No selection' }}</p></Radio.Root>
 </template>

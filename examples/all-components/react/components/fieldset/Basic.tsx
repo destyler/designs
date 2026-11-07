@@ -1,11 +1,7 @@
-import { Field } from '@destyler-ui/react'
-import { Fieldset } from '@destyler-ui/react'
-
-export interface BasicProps extends Fieldset.RootProps {}
-
-export function Basic(props: BasicProps = {}) {
+import { Fieldset, Field } from "@destyler-ui/react";
+export function Basic() {
   return (
-    <Fieldset.Root invalid {...props}>
+    <Fieldset.Root invalid>
       <Fieldset.Legend>Legend</Fieldset.Legend>
       <Fieldset.HelperText>Fieldset Helper Text</Fieldset.HelperText>
       <Fieldset.ErrorText>Fieldset Error Text</Fieldset.ErrorText>
@@ -13,8 +9,7 @@ export function Basic(props: BasicProps = {}) {
         <Field.Label>Label</Field.Label>
         <Field.Input />
         <Field.HelperText>Field Helper Text</Field.HelperText>
-        <Field.ErrorText>Field Error Text</Field.ErrorText>
       </Field.Root>
     </Fieldset.Root>
-  )
+  );
 }

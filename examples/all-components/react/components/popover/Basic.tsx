@@ -1,10 +1,8 @@
-import { Popover } from '@destyler-ui/react'
-
+import { Popover } from "@destyler-ui/react";
 export interface BasicProps {
-  lazyMount?: boolean
-  unmountOnExit?: boolean
+  lazyMount?: boolean;
+  unmountOnExit?: boolean;
 }
-
 export function Basic({ lazyMount, unmountOnExit }: BasicProps = {}) {
   return (
     <Popover.Root lazyMount={lazyMount} unmountOnExit={unmountOnExit}>
@@ -12,11 +10,8 @@ export function Basic({ lazyMount, unmountOnExit }: BasicProps = {}) {
         click me
         <Popover.Indicator />
       </Popover.Trigger>
-      <Popover.Anchor>Anchor</Popover.Anchor>
+
       <Popover.Positioner data-testid="positioner">
-        <Popover.Arrow>
-          <Popover.ArrowTip />
-        </Popover.Arrow>
         <Popover.Content>
           <Popover.Title>title</Popover.Title>
           <Popover.Description>description</Popover.Description>
@@ -24,5 +19,5 @@ export function Basic({ lazyMount, unmountOnExit }: BasicProps = {}) {
         </Popover.Content>
       </Popover.Positioner>
     </Popover.Root>
-  )
+  );
 }

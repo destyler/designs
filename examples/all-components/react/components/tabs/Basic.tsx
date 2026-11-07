@@ -1,41 +1,19 @@
-import { Tabs } from '@destyler-ui/react'
-
-interface BasicProps {
-  defaultValue?: string | null
-  onValueChange?: (details: { value: string | null }) => void
-  loopFocus?: boolean
-  orientation?: 'horizontal' | 'vertical'
-  lazyMount?: boolean
-  unmountOnExit?: boolean
-}
-
-const items = [
-  { value: 'React' },
-  { value: 'Solid' },
-  { value: 'Svelte', disabled: true },
-  { value: 'Vue' },
-]
-
-export function Basic(props: BasicProps = {}) {
+import { Tabs } from "@destyler-ui/react";
+export function Basic() {
   return (
-    <Tabs.Root {...props}>
+    <Tabs.Root defaultValue="React">
       <Tabs.List>
-        {items.map(item => (
-          <Tabs.Trigger key={item.value} value={item.value} disabled={item.disabled}>
-            {item.value}
-            {' '}
-            Trigger
-          </Tabs.Trigger>
-        ))}
-        <Tabs.Indicator />
+        <Tabs.Trigger value="React">React Trigger</Tabs.Trigger>
+        <Tabs.Trigger value="Solid">Solid Trigger</Tabs.Trigger>
+        <Tabs.Trigger value="Svelte" disabled>
+          Svelte Trigger
+        </Tabs.Trigger>
+        <Tabs.Trigger value="Vue">Vue Trigger</Tabs.Trigger>
       </Tabs.List>
-      {items.map(item => (
-        <Tabs.Content key={item.value} value={item.value}>
-          {item.value}
-          {' '}
-          Content
-        </Tabs.Content>
-      ))}
+      <Tabs.Content value="React">React Content</Tabs.Content>
+      <Tabs.Content value="Solid">Solid Content</Tabs.Content>
+      <Tabs.Content value="Svelte">Svelte Content</Tabs.Content>
+      <Tabs.Content value="Vue">Vue Content</Tabs.Content>
     </Tabs.Root>
-  )
+  );
 }

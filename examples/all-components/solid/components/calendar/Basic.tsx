@@ -1,143 +1,127 @@
-import { Calendar } from '@destyler-ui/solid/calendar'
-import { Index } from 'solid-js'
-import { Portal } from 'solid-js/web'
-
+import { Calendar } from "@destyler-ui/solid";
+import { createSignal, Index } from "solid-js";
+import { parseDate, type DateValue } from "@destyler-ui/solid";
 export function Basic() {
+  const [focused, setFocused] = createSignal<DateValue>(
+    parseDate("2026-11-01"),
+  );
+  const [selected, setSelected] = createSignal<DateValue[]>([]);
   return (
-    <Calendar.Root ids={{ table: key => `calendar-table-${key.replace(/\s+/g, '-')}` }}>
-      <Calendar.Label>Label</Calendar.Label>
-
-      <Calendar.Control>
-        <Calendar.Input />
-        <Calendar.Trigger>📅</Calendar.Trigger>
-        <Calendar.ClearTrigger>Clear</Calendar.ClearTrigger>
-      </Calendar.Control>
-
-      <Portal>
-        <Calendar.Positioner>
-          <Calendar.Content>
-            <Calendar.YearSelect />
-            <Calendar.MonthSelect />
-            <Calendar.View view="day">
-              <Calendar.Context>
-                {context => (
-                  <>
-                    <Calendar.ViewControl>
-                      <Calendar.PrevTrigger>Prev</Calendar.PrevTrigger>
-                      <Calendar.ViewTrigger>
-                        <Calendar.RangeText />
-                      </Calendar.ViewTrigger>
-                      <Calendar.NextTrigger>Next</Calendar.NextTrigger>
-                    </Calendar.ViewControl>
-
-                    <Calendar.Table>
-                      <Calendar.TableHead>
-                        <Calendar.TableRow>
-                          <Index each={context().weekDays}>
-                            {weekDay => (
-                              <Calendar.TableHeader>{weekDay().short}</Calendar.TableHeader>
-                            )}
-                          </Index>
-                        </Calendar.TableRow>
-                      </Calendar.TableHead>
-
-                      <Calendar.TableBody>
-                        <Index each={context().weeks}>
-                          {week => (
-                            <Calendar.TableRow>
-                              <Index each={week()}>
-                                {day => (
-                                  <Calendar.TableCell value={day()}>
-                                    <Calendar.TableCellTrigger>
-                                      {day().day}
-                                    </Calendar.TableCellTrigger>
-                                  </Calendar.TableCell>
-                                )}
-                              </Index>
-                            </Calendar.TableRow>
+    <div class="parity-stack">
+      <Calendar.Root
+        open
+        closeOnSelect={false}
+        fixedWeeks={false}
+        focusedValue={focused()}
+        onFocusChange={(details) => setFocused(details.focusedValue)}
+        value={selected()}
+        onValueChange={(details) => setSelected(details.value)}
+        min={parseDate("2020-01-01")}
+        max={parseDate("2030-12-31")}
+        ids={{ table: (key) => `calendar-table-${key.replace(/\s+/g, "-")}` }}
+      >
+        <Calendar.Content
+          class="parity-calendar parity-calendar-content"
+          role="group"
+          aria-label="Calendar"
+        >
+          <Calendar.Context>
+            {(api) => (
+              <>
+                <Calendar.ViewControl>
+                  <Calendar.PrevTrigger aria-label="Go to previous month">
+                    ‹
+                  </Calendar.PrevTrigger>
+                  <select
+                    ref={(node) =>
+                      queueMicrotask(() => {
+                        node.value = String(api().visibleRange.start.month);
+                      })
+                    }
+                    aria-label="Choose the Month"
+                    value={String(api().visibleRange.start.month)}
+                    onChange={(event) =>
+                      setFocused(
+                        api().visibleRange.start.set({
+                          month: Number(event.currentTarget.value),
+                        }),
+                      )
+                    }
+                  >
+                    {Array.from({ length: 12 }, (_, index) => (
+                      <option value={index + 1}>
+                        {new Intl.DateTimeFormat("en-US", {
+                          month: "short",
+                        }).format(new Date(2026, index, 1))}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    ref={(node) =>
+                      queueMicrotask(() => {
+                        node.value = String(api().visibleRange.start.year);
+                      })
+                    }
+                    aria-label="Choose the Year"
+                    value={String(api().visibleRange.start.year)}
+                    onChange={(event) =>
+                      setFocused(
+                        api().visibleRange.start.set({
+                          year: Number(event.currentTarget.value),
+                        }),
+                      )
+                    }
+                  >
+                    {Array.from({ length: 11 }, (_, index) => (
+                      <option value={2020 + index}>{2020 + index}</option>
+                    ))}
+                  </select>
+                  <Calendar.NextTrigger aria-label="Go to next month">
+                    ›
+                  </Calendar.NextTrigger>
+                </Calendar.ViewControl>
+                <Calendar.View view="day">
+                  <Calendar.Table>
+                    <Calendar.TableHead>
+                      <Calendar.TableRow>
+                        <Index each={api().weekDays}>
+                          {(day) => (
+                            <Calendar.TableHeader>
+                              {day().short}
+                            </Calendar.TableHeader>
                           )}
                         </Index>
-                      </Calendar.TableBody>
-                    </Calendar.Table>
-                  </>
-                )}
-              </Calendar.Context>
-            </Calendar.View>
-
-            <Calendar.View view="month">
-              <Calendar.Context>
-                {context => (
-                  <>
-                    <Calendar.ViewControl>
-                      <Calendar.PrevTrigger>Prev</Calendar.PrevTrigger>
-                      <Calendar.ViewTrigger>
-                        <Calendar.RangeText />
-                      </Calendar.ViewTrigger>
-                      <Calendar.NextTrigger>Next</Calendar.NextTrigger>
-                    </Calendar.ViewControl>
-
-                    <Calendar.Table>
-                      <Calendar.TableBody>
-                        <Index each={context().getMonthsGrid({ columns: 4, format: 'short' })}>
-                          {months => (
-                            <Calendar.TableRow>
-                              <Index each={months()}>
-                                {month => (
-                                  <Calendar.TableCell value={month().value}>
-                                    <Calendar.TableCellTrigger>
-                                      {month().label}
-                                    </Calendar.TableCellTrigger>
-                                  </Calendar.TableCell>
-                                )}
-                              </Index>
-                            </Calendar.TableRow>
-                          )}
-                        </Index>
-                      </Calendar.TableBody>
-                    </Calendar.Table>
-                  </>
-                )}
-              </Calendar.Context>
-            </Calendar.View>
-
-            <Calendar.View view="year">
-              <Calendar.Context>
-                {context => (
-                  <>
-                    <Calendar.ViewControl>
-                      <Calendar.PrevTrigger>Prev</Calendar.PrevTrigger>
-                      <Calendar.ViewTrigger>
-                        <Calendar.RangeText />
-                      </Calendar.ViewTrigger>
-                      <Calendar.NextTrigger>Next</Calendar.NextTrigger>
-                    </Calendar.ViewControl>
-
-                    <Calendar.Table>
-                      <Calendar.TableBody>
-                        <Index each={context().getYearsGrid({ columns: 4 })}>
-                          {years => (
-                            <Calendar.TableRow>
-                              <Index each={years()}>
-                                {year => (
-                                  <Calendar.TableCell value={year().value}>
-                                    <Calendar.TableCellTrigger>
-                                      {year().label}
-                                    </Calendar.TableCellTrigger>
-                                  </Calendar.TableCell>
-                                )}
-                              </Index>
-                            </Calendar.TableRow>
-                          )}
-                        </Index>
-                      </Calendar.TableBody>
-                    </Calendar.Table>
-                  </>
-                )}
-              </Calendar.Context>
-            </Calendar.View>
-          </Calendar.Content>
-        </Calendar.Positioner>
-      </Portal>
-    </Calendar.Root>
-  )
+                      </Calendar.TableRow>
+                    </Calendar.TableHead>
+                    <Calendar.TableBody>
+                      <Index each={api().weeks}>
+                        {(week) => (
+                          <Calendar.TableRow>
+                            <Index each={week()}>
+                              {(day) => (
+                                <Calendar.TableCell value={day()}>
+                                  <Calendar.TableCellTrigger>
+                                    {day().day}
+                                  </Calendar.TableCellTrigger>
+                                </Calendar.TableCell>
+                              )}
+                            </Index>
+                          </Calendar.TableRow>
+                        )}
+                      </Index>
+                    </Calendar.TableBody>
+                  </Calendar.Table>
+                </Calendar.View>
+              </>
+            )}
+          </Calendar.Context>
+        </Calendar.Content>
+      </Calendar.Root>
+      <p role="status" class="parity-status">
+        {selected()[0]
+          ? `Selected: ${selected()[0].year}-${selected()[0].month}-${selected()[0].day}`
+          : "Select a date"}
+      </p>
+    </div>
+  );
 }

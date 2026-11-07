@@ -19,6 +19,5 @@
     <Field.Label>Label</Field.Label>
     <Field.Input />
     <Field.HelperText>Field Helper Text</Field.HelperText>
-    <Field.ErrorText>Field Error Text</Field.ErrorText>
   </Field.Root>
 </Fieldset.Root>

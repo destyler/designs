@@ -1,61 +1,69 @@
-import type { OpenChangeDetails, ValueChangeDetails } from '@destyler/select'
-import { createListCollection } from '@destyler-ui/react'
-import { Select } from '@destyler-ui/react'
-
-const collection = createListCollection({
-  items: [
-    { label: 'React', value: 'react' },
-    { label: 'Solid', value: 'solid' },
-    { label: 'Vue', value: 'vue' },
-    { label: 'Svelte', value: 'svelte', disabled: true },
-  ],
-})
-
-interface BasicProps {
-  disabled?: boolean
-  multiple?: boolean
-  onValueChange?: (details: ValueChangeDetails) => void
-  onOpenChange?: (details: OpenChangeDetails) => void
-  readOnly?: boolean
-  lazyMount?: boolean
-  unmountOnExit?: boolean
-}
-
-export function Basic(props: BasicProps = {}) {
+import { Select } from "@destyler-ui/react";
+import { useState } from "react";
+import { createListCollection } from "@destyler-ui/react";
+export function Basic() {
+  const [value, setValue] = useState<string[]>([]);
+  const collection = createListCollection({
+    items: ["React", "Solid", "Vue", "Svelte"].map((label) => ({
+      label,
+      value: label.toLowerCase(),
+      disabled: label === "Svelte",
+    })),
+  });
   return (
     <Select.Root
       collection={collection}
-      disabled={props.disabled}
-      multiple={props.multiple}
-      onValueChange={props.onValueChange}
-      onOpenChange={props.onOpenChange}
-      readOnly={props.readOnly}
-      lazyMount={props.lazyMount}
-      unmountOnExit={props.unmountOnExit}
+      value={value}
+      onValueChange={(details) => setValue(details.value)}
     >
       <Select.Label>Framework</Select.Label>
       <Select.Control>
         <Select.Trigger>
           <Select.ValueText placeholder="Select a Framework" />
-          <Select.Indicator>⌄</Select.Indicator>
+          <Select.Indicator>
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </Select.Indicator>
         </Select.Trigger>
-        <Select.ClearTrigger>Clear</Select.ClearTrigger>
       </Select.Control>
-      <Select.Positioner data-testid="positioner">
+      <Select.Positioner>
         <Select.Content>
           <Select.ItemGroup>
             <Select.ItemGroupLabel>Frameworks</Select.ItemGroupLabel>
-            {collection.items.map(item => (
+            {collection.items.map((item) => (
               <Select.Item key={item.value} item={item}>
                 <Select.ItemText>{item.label}</Select.ItemText>
-                <Select.ItemIndicator>✓</Select.ItemIndicator>
+                <Select.ItemIndicator>
+                  <svg
+                    aria-hidden="true"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="m20 6-11 11-5-5" />
+                  </svg>
+                </Select.ItemIndicator>
               </Select.Item>
             ))}
           </Select.ItemGroup>
-          <Select.List />
         </Select.Content>
       </Select.Positioner>
       <Select.HiddenSelect />
+      <p role="status" className="parity-status">
+        {value[0] || "No selection"}
+      </p>
     </Select.Root>
-  )
+  );
 }

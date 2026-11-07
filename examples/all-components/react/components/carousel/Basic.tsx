@@ -1,36 +1,33 @@
-import { createSampleImage } from '../../sample-image'
-import { Carousel } from '@destyler-ui/react'
-
-const images = Array.from({ length: 5 }, (_, index) => createSampleImage(index))
-
+import { Carousel } from "@destyler-ui/react";
 export function Basic() {
+  const images = ["4f46e5", "0f766e", "be123c", "b45309", "7e22ce"].map(
+    (color) =>
+      `data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 300%22%3E%3Crect width=%22500%22 height=%22300%22 fill=%22%23${color}%22/%3E%3Ccircle cx=%22250%22 cy=%22150%22 r=%2280%22 fill=%22%23a5b4fc%22/%3E%3C/svg%3E`,
+  );
   return (
     <Carousel.Root>
-      <Carousel.Control>
-        <Carousel.PrevTrigger>Previous</Carousel.PrevTrigger>
-        <Carousel.NextTrigger>Next</Carousel.NextTrigger>
-        <Carousel.AutoplayTrigger>
-          <Carousel.Context>
-            {context => (context.isPlaying ? 'Pause' : 'Play')}
-          </Carousel.Context>
-        </Carousel.AutoplayTrigger>
-      </Carousel.Control>
-      <Carousel.IndicatorGroup>
-        {images.map((_, idx) => (
-          <Carousel.Indicator key={idx} index={idx} />
-        ))}
-      </Carousel.IndicatorGroup>
       <Carousel.ItemGroup>
-        {images.map((image, idx) => (
-          <Carousel.Item key={idx} index={idx}>
+        {images.map((image, index) => (
+          <Carousel.Item key={index} index={index}>
             <img
               src={image}
-              alt={`Landscape ${idx + 1}`}
-              style={{ height: '300px', width: '100%', objectFit: 'cover' }}
+              alt={`Slide ${index + 1}`}
+              style={{
+                width: "100%",
+                aspectRatio: "16 / 9",
+                objectFit: "cover",
+                borderRadius: "6px",
+              }}
             />
           </Carousel.Item>
         ))}
       </Carousel.ItemGroup>
+      <Carousel.Control>
+        <Carousel.PrevTrigger aria-label="Previous slide">
+          ←
+        </Carousel.PrevTrigger>
+        <Carousel.NextTrigger aria-label="Next slide">→</Carousel.NextTrigger>
+      </Carousel.Control>
     </Carousel.Root>
-  )
+  );
 }

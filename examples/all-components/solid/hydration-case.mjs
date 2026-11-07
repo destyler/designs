@@ -50,6 +50,34 @@ try {
     assert.equal(result.retainedServerNodes, result.serverNodes, 'Hydration replaced meaningful server elements')
     const click = async node => { assert.ok(node, 'Missing interaction target'); node.click(); await settle() }
     const query = selector => document.querySelector(selector)
+    if (family === 'progress') {
+      const advance=[...document.querySelectorAll('button')].find(node=>node.textContent==='Advance')
+      for (const value of [75,85,95,100,0]) {
+        advance.click(); await settle()
+        assert.equal(document.querySelector('[role="status"]').textContent,`${value}%`)
+        assert.equal(document.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'),String(value))
+      }
+      result.interactions.push('Progress advances 65→100 and resets to 0 with matching output and ARIA')
+    }
+    if (family === 'pagination') {
+      for (const value of [2,10,9,1]) {
+        const trigger=[...document.querySelectorAll('[data-scope="pagination"][data-part="item"]')].find(node=>node.textContent===String(value))
+        assert.ok(trigger); trigger.click(); await settle()
+        assert.match(document.querySelector('[role="status"]').textContent,new RegExp(`Page ${value} of 10`))
+      }
+      result.interactions.push('Pagination 1→2→10→9→1 updates output')
+    }
+    if (family === 'clipboard') {
+      let copied=''
+      Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{copied=value}}})
+      document.querySelector('button').click(); await settle()
+      assert.equal(copied,'https://destyler.org')
+      assert.equal(document.querySelector('[role="status"]').textContent,'Copied')
+      Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('permission denied')}}})
+      document.querySelector('button').click(); await settle()
+      assert.match(document.querySelector('[role="status"]').textContent,/Copy unavailable/)
+      result.interactions.push('Clipboard reports resolved success and rejected failure honestly (mock API)')
+    }
     if (family === 'splitter') {
       const handle = query('[data-scope="splitter"][data-part="resize-trigger"]')
       assert.equal(handle.getAttribute('aria-label'), 'Resize A and B panels')
@@ -59,13 +87,13 @@ try {
     }
     if (family === 'toggle') {
       const toggle = query('[data-scope="toggle"][data-part="root"]')
-      assert.equal(toggle.getAttribute('aria-label'), 'Bold', 'Icon-only toggle needs an accessible name')
+      assert.equal(toggle.getAttribute('aria-label'), 'Toggle', 'Toggle needs an accessible name')
       const initial = toggle.getAttribute('aria-pressed')
       await click(toggle)
       assert.notEqual(toggle.getAttribute('aria-pressed'), initial)
       await click(toggle)
       assert.equal(toggle.getAttribute('aria-pressed'), initial)
-      result.interactions.push('named Bold toggle on and off')
+      result.interactions.push('named Toggle on and off')
     }
     if (family === 'scroll-area') {
       const thumbs = [...document.querySelectorAll('[data-scope="scroll-area"][data-part="thumb"]')]
@@ -75,16 +103,20 @@ try {
       result.interactions.push('vertical/horizontal thumb orientations and unique IDs')
     }
     if (family === 'calendar') {
-      await click(query('[data-scope="calendar"][data-part="trigger"]'))
       const tables = [...document.querySelectorAll('[data-scope="calendar"][data-part="table"]')]
-      assert.equal(tables.length, 3)
-      assert.deepEqual(tables.map(node => node.dataset.view), ['day', 'month', 'year'])
-      assert.equal(new Set(tables.map(node => node.id)).size, 3, 'Calendar view tables need distinct IDs')
-      const ids = [...document.querySelectorAll('[id]')].map(node => node.id)
-      assert.equal(new Set(ids).size, ids.length, 'Open calendar contains duplicate IDs')
-      assert.ok(ids.every(id => !/\s/.test(id)), 'Open calendar IDs must not contain whitespace')
-      await click(query('[data-scope="calendar"][data-part="trigger"]'))
-      result.interactions.push('open calendar with unique day/month/year table IDs')
+      assert.equal(tables.length,1)
+      assert.equal(tables[0].dataset.view,'day')
+      const month=query('select[aria-label="Choose the Month"]')
+      const year=query('select[aria-label="Choose the Year"]')
+      assert.equal(month.value,'11'); assert.equal(year.value,'2026')
+      await click(query('[data-scope="calendar"][data-part="next-trigger"]')); assert.equal(month.value,'12')
+      await click(query('[data-scope="calendar"][data-part="prev-trigger"]')); assert.equal(month.value,'11')
+      year.value='2027'; year.dispatchEvent(new window.Event('change',{bubbles:true})); await settle()
+      assert.ok(query('[data-scope="calendar"][data-part="table-cell-trigger"][data-value="2027-11-15"]'))
+      month.value='10'; month.dispatchEvent(new window.Event('change',{bubbles:true})); await settle()
+      await click(query('[data-scope="calendar"][data-part="table-cell-trigger"][data-value="2027-10-15"]'))
+      assert.match(query('[role="status"]').textContent,/Selected: 2027-10-15/)
+      result.interactions.push('inline month navigation, year/month state updates and date selection')
     }
     if (family === 'checkbox' || family === 'switch') {
       const input = query(`input[type="checkbox"]`)
@@ -119,10 +151,9 @@ try {
         assert.ok(items.length > 1)
         await click(items[i])
         assert.ok(query('[data-scope="select"][data-part="value-text"]').textContent.includes(['React', 'Solid'][i]))
-        await click(query('[data-scope="select"][data-part="clear-trigger"]'))
-        assert.ok(query('[data-scope="select"][data-part="value-text"]').textContent.includes('Select a Framework'))
+        assert.ok(query('[role="status"]').textContent.includes(['react','solid'][i]))
       }
-      result.interactions.push('select and clear two choices')
+      result.interactions.push('select two choices with current status')
     }
     if (family === 'steps') {
       const current = () => query('[data-scope="steps"][data-part="trigger"][aria-selected="true"]')?.id

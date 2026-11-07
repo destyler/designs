@@ -17,10 +17,6 @@ const sliderValue = ref([-20, 20])
         <Slider.HiddenInput />
       </Slider.Thumb>
     </Slider.Control>
-    <Slider.MarkerGroup>
-      <Slider.Marker :value="-30">*</Slider.Marker>
-      <Slider.Marker :value="0">*</Slider.Marker>
-      <Slider.Marker :value="30">*</Slider.Marker>
-    </Slider.MarkerGroup>
+
   </Slider.Root>
 </template>

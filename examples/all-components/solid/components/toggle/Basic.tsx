@@ -1,10 +1,4 @@
-import { Toggle } from '@destyler-ui/solid/toggle'
-import { BoldIcon } from '../../icons'
-
+import { Toggle } from "@destyler-ui/solid";
 export function Basic() {
-  return (
-    <Toggle.Root aria-label="Bold">
-      <BoldIcon />
-    </Toggle.Root>
-  )
+  return <Toggle.Root aria-label="Toggle">Toggle</Toggle.Root>;
 }

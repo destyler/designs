@@ -1,21 +1,21 @@
-import { Popover } from '@destyler-ui/solid/popover'
-import { ChevronRightIcon } from '../../icons'
-
+import { Popover } from "@destyler-ui/solid/popover";
+import { ChevronRightIcon } from "../../icons";
 export function Basic() {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        Click Me
+        click me
         <Popover.Indicator>
           <ChevronRightIcon />
         </Popover.Indicator>
       </Popover.Trigger>
       <Popover.Positioner>
         <Popover.Content>
-          <Popover.Title>Title</Popover.Title>
-          <Popover.Description>Description</Popover.Description>
+          <Popover.Title>title</Popover.Title>
+          <Popover.Description>description</Popover.Description>
+          <Popover.CloseTrigger>close</Popover.CloseTrigger>
         </Popover.Content>
       </Popover.Positioner>
     </Popover.Root>
-  )
+  );
 }

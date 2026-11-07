@@ -8,9 +8,7 @@ import { HoverCard } from '@destyler-ui/vue'
     <Teleport to="body">
       <HoverCard.Positioner data-testid="positioner">
         <HoverCard.Content>
-          <HoverCard.Arrow>
-            <HoverCard.ArrowTip />
-          </HoverCard.Arrow>
+
           Content
         </HoverCard.Content>
       </HoverCard.Positioner>

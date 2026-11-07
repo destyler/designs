@@ -1,12 +1,4 @@
-import { Toggle } from '@destyler-ui/react'
-
+import { Toggle } from "@destyler-ui/react";
 export function Basic() {
-  return (
-    <Toggle.Root>
-      <Toggle.Indicator>
-        ✓
-      </Toggle.Indicator>
-      Toggle
-    </Toggle.Root>
-  )
+  return <Toggle.Root aria-label="Toggle">Toggle</Toggle.Root>;
 }

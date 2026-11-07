@@ -1,20 +1,26 @@
-import { Separator } from '@destyler-ui/solid/separator'
-
+import { Separator } from "@destyler-ui/solid";
 export function Basic() {
   return (
-    <main style={{ width: '300px', padding: '1rem' }}>
+    <div class="parity-stack" style={{ width: "256px" }}>
       <div>
-        <p>Destyler UI</p>
-        <p>Unstyled components for Solid.</p>
+        <h3>shadcn/ui</h3>
+        <p class="parity-status">Original New York components.</p>
       </div>
       <Separator.Root />
-      <nav style={{ 'display': 'flex', 'align-items': 'center', 'gap': '0.5rem', 'margin-top': '1rem' }}>
+      <div
+        style={{
+          display: "flex",
+          height: "20px",
+          gap: "16px",
+          "align-items": "center",
+        }}
+      >
         <span>Blog</span>
-        <Separator.Root orientation="vertical" style={{ height: '1rem' }} />
+        <Separator.Root orientation="vertical" />
         <span>Docs</span>
-        <Separator.Root orientation="vertical" style={{ height: '1rem' }} />
+        <Separator.Root orientation="vertical" />
         <span>Source</span>
-      </nav>
-    </main>
-  )
+      </div>
+    </div>
+  );
 }

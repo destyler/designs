@@ -1,34 +1,28 @@
-import { useState } from 'react'
-import { Slider } from '@destyler-ui/react'
-
+import { Slider } from "@destyler-ui/react";
+import { useState } from "react";
 export function Basic() {
-  const [sliderValue, setSliderValue] = useState([-20, 20])
-
+  const [value, setValue] = useState([-20, 20]);
   return (
     <Slider.Root
       min={-50}
       max={50}
-      value={sliderValue}
-      onValueChange={({ value }) => setSliderValue(value)}
+      value={value}
+      onValueChange={(details) => setValue(details.value)}
     >
-      <Slider.Label>Slider Label</Slider.Label>
-      <Slider.ValueText />
+      <Slider.Label>
+        Quantity: <span role="status">{value.join(", ")}</span>
+      </Slider.Label>
       <Slider.Control>
         <Slider.Track>
           <Slider.Range />
         </Slider.Track>
-        {sliderValue.map((_, index) => (
-          <Slider.Thumb key={index} index={index}>
-            <Slider.DraggingIndicator />
-            <Slider.HiddenInput />
-          </Slider.Thumb>
-        ))}
+        <Slider.Thumb index={0}>
+          <Slider.HiddenInput />
+        </Slider.Thumb>
+        <Slider.Thumb index={1}>
+          <Slider.HiddenInput />
+        </Slider.Thumb>
       </Slider.Control>
-      <Slider.MarkerGroup>
-        <Slider.Marker value={-30}>*</Slider.Marker>
-        <Slider.Marker value={0}>*</Slider.Marker>
-        <Slider.Marker value={30}>*</Slider.Marker>
-      </Slider.MarkerGroup>
     </Slider.Root>
-  )
+  );
 }

@@ -1,18 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Progress } from '@destyler-ui/vue'
+const value = ref(65)
 </script>
-
 <template>
-  <Progress.Root :value="65">
-    <Progress.Label>Label</Progress.Label>
-    <Progress.ValueText />
-    <Progress.View state="loading" />
-    <Progress.Track>
-      <Progress.Range />
-    </Progress.Track>
-    <Progress.Circle>
-      <Progress.CircleTrack />
-      <Progress.CircleRange />
-    </Progress.Circle>
+  <Progress.Root v-model="value" class="parity-stack">
+    <Progress.Label>Label <span role="status">{{ value }}%</span></Progress.Label>
+    <Progress.Track><Progress.Range /></Progress.Track>
+    <button type="button" class="parity-button" @click="value = value >= 100 ? 0 : Math.min(100, value + 10)">Advance</button>
   </Progress.Root>
 </template>

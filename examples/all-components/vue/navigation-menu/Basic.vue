@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { NavigationMenuRootEmits, NavigationMenuRootProps } from '@destyler-ui/vue'
 import { NavigationMenu } from '@destyler-ui/vue'
 
 const props = defineProps<NavigationMenuRootProps>()
 const emits = defineEmits<NavigationMenuRootEmits>()
+const selected = ref('')
 </script>
 
 <template>
@@ -29,7 +31,7 @@ const emits = defineEmits<NavigationMenuRootEmits>()
         </NavigationMenu.Item>
 
         <NavigationMenu.Item value="docs">
-          <NavigationMenu.Link value="docs" href="#">
+          <NavigationMenu.Link value="docs" href="#" @click.prevent="selected = 'Documentation'">
             Documentation
           </NavigationMenu.Link>
         </NavigationMenu.Item>
@@ -44,21 +46,21 @@ const emits = defineEmits<NavigationMenuRootEmits>()
           <NavigationMenu.Content value="getting-started">
             <ul>
               <li>
-                <NavigationMenu.Link value="intro" href="#">
+                <NavigationMenu.Link value="intro" href="#" @click.prevent="selected = 'Introduction'">
                   <div>Introduction</div>
-                  <p>Re-usable components built using Destyler UI and Tailwind CSS.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="install" href="#">
+                <NavigationMenu.Link value="install" href="#" @click.prevent="selected = 'Installation'">
                   <div>Installation</div>
-                  <p>How to install dependencies and structure your app.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="typography" href="#">
+                <NavigationMenu.Link value="typography" href="#" @click.prevent="selected = 'Typography'">
                   <div>Typography</div>
-                  <p>Styles for headings, paragraphs, lists...etc</p>
+
                 </NavigationMenu.Link>
               </li>
             </ul>
@@ -67,45 +69,45 @@ const emits = defineEmits<NavigationMenuRootEmits>()
           <NavigationMenu.Content value="components">
             <ul>
               <li>
-                <NavigationMenu.Link value="alert-dialog" href="#">
+                <NavigationMenu.Link value="alert-dialog" href="#" @click.prevent="selected = 'Alert Dialog'">
                   <div>Alert Dialog</div>
-                  <p>A modal dialog that interrupts the user with important content.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="hover-card" href="#">
+                <NavigationMenu.Link value="hover-card" href="#" @click.prevent="selected = 'Hover Card'">
                   <div>Hover Card</div>
-                  <p>For sighted users to preview content available behind a link.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="progress" href="#">
+                <NavigationMenu.Link value="progress" href="#" @click.prevent="selected = 'Progress'">
                   <div>Progress</div>
-                  <p>Displays an indicator showing the completion progress of a task.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="scroll-area" href="#">
+                <NavigationMenu.Link value="scroll-area" href="#" @click.prevent="selected = 'Scroll-area'">
                   <div>Scroll-area</div>
-                  <p>Visually or semantically separates content.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="tabs" href="#">
+                <NavigationMenu.Link value="tabs" href="#" @click.prevent="selected = 'Tabs'">
                   <div>Tabs</div>
-                  <p>A set of layered sections of content known as tab panels.</p>
+
                 </NavigationMenu.Link>
               </li>
               <li>
-                <NavigationMenu.Link value="tooltip" href="#">
+                <NavigationMenu.Link value="tooltip" href="#" @click.prevent="selected = 'Tooltip'">
                   <div>Tooltip</div>
-                  <p>A popup that displays information related to an element.</p>
+
                 </NavigationMenu.Link>
               </li>
             </ul>
           </NavigationMenu.Content>
         </NavigationMenu.Viewport>
       </NavigationMenu.ViewportPositioner>
-    </NavigationMenu.Root>
+    </NavigationMenu.Root><p role="status" class="parity-status">{{ selected || 'Choose a section' }}</p>
   </main>
 </template>

@@ -1,14 +1,22 @@
-import { OtpInput } from '@destyler-ui/solid/otp-input'
-import { Index } from 'solid-js'
-
+import { OtpInput } from "@destyler-ui/solid";
+import { createSignal } from "solid-js";
 export function Basic() {
+  const [value, setValue] = createSignal<string[]>(["", "", ""]);
   return (
-    <OtpInput.Root onValueComplete={e => console.warn(e.valueAsString)}>
+    <OtpInput.Root
+      value={value()}
+      onValueChange={(details) => setValue(details.value)}
+    >
       <OtpInput.Label>Label</OtpInput.Label>
       <OtpInput.Control>
-        <Index each={[0, 1, 2]}>{id => <OtpInput.Input index={id()} />}</Index>
+        <OtpInput.Input index={0} />
+        <OtpInput.Input index={1} />
+        <OtpInput.Input index={2} />
       </OtpInput.Control>
       <OtpInput.HiddenInput />
+      <p class="parity-status" role="status">
+        {value().join("").length}/3 characters
+      </p>
     </OtpInput.Root>
-  )
+  );
 }

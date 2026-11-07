@@ -3,11 +3,11 @@ import { Portal } from 'solid-js/web'
 
 export function Basic() {
   return (
-    <Tooltip.Root>
-      <Tooltip.Trigger>Hover Me</Tooltip.Trigger>
+    <Tooltip.Root openDelay={0} closeDelay={0}>
+      <Tooltip.Trigger>hover me</Tooltip.Trigger>
       <Portal>
         <Tooltip.Positioner>
-          <Tooltip.Content>I am a tooltip!</Tooltip.Content>
+          <Tooltip.Arrow><Tooltip.ArrowTip /></Tooltip.Arrow><Tooltip.Content>content</Tooltip.Content>
         </Tooltip.Positioner>
       </Portal>
     </Tooltip.Root>

@@ -80,25 +80,13 @@ if (!mode) {
           current.scrollThumbRegression={ids:thumbs.map(node=>node.id),orientations:thumbs.map(node=>node.dataset.orientation),uniqueIds:true,parentOrientationMatched:true}
         }
         if(family==='calendar'){
-          const inspectTables=()=>{
-            const tables=[...document.querySelectorAll('[data-scope="calendar"][data-part="table"]')]
-            assert.equal(tables.length,3)
-            assert.deepEqual(tables.map(node=>node.dataset.view).sort(),['day','month','year'])
-            assert.ok(tables.every(node=>node.id&&! /\s/.test(node.id)),'Calendar table IDs must be nonempty and whitespace-free')
-            assert.ok([...document.querySelectorAll('[id]')].every(node=>! /\s/.test(node.id)), 'Whitespace in calendar element IDs')
-            assert.equal(new Set(tables.map(node=>node.id)).size,3,'Duplicate calendar view table IDs')
-            return tables.map(node=>({view:node.dataset.view,id:node.id}))
-          }
-          const mountedTables=inspectTables()
-          part('calendar','trigger').click();await pause()
-          assert.equal(part('calendar','trigger').dataset.state,'open')
-          assert.equal(part('calendar','content').hidden,false)
-          const openedTables=inspectTables()
-          assert.deepEqual(openedTables,mountedTables,'Table IDs changed on calendar open')
-          current.calendarTableRegression={mountedTables,openedTables,uniqueIds:true,opened:true}
-          part('calendar','trigger').click();await pause()
-          assert.equal(part('calendar','trigger').dataset.state,'closed')
-          assert.equal(part('calendar','content').hidden,true)
+          const tables=[...document.querySelectorAll('[data-scope="calendar"][data-part="table"]')];assert.equal(tables.length,1);assert.equal(tables[0].dataset.view,'day');
+          assert.equal(part('calendar','trigger'),null);assert.equal(part('calendar','input'),null);
+          const cells=()=>[...document.querySelectorAll('[data-scope="calendar"][data-part="table-cell-trigger"]')].map(el=>el.getAttribute('data-value')).join(',');
+          const initial=cells();part('calendar','next-trigger').click();await pause();assert.notEqual(cells(),initial);part('calendar','prev-trigger').click();await pause();assert.equal(cells(),initial);
+          const year=part('calendar','year-select');year.value='2027';year.dispatchEvent(new win.Event('input',{bubbles:true}));await pause();assert.notEqual(cells(),initial);
+          document.querySelector('[data-scope="calendar"][data-part="table-cell-trigger"]:not([data-outside-range])').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Selected:/);
+          current.calendarTableRegression={inline:true,uniqueIds:true,nextPreviousAndYear:true,dateSelection:true};
         }
         if(['checkbox','switch'].includes(family)){
           const input=document.querySelector('input');const initial=input.checked
@@ -117,6 +105,15 @@ if (!mode) {
         if(family==='select'){
           for(const value of ['react','solid','vue','react']){part('select','trigger').click();await pause();const item=document.querySelector(`[data-scope="select"][data-part="item"][data-value="${value}"]`);assert.ok(item);item.click();await pause();assert.equal(document.querySelector('select').value,value)}
           current.interactions={selections:4}
+        }
+        if(family==='pagination'){
+          assert.match(document.querySelector('[role="status"]').textContent,/Page 1 of 10/);part('pagination','next-trigger').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Page 2 of 10/);part('pagination','prev-trigger').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Page 1 of 10/);current.interactions={nextBack:true};
+        }
+        if(family==='progress'){
+          assert.equal(document.querySelector('[role="status"]').textContent,'65%');[...document.querySelectorAll('button')].find(el=>el.textContent==='Advance').click();await pause();assert.equal(document.querySelector('[role="status"]').textContent,'75%');assert.equal(document.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'),'75');current.interactions={advance:true};
+        }
+        if(family==='clipboard'){
+          const button=[...document.querySelectorAll('button')].find(el=>el.textContent==='Copy link');Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>assert.equal(value,'https://destyler.org')}});button.click();await pause();assert.equal(document.querySelector('[role="status"]').textContent,'Copied');Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('denied')}}});button.click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Copy unavailable/);current.interactions={resolveReject:true};
         }
         if(family==='steps'){
           for(let i=0;i<2;i++){part('steps','next-trigger').click();await pause();assert.equal([...document.querySelectorAll('[data-scope="steps"][data-part="item"]')][i+1].getAttribute('aria-current'),'step')}

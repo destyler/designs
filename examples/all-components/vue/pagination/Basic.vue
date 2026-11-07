@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Pagination } from '@destyler-ui/vue'
+const currentPage = ref(1)
 </script>
 <template>
-  <Pagination.Root :count="100" :page-size="10" :sibling-count="2">
+  <div class="parity-stack"><Pagination.Root :page="currentPage" @page-change="currentPage = $event.page" :count="100" :page-size="10" :sibling-count="2">
     <Pagination.PrevTrigger>
       Previous
-      <span className="visually-hidden">Page</span>
+      <span class="visually-hidden">Page</span>
     </Pagination.PrevTrigger>
     <Pagination.Context v-slot="pagination">
       <template v-for="(page, index) in pagination.pages">
@@ -17,7 +19,7 @@ import { Pagination } from '@destyler-ui/vue'
     </Pagination.Context>
     <Pagination.NextTrigger>
       Next
-      <span className="visually-hidden">Page</span>
+      <span class="visually-hidden">Page</span>
     </Pagination.NextTrigger>
-  </Pagination.Root>
+  </Pagination.Root><p role="status" class="parity-status">Page {{ currentPage }} of 10 · 100 items</p></div>
 </template>

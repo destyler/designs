@@ -1,45 +1,75 @@
-import { Combobox, createListCollection } from '@destyler-ui/solid/combobox'
-import { createMemo, createSignal, For } from 'solid-js'
-import { Portal } from 'solid-js/web'
-
-const initialItems = ['React', 'Solid', 'Vue']
-
+import { Combobox } from "@destyler-ui/solid";
+import { createSignal } from "solid-js";
+import { createListCollection } from "@destyler-ui/solid";
 export function Basic() {
-  const [items, setItems] = createSignal(initialItems)
-
-  const collection = createMemo(() => createListCollection({ items: items() }))
-
-  const handleInputChange = (details: Combobox.InputValueChangeDetails) => {
-    setItems(
-      initialItems.filter(item => item.toLowerCase().includes(details.inputValue.toLowerCase())),
-    )
-  }
-
+  const [value, setValue] = createSignal<string[]>([]);
+  const [query, setQuery] = createSignal("");
+  const items = ["React", "Solid", "Vue", "Svelte"].map((label) => ({
+    label,
+    value: label,
+    disabled: label === "Svelte",
+  }));
+  const collection = () =>
+    createListCollection({
+      items: items.filter((item) =>
+        item.label.toLowerCase().includes(query().toLowerCase()),
+      ),
+    });
   return (
-    <Combobox.Root collection={collection()} onInputValueChange={handleInputChange}>
+    <Combobox.Root
+      collection={collection()}
+      value={value()}
+      onValueChange={(details) => setValue(details.value)}
+      onInputValueChange={(details) => setQuery(details.inputValue)}
+    >
       <Combobox.Label>Framework</Combobox.Label>
       <Combobox.Control>
-        <Combobox.Input />
-        <Combobox.Trigger>Open</Combobox.Trigger>
-        <Combobox.ClearTrigger>Clear</Combobox.ClearTrigger>
+        <Combobox.Input placeholder="Select a framework" />
+        <Combobox.Trigger aria-label="Open framework options">
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </Combobox.Trigger>
+        <Combobox.ClearTrigger disabled={!value().length}>
+          Clear
+        </Combobox.ClearTrigger>
       </Combobox.Control>
-      <Portal>
-        <Combobox.Positioner>
-          <Combobox.Content>
-            <Combobox.ItemGroup>
-              <Combobox.ItemGroupLabel>Frameworks</Combobox.ItemGroupLabel>
-              <For each={collection().items}>
-                {item => (
-                  <Combobox.Item item={item}>
-                    <Combobox.ItemText>{item}</Combobox.ItemText>
-                    <Combobox.ItemIndicator>✓</Combobox.ItemIndicator>
-                  </Combobox.Item>
-                )}
-              </For>
-            </Combobox.ItemGroup>
-          </Combobox.Content>
-        </Combobox.Positioner>
-      </Portal>
+      <Combobox.Positioner>
+        <Combobox.Content>
+          {collection().items.length === 0 && <p>No frameworks found.</p>}
+          <Combobox.ItemGroup>
+            {collection().items.map((item) => (
+              <Combobox.Item item={item}>
+                <Combobox.ItemText>{item.label}</Combobox.ItemText>
+                <Combobox.ItemIndicator>
+                  <svg
+                    aria-hidden="true"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="m20 6-11 11-5-5" />
+                  </svg>
+                </Combobox.ItemIndicator>
+              </Combobox.Item>
+            ))}
+          </Combobox.ItemGroup>
+        </Combobox.Content>
+      </Combobox.Positioner>
+      <p role="status" class="parity-status">
+        {value()[0] || "No selection"}
+      </p>
     </Combobox.Root>
-  )
+  );
 }

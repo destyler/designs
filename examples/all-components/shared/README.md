@@ -1,4 +1,4 @@
-# Shared Basic-example theme
+# Shared component demonstration theme
 
 `theme.css` is a new plain-CSS reconstruction for the 46 component families in
 `catalog.json`, shared by React, Vue, Solid and Svelte. It is **not a recovered
@@ -13,9 +13,9 @@ historical v7 stylesheet**, and does not claim pixel-exact shadcn parity.
 - Upstream author and license: Elone Hoo, MIT. The complete notice is retained
   below and in the distributed stylesheet header.
 - Reconstruction date: 2026-11-06.
-- The new palette uses Zinc-like neutral surfaces and contrasting primary
-  controls. Original `--demo-coral-*` names remain compatibility aliases; their
-  values are neutral. Calendar's original `--sl-color-*` variables are resolved
+- The original neutral recoloring is superseded by exact pinned Zinc token values
+  and default-reference recipe adaptations for the 32 corresponding families plus Clipboard. Original `--demo-coral-*` names remain compatibility aliases; their
+  values now alias the pinned tokens. Calendar's original `--sl-color-*` variables are resolved
   locally, without Starlight.
 
 ## Integration
@@ -98,3 +98,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+The current correction is documented in `docs/shadcn-parity-repair.md`. Default example structures and styling are adapted to the reference; real-browser visual acceptance remains pending.

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { Pagination } from '@destyler-ui/svelte/pagination'
+  let currentPage = $state(1)
 </script>
 
-<Pagination.Root count={100} pageSize={10} siblingCount={2}>
+<div class="parity-stack"><Pagination.Root page={currentPage} onPageChange={details => currentPage = details.page} count={100} pageSize={10} siblingCount={2}>
   <Pagination.PrevTrigger>Previous <span class="visually-hidden">Page</span></Pagination.PrevTrigger>
   <Pagination.Context>
     {#snippet render(pagination)}
@@ -16,4 +17,4 @@
     {/snippet}
   </Pagination.Context>
   <Pagination.NextTrigger>Next <span class="visually-hidden">Page</span></Pagination.NextTrigger>
-</Pagination.Root>
+</Pagination.Root><p role="status" class="parity-status">Page {currentPage} of 10 · 100 items</p></div>

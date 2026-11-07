@@ -3,10 +3,7 @@ import { Toggle } from '@destyler-ui/vue'
 </script>
 
 <template>
-  <Toggle.Root>
-    <Toggle.Indicator>
-      ✓
-    </Toggle.Indicator>
+  <Toggle.Root aria-label="Toggle">
     Toggle
   </Toggle.Root>
 </template>

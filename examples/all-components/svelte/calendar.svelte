@@ -1,80 +1,25 @@
-<script module lang="ts">
-  import type { UsePresenceProps } from '@destyler-ui/svelte/presence'
-
-  export interface BasicProps extends UsePresenceProps {}
-</script>
-
 <script lang="ts">
-  import { Calendar } from '@destyler-ui/svelte/calendar'
-
-  let { ...props }: BasicProps = $props()
+  import { Calendar, parseDate } from '@destyler-ui/svelte/calendar'
+  let focused = $state(parseDate('2026-11-01'))
+  let selected = $state('')
 </script>
-
-{#snippet calendarViews()}
-  <Calendar.YearSelect />
-  <Calendar.MonthSelect />
-  <Calendar.View view="day">
-    <Calendar.Context>
-      {#snippet render(calendar)}
-        <Calendar.ViewControl>
-          <Calendar.PrevTrigger>Prev</Calendar.PrevTrigger>
-          <Calendar.ViewTrigger><Calendar.RangeText /></Calendar.ViewTrigger>
-          <Calendar.NextTrigger>Next</Calendar.NextTrigger>
-        </Calendar.ViewControl>
-        <Calendar.Table>
-          <Calendar.TableHead><Calendar.TableRow>
-            {#each calendar().weekDays as weekDay}<Calendar.TableHeader>{weekDay.short}</Calendar.TableHeader>{/each}
-          </Calendar.TableRow></Calendar.TableHead>
-          <Calendar.TableBody>
-            {#each calendar().weeks as week}<Calendar.TableRow>
-              {#each week as day}<Calendar.TableCell value={day}><Calendar.TableCellTrigger>{day.day}</Calendar.TableCellTrigger></Calendar.TableCell>{/each}
-            </Calendar.TableRow>{/each}
-          </Calendar.TableBody>
-        </Calendar.Table>
-      {/snippet}
-    </Calendar.Context>
-  </Calendar.View>
-  <Calendar.View view="month">
-    <Calendar.Context>
-      {#snippet render(calendar)}
-        <Calendar.ViewControl><Calendar.PrevTrigger>Prev</Calendar.PrevTrigger><Calendar.ViewTrigger><Calendar.RangeText /></Calendar.ViewTrigger><Calendar.NextTrigger>Next</Calendar.NextTrigger></Calendar.ViewControl>
-        <Calendar.Table><Calendar.TableBody>
-          {#each calendar().getMonthsGrid({ columns: 4, format: 'short' }) as months}<Calendar.TableRow>
-            {#each months as month}<Calendar.TableCell value={month.value}><Calendar.TableCellTrigger>{month.label}</Calendar.TableCellTrigger></Calendar.TableCell>{/each}
-          </Calendar.TableRow>{/each}
-        </Calendar.TableBody></Calendar.Table>
-      {/snippet}
-    </Calendar.Context>
-  </Calendar.View>
-  <Calendar.View view="year">
-    <Calendar.Context>
-      {#snippet render(calendar)}
-        <Calendar.ViewControl><Calendar.PrevTrigger>Prev</Calendar.PrevTrigger><Calendar.ViewTrigger><Calendar.RangeText /></Calendar.ViewTrigger><Calendar.NextTrigger>Next</Calendar.NextTrigger></Calendar.ViewControl>
-        <Calendar.Table><Calendar.TableBody>
-          {#each calendar().getYearsGrid({ columns: 4 }) as years}<Calendar.TableRow>
-            {#each years as year}<Calendar.TableCell value={year.value}><Calendar.TableCellTrigger>{year.label}</Calendar.TableCellTrigger></Calendar.TableCell>{/each}
-          </Calendar.TableRow>{/each}
-        </Calendar.TableBody></Calendar.Table>
-      {/snippet}
-    </Calendar.Context>
-  </Calendar.View>
-{/snippet}
-
-<Calendar.Root {...props} ids={{ table: key => `calendar-table-${key.replace(/\s+/g, '-')}` }}>
-  <Calendar.Label>Label</Calendar.Label>
-  <Calendar.Control>
-    <Calendar.Input />
-    <Calendar.Context>
-      {#snippet render(calendar)}
-        <Calendar.Trigger>{calendar().open ? 'Close calendar' : 'Open calendar'}</Calendar.Trigger>
-      {/snippet}
-    </Calendar.Context>
-    <Calendar.ClearTrigger>Clear</Calendar.ClearTrigger>
-  </Calendar.Control>
-  <Calendar.PresetTrigger value="last7Days">Last 7 days</Calendar.PresetTrigger>
-  <Calendar.Positioner data-testid="positioner">
-    <Calendar.Content>
-      {@render calendarViews()}
-    </Calendar.Content>
-  </Calendar.Positioner>
-</Calendar.Root>
+<div class="parity-stack">
+  <Calendar.Root open={true} closeOnSelect={false} bind:focusedValue={focused} onValueChange={details => { const day = details.value[0]; selected = day ? `${day.year}-${day.month}-${day.day}` : '' }} min={parseDate('2020-01-01')} max={parseDate('2030-12-31')} ids={{ table: key => `calendar-table-${key.replace(/\s+/g, '-')}` }} class="parity-calendar">
+    <Calendar.Positioner class="parity-calendar-positioner"><Calendar.Content class="parity-calendar-content" role="group" aria-label="Calendar"><Calendar.View view="day">
+      <Calendar.Context>
+        {#snippet render(api)}
+          <Calendar.ViewControl>
+            <Calendar.PrevTrigger aria-label="Go to the previous month">‹</Calendar.PrevTrigger>
+            <div class="parity-calendar-caption"><Calendar.MonthSelect aria-label="Choose month" /><Calendar.YearSelect aria-label="Choose year" /></div>
+            <Calendar.NextTrigger aria-label="Go to the next month">›</Calendar.NextTrigger>
+          </Calendar.ViewControl>
+          <Calendar.Table>
+            <Calendar.TableHead><Calendar.TableRow>{#each api().weekDays as day}<Calendar.TableHeader>{day.short}</Calendar.TableHeader>{/each}</Calendar.TableRow></Calendar.TableHead>
+            <Calendar.TableBody>{#each api().weeks as week}<Calendar.TableRow>{#each week as day}<Calendar.TableCell value={day}><Calendar.TableCellTrigger>{day.day}</Calendar.TableCellTrigger></Calendar.TableCell>{/each}</Calendar.TableRow>{/each}</Calendar.TableBody>
+          </Calendar.Table>
+        {/snippet}
+      </Calendar.Context>
+    </Calendar.View></Calendar.Content></Calendar.Positioner>
+  </Calendar.Root>
+  <p role="status" class="parity-status">{selected ? `Selected: ${selected}` : 'Select a date'}</p>
+</div>

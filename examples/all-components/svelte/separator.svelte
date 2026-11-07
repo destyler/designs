@@ -5,17 +5,17 @@
   const props: SeparatorRootProps = $props()
 </script>
 
-<main style="width: 300px; padding: 1rem;">
+<main class="parity-stack" style="width:256px;">
   <div>
-    <p>Destyler UI</p>
-    <p>Unstyled components for Svelte.</p>
+    <p>shadcn/ui</p>
+    <p>Original New York components.</p>
   </div>
   <Separator.Root {...props} />
-  <nav style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
+  <nav style="display: flex; align-items: center; gap: 16px; height:20px;">
     <span>Blog</span>
-    <Separator.Root orientation="vertical" style="height: 1rem;" />
+    <Separator.Root orientation="vertical" style="height: 20px;" />
     <span>Docs</span>
-    <Separator.Root orientation="vertical" style="height: 1rem;" />
+    <Separator.Root orientation="vertical" style="height: 20px;" />
     <span>Source</span>
   </nav>
 </main>

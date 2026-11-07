@@ -18,23 +18,23 @@ const testProps = ref<string[]>([])
   <Combobox.Root :collection="frameworks" v-model="testProps">
     <Combobox.Label>Framework</Combobox.Label>
     <Combobox.Control>
-      <Combobox.Input data-testid="input" />
-      <Combobox.Trigger data-testid="trigger">Open</Combobox.Trigger>
-      <Combobox.ClearTrigger>Clear</Combobox.ClearTrigger>
+      <Combobox.Input data-testid="input" placeholder="Select a framework" />
+      <Combobox.Trigger data-testid="trigger" aria-label="Open framework options"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" /></svg></Combobox.Trigger>
+      <Combobox.ClearTrigger :disabled="!testProps.length">Clear</Combobox.ClearTrigger>
     </Combobox.Control>
     <Teleport to="body">
       <Combobox.Positioner data-testid="positioner">
         <Combobox.Content>
           <Combobox.ItemGroup>
-            <Combobox.ItemGroupLabel>Frameworks</Combobox.ItemGroupLabel>
+
             <Combobox.Item v-for="item in frameworks.items" :key="item.value" :item="item">
               <Combobox.ItemText>{{ item.label }}</Combobox.ItemText>
               <Combobox.ItemIndicator>✓</Combobox.ItemIndicator>
             </Combobox.Item>
           </Combobox.ItemGroup>
-          <Combobox.List />
+
         </Combobox.Content>
       </Combobox.Positioner>
     </Teleport>
-  </Combobox.Root>
+  <p role="status" class="parity-status">{{ frameworks.items.find(item => item.value === testProps[0])?.label || 'No selection' }}</p></Combobox.Root>
 </template>

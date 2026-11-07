@@ -8,9 +8,10 @@
   import { OtpInput } from '@destyler-ui/svelte/otp-input'
 
   const props: BasicProps = $props()
+  let value = $state<string[]>([])
 </script>
 
-<OtpInput.Root {...props}>
+<OtpInput.Root bind:value {...props}>
   <OtpInput.Label>Label</OtpInput.Label>
   <OtpInput.Control>
     {#each [0, 1, 2] as index (index)}
@@ -18,4 +19,4 @@
     {/each}
   </OtpInput.Control>
   <OtpInput.HiddenInput />
-</OtpInput.Root>
+<p role="status" class="parity-status">{value.join('').length}/3 characters</p></OtpInput.Root>

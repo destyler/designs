@@ -11,7 +11,7 @@
 </script>
 
 <Slider.Root {min} {max} bind:value {...props}>
-  <Slider.Label>Slider Label</Slider.Label>
+  <Slider.Label>Quantity:</Slider.Label>
   <Slider.ValueText />
   <Slider.Control>
     <Slider.Track>
@@ -24,9 +24,5 @@
       </Slider.Thumb>
     {/each}
   </Slider.Control>
-  <Slider.MarkerGroup>
-    <Slider.Marker value={-30}>*</Slider.Marker>
-    <Slider.Marker value={0}>*</Slider.Marker>
-    <Slider.Marker value={30}>*</Slider.Marker>
-  </Slider.MarkerGroup>
+
 </Slider.Root>

@@ -1,20 +1,26 @@
-import { Separator } from '@destyler-ui/react'
-
+import { Separator } from "@destyler-ui/react";
 export function Basic() {
   return (
-    <main style={{ width: '300px', padding: '1rem' }}>
+    <div className="parity-stack" style={{ width: "256px" }}>
       <div>
-        <p>Destyler UI</p>
-        <p>Unstyled components for React.</p>
+        <h3>shadcn/ui</h3>
+        <p className="parity-status">Original New York components.</p>
       </div>
       <Separator.Root />
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+      <div
+        style={{
+          display: "flex",
+          height: "20px",
+          gap: "16px",
+          alignItems: "center",
+        }}
+      >
         <span>Blog</span>
-        <Separator.Root orientation="vertical" style={{ height: '1rem' }} />
+        <Separator.Root orientation="vertical" />
         <span>Docs</span>
-        <Separator.Root orientation="vertical" style={{ height: '1rem' }} />
+        <Separator.Root orientation="vertical" />
         <span>Source</span>
-      </nav>
-    </main>
-  )
+      </div>
+    </div>
+  );
 }

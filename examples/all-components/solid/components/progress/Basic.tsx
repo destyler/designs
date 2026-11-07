@@ -1,13 +1,27 @@
-import { Progress } from '@destyler-ui/solid/progress'
-
+import { Progress } from "@destyler-ui/solid";
+import { createSignal } from "solid-js";
 export function Basic() {
+  const [value, setValue] = createSignal(65);
   return (
-    <Progress.Root defaultValue={42}>
-      <Progress.Label>Label</Progress.Label>
-      <Progress.ValueText />
-      <Progress.Track>
-        <Progress.Range />
-      </Progress.Track>
-    </Progress.Root>
-  )
+    <div class="parity-stack" style={{ width: "256px" }}>
+      <Progress.Root value={value()}>
+        <Progress.Label>
+          Label <span role="status">{value()}%</span>
+        </Progress.Label>
+        <Progress.Track>
+          <Progress.Range />
+        </Progress.Track>
+      </Progress.Root>
+      <button
+        class="parity-button"
+        onClick={() =>
+          setValue((current) =>
+            current >= 100 ? 0 : Math.min(100, current + 10),
+          )
+        }
+      >
+        Advance
+      </button>
+    </div>
+  );
 }

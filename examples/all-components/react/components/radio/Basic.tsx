@@ -1,24 +1,36 @@
-import { Radio } from '@destyler-ui/react'
-
-const items = [
-  { label: 'React', value: 'react' },
-  { label: 'Solid', value: 'solid' },
-  { label: 'Vue', value: 'vue' },
-  { label: 'Svelte', value: 'svelte', disabled: true },
-]
-
+import { Radio } from "@destyler-ui/react";
+import { useState } from "react";
 export function Basic() {
+  const [value, setValue] = useState("");
   return (
-    <Radio.Root>
+    <Radio.Root
+      value={value}
+      onValueChange={(details) => setValue(details.value || "")}
+    >
       <Radio.Label>Framework</Radio.Label>
-      <Radio.Indicator />
-      {items.map(item => (
-        <Radio.Item key={item.value} value={item.value} disabled={item.disabled}>
-          <Radio.ItemText>{item.label}</Radio.ItemText>
-          <Radio.ItemControl />
-          <Radio.ItemHiddenInput />
-        </Radio.Item>
-      ))}
+      <Radio.Item value="react">
+        <Radio.ItemControl />
+        <Radio.ItemText>React</Radio.ItemText>
+        <Radio.ItemHiddenInput />
+      </Radio.Item>
+      <Radio.Item value="solid">
+        <Radio.ItemControl />
+        <Radio.ItemText>Solid</Radio.ItemText>
+        <Radio.ItemHiddenInput />
+      </Radio.Item>
+      <Radio.Item value="vue">
+        <Radio.ItemControl />
+        <Radio.ItemText>Vue</Radio.ItemText>
+        <Radio.ItemHiddenInput />
+      </Radio.Item>
+      <Radio.Item value="svelte" disabled>
+        <Radio.ItemControl />
+        <Radio.ItemText>Svelte</Radio.ItemText>
+        <Radio.ItemHiddenInput />
+      </Radio.Item>
+      <p role="status" className="parity-status">
+        {value || "No selection"}
+      </p>
     </Radio.Root>
-  )
+  );
 }

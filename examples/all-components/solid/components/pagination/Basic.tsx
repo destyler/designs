@@ -1,25 +1,37 @@
-import { Pagination } from '@destyler-ui/solid/pagination'
-import { For } from 'solid-js'
-
+import { Pagination } from "@destyler-ui/solid";
+import { createSignal } from "solid-js";
 export function Basic() {
+  const [page, setPage] = createSignal(1);
   return (
-    <Pagination.Root count={5000} pageSize={10} siblingCount={2}>
-      <Pagination.PrevTrigger>Previous Page</Pagination.PrevTrigger>
-      <Pagination.Context>
-        {api => (
-          <For each={api().pages}>
-            {(page, index) =>
-              page.type === 'page'
-                ? (
-                    <Pagination.Item {...page}>{page.value}</Pagination.Item>
-                  )
-                : (
-                    <Pagination.Ellipsis index={index()}>&#8230;</Pagination.Ellipsis>
-                  )}
-          </For>
-        )}
-      </Pagination.Context>
-      <Pagination.NextTrigger>Next Page</Pagination.NextTrigger>
-    </Pagination.Root>
-  )
+    <div class="parity-stack">
+      <Pagination.Root
+        count={100}
+        pageSize={10}
+        siblingCount={2}
+        page={page()}
+        onPageChange={(details) => setPage(details.page)}
+      >
+        <Pagination.PrevTrigger>Previous</Pagination.PrevTrigger>
+        <Pagination.Context>
+          {(api) => (
+            <>
+              {api().pages.map((item, index) =>
+                item.type === "page" ? (
+                  <Pagination.Item value={item.value} type="page">
+                    {item.value}
+                  </Pagination.Item>
+                ) : (
+                  <Pagination.Ellipsis index={index}>…</Pagination.Ellipsis>
+                ),
+              )}
+            </>
+          )}
+        </Pagination.Context>
+        <Pagination.NextTrigger>Next</Pagination.NextTrigger>
+      </Pagination.Root>
+      <p role="status" class="parity-status">
+        Page {page()} of 10 · 100 items
+      </p>
+    </div>
+  );
 }

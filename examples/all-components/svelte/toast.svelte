@@ -15,7 +15,7 @@
 {#snippet title()}Title{/snippet}
 {#snippet description()}Description{/snippet}
 
-<button type="button" onclick={() => toaster.create({ title, description, type: 'info', duration })}>Create Toast</button>
+<button class="parity-button" type="button" onclick={() => toaster.create({ title, description, type: 'info', duration })}>Create Toast</button>
 
 <Toaster {toaster}>
   {#snippet children(toast)}
@@ -23,7 +23,7 @@
       <Toast.Title>{@render toast().title?.()}</Toast.Title>
       <Toast.Description>{@render toast().description?.()}</Toast.Description>
       <Toast.ActionTrigger>Action</Toast.ActionTrigger>
-      <Toast.CloseTrigger>x</Toast.CloseTrigger>
+      <Toast.CloseTrigger aria-label="Close notification">×</Toast.CloseTrigger>
     </Toast.Root>
   {/snippet}
 </Toaster>

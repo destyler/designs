@@ -8,6 +8,7 @@
   import { Radio } from '@destyler-ui/svelte/radio'
 
   const props: BasicProps = $props()
+  let value = $state('')
   const items = [
     { label: 'React', value: 'react' },
     { label: 'Solid', value: 'solid' },
@@ -16,14 +17,13 @@
   ]
 </script>
 
-<Radio.Root {...props}>
+<Radio.Root bind:value {...props}>
   <Radio.Label>Framework</Radio.Label>
-  <Radio.Indicator />
   {#each items as item (item.value)}
     <Radio.Item value={item.value} disabled={item.disabled}>
-      <Radio.ItemText>{item.label}</Radio.ItemText>
       <Radio.ItemControl />
+      <Radio.ItemText>{item.label}</Radio.ItemText>
       <Radio.ItemHiddenInput />
     </Radio.Item>
   {/each}
-</Radio.Root>
+<p role="status" class="parity-status">{value || 'No selection'}</p></Radio.Root>

@@ -75,11 +75,51 @@ if (!mode) {
     const actions = []
     if (family === 'calendar') {
       const tables = qa('calendar', 'table')
-      assert.deepEqual(tables.map(node => node.dataset.view), ['day', 'month', 'year'])
-      assert.deepEqual(tables.map(node => node.dataset.columns), ['7', '4', '4'])
-      assert.equal(new Set(tables.map(node => node.id)).size, 3)
-      assert.ok(tables.every(node => !/\s/.test(node.id)))
-      actions.push('Distinct valid calendar table IDs and matching day/month/year views')
+      assert.deepEqual(tables.map(node => node.dataset.view), ['day'])
+      assert.equal(tables[0].dataset.columns, '7')
+      assert.ok(!/\s/.test(tables[0].id))
+      const month = document.querySelector('select[aria-label="Choose the Month"]')
+      const year = document.querySelector('select[aria-label="Choose the Year"]')
+      assert.equal(month.value, '11')
+      assert.equal(year.value, '2026')
+      q('calendar','next-trigger').click(); await pause(); assert.equal(month.value,'12')
+      q('calendar','prev-trigger').click(); await pause(); assert.equal(month.value,'11')
+      year.value='2027'; year.dispatchEvent(new win.Event('change',{bubbles:true})); await pause()
+      assert.ok(qa('calendar','table-cell-trigger').some(node=>node.dataset.value?.startsWith('2027-11')))
+      month.value='10'; month.dispatchEvent(new win.Event('change',{bubbles:true})); await pause()
+      assert.ok(qa('calendar','table-cell-trigger').some(node=>node.dataset.value?.startsWith('2027-10')))
+      const date=qa('calendar','table-cell-trigger').find(node=>node.dataset.value==='2027-10-15')
+      assert.ok(date); date.click(); await pause()
+      assert.match(document.querySelector('[role="status"]').textContent,/Selected: 2027-10-15/)
+      actions.push('Inline calendar: initial month, next/previous, year/month changes, actual date selection')
+    }
+    if (family === 'progress') {
+      const advance=[...document.querySelectorAll('button')].find(node=>node.textContent==='Advance')
+      for (const value of [75,85,95,100,0]) {
+        advance.click(); await pause()
+        assert.equal(document.querySelector('[role="status"]').textContent,`${value}%`)
+        assert.equal(document.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'),String(value))
+      }
+      actions.push('Progress advances 65→100 and resets to 0 with matching output and ARIA')
+    }
+    if (family === 'pagination') {
+      for (const value of [2,10,9,1]) {
+        const trigger=qa('pagination','item').find(node=>node.textContent===String(value))
+        assert.ok(trigger); trigger.click(); await pause()
+        assert.match(document.querySelector('[role="status"]').textContent,new RegExp(`Page ${value} of 10`))
+      }
+      actions.push('Pagination 1→2→10→9→1 updates output')
+    }
+    if (family === 'clipboard') {
+      let copied=''
+      Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{copied=value}}})
+      document.querySelector('button').click(); await pause()
+      assert.equal(copied,'https://destyler.org')
+      assert.equal(document.querySelector('[role="status"]').textContent,'Copied')
+      Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('permission denied')}}})
+      document.querySelector('button').click(); await pause()
+      assert.match(document.querySelector('[role="status"]').textContent,/Copy unavailable/)
+      actions.push('Clipboard reports resolved success and rejected failure honestly (mock API)')
     }
     if (family === 'splitter') {
       const separator = q('splitter', 'resize-trigger')

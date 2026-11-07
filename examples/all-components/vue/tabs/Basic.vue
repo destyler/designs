@@ -10,12 +10,11 @@ const items = ref([
 ])
 </script>
 <template>
-  <Tabs.Root>
+  <Tabs.Root default-value="React">
     <Tabs.List>
       <Tabs.Trigger v-for="(item, idx) in items" :key="idx" :value="item.value" :disabled="item.disabled">
         {{ item.value }} Trigger
       </Tabs.Trigger>
-      <Tabs.Indicator />
     </Tabs.List>
     <Tabs.Content v-for="(item, idx) in items" :key="idx" :value="item.value">{{ item.value }} Content</Tabs.Content>
   </Tabs.Root>

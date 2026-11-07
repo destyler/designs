@@ -3,13 +3,13 @@ import { Separator } from '@destyler-ui/vue'
 </script>
 
 <template>
-  <main>
+  <main class="parity-stack" style="width:256px;">
     <div>
-      <p>Destyler UI</p>
-      <p>Unstyled components for Vue.</p>
+      <p>shadcn/ui</p>
+      <p>Original New York components.</p>
     </div>
     <Separator.Root />
-    <nav>
+    <nav style="display:flex;align-items:center;gap:16px;height:20px;">
       <span>Blog</span>
       <Separator.Root orientation="vertical" />
       <span>Docs</span>

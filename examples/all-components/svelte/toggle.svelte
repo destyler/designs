@@ -2,7 +2,6 @@
   import { Toggle } from '@destyler-ui/svelte/toggle'
 </script>
 
-<Toggle.Root>
-  <Toggle.Indicator>✓</Toggle.Indicator>
+<Toggle.Root aria-label="Toggle">
   Toggle
 </Toggle.Root>

@@ -2,12 +2,12 @@
 import { Collapse } from '@destyler-ui/vue'
 import { ref } from 'vue'
 
-const items = ref(['React', 'Solid', 'Vue'])
+const items = ref(['React', 'Solid', 'Svelte', 'Vue'])
 </script>
 
 <template>
-  <Collapse.Root :defaultValue="['Vue']">
-    <Collapse.Item v-for="item in items" :key="item" :value="item">
+  <Collapse.Root :defaultValue="['Vue']" collapsible>
+    <Collapse.Item v-for="item in items" :key="item" :value="item" :disabled="item === 'Svelte'">
       <Collapse.ItemTrigger>
         {{ item }} trigger
         <Collapse.ItemIndicator />

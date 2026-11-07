@@ -9,10 +9,10 @@
     { value: 'Vue' },
   ]
 </script>
-<Collapse.Root {...props}>
+<Collapse.Root defaultValue={['Vue']} collapsible {...props}>
   {#each items as item (item.value)}
     <Collapse.Item value={item.value} disabled={item.disabled}>
-      <Collapse.ItemTrigger>{item.value} Trigger <Collapse.ItemIndicator>⬇️</Collapse.ItemIndicator></Collapse.ItemTrigger>
+      <Collapse.ItemTrigger>{item.value} trigger <Collapse.ItemIndicator>⌄</Collapse.ItemIndicator></Collapse.ItemTrigger>
       <Collapse.ItemContent>{item.value} Content</Collapse.ItemContent>
     </Collapse.Item>
   {/each}
