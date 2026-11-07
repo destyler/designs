@@ -51,8 +51,8 @@ const coverage = shadcnCoverage.checkbox
               <p class="gallery-frame-status" role="status">Loading example…</p>
             </div>
             <div id={`${framework}-code-panel`} class="gallery-code-panel" role="tabpanel" aria-labelledby={`${framework}-code-tab`} hidden>
-              <div class="gallery-source-toolbar"><label><span class="visually-hidden">Source file</span><select class="gallery-source-select"><option>Loading source…</option></select></label><button class="gallery-copy" type="button">Copy</button></div>
-              <pre tabindex="0" aria-label={`${title(framework)} example source`}><code>Choose Code to load the source.</code></pre><p class="gallery-copy-status" role="status"></p>
+              <div class="gallery-file-tabs" role="tablist" aria-label={`${title(framework)} source files`}></div><div class="gallery-source-toolbar"><span class="gallery-source-path"></span><label class="visually-hidden"><span class="visually-hidden">Source file</span><select class="gallery-source-select"><option>Loading source…</option></select></label><a class="gallery-source-link" href="https://github.com/destyler/designs/pull/2" target="_blank" rel="noopener noreferrer">GitHub ↗</a><button class="gallery-download" type="button">Download</button><button class="gallery-copy" type="button">Copy</button></div>
+              <pre class="gallery-source-editor" id={`${framework}-source-editor`} role="tabpanel" tabindex="0" aria-label={`${title(framework)} example source`}><code>Choose Code to load the source.</code></pre><p class="gallery-copy-status" role="status"></p>
             </div>
             <footer class="gallery-card-footer"><span>{framework === 'shadcn' ? 'shadcn/ui · Pinned reference' : `@destyler-ui/${framework}`}</span><span>{framework === 'shadcn' ? 'React + Tailwind CSS' : '0.0.4'}</span></footer>
           </article>)}

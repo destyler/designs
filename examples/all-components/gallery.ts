@@ -1,3 +1,4 @@
+import { tokenizeSource } from '../shadcn/components/source-view'
 import catalog from './shared/catalog.json'
 import shadcnCoverage from './shared/shadcn-coverage.json'
 
@@ -43,6 +44,37 @@ export function initializeGallery(doc: Document, win: Window) {
     card.querySelector<HTMLAnchorElement>('.gallery-open-frame')!.href = frameUrl(card)
     timers.set(card, setTimeout(() => setStatus(card, 'Still loading. Use Open to inspect this example separately.'), 15_000))
   }
+  const renderSource = (card: HTMLElement, index: number, focus = false) => {
+    const source = sourceCache.get(card.dataset.sourceKey!)
+    const file = source?.files[index]
+    if (!file) return
+    card.querySelector<HTMLSelectElement>('.gallery-source-select')!.value = String(index)
+    const code = card.querySelector<HTMLElement>('pre code')!
+    code.replaceChildren(...tokenizeSource(file.code).map(token => {
+      if (!token.kind) return doc.createTextNode(token.text)
+      const span = doc.createElement('span'); span.className = `syntax-${token.kind}`; span.textContent = token.text; return span
+    }))
+    const tabs = card.querySelector<HTMLElement>('.gallery-file-tabs')!
+    tabs.replaceChildren(...source!.files.map((item, i) => {
+      const button = doc.createElement('button'); button.type = 'button'; button.textContent = item.name.split('/').pop()!; button.title = item.name
+      button.id = `${card.dataset.framework}-file-${i}`; button.setAttribute('role', 'tab'); button.setAttribute('aria-controls', `${card.dataset.framework}-source-editor`)
+      button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1
+      button.addEventListener('click', () => renderSource(card, i))
+      button.addEventListener('keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+        event.preventDefault()
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? source!.files.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + source!.files.length) % source!.files.length
+        renderSource(card, next, true)
+      })
+      return button
+    }))
+    const editor = card.querySelector<HTMLElement>('.gallery-source-editor')!
+    editor.setAttribute('aria-labelledby', `${card.dataset.framework}-file-${index}`)
+    card.querySelector<HTMLElement>('.gallery-source-path')!.textContent = file.name
+    const path = file.name === 'theme.css' ? 'examples/all-components/shared/theme.css' : card.dataset.framework === 'shadcn' ? file.name : `examples/all-components/${card.dataset.framework}/${file.name}`
+    card.querySelector<HTMLAnchorElement>('.gallery-source-link')!.href = `https://github.com/destyler/designs/blob/rebuild/all-components-20261106/${path}`
+    if (focus) (tabs.children[index] as HTMLButtonElement).focus()
+  }
   const loadSource = async (card: HTMLElement) => {
     const family = selected
     const framework = card.dataset.framework!
@@ -76,10 +108,12 @@ export function initializeGallery(doc: Document, win: Window) {
         option.value = String(index); option.textContent = file.name
         return option
       }))
-      code.textContent = source.files[0].code
+      renderSource(card, 0)
     } catch (error) {
       if (!disposed && card.dataset.sourceKey === key) {
         select.replaceChildren()
+        card.querySelector('.gallery-file-tabs')!.replaceChildren()
+        card.querySelector('.gallery-source-path')!.textContent = ''
         code.textContent = `Could not load this example’s source. ${String(error)}`
       }
     }
@@ -117,7 +151,15 @@ export function initializeGallery(doc: Document, win: Window) {
     on(card.querySelector('.gallery-source-select')!, 'change', event => {
       const source = sourceCache.get(card.dataset.sourceKey!)
       const item = source?.files[Number((event.target as HTMLSelectElement).value)]
-      if (item) card.querySelector('pre code')!.textContent = item.code
+      if (item) renderSource(card, Number((event.target as HTMLSelectElement).value))
+    })
+    on(card.querySelector('.gallery-download')!, 'click', () => {
+      const source = sourceCache.get(card.dataset.sourceKey!)
+      const file = source?.files[Number(card.querySelector<HTMLSelectElement>('.gallery-source-select')!.value)]
+      if (!file) return
+      const url = URL.createObjectURL(new Blob([file.code], { type: 'text/plain;charset=utf-8' }))
+      const link = doc.createElement('a'); link.href = url; link.download = file.name.split('/').pop()!; link.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
     })
     on(card.querySelector('.gallery-copy')!, 'click', async () => {
       const status = card.querySelector<HTMLElement>('.gallery-copy-status')!
