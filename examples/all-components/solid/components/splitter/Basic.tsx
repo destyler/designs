@@ -1,0 +1,16 @@
+import { Splitter } from '@destyler-ui/solid/splitter'
+
+export function Basic() {
+  return (
+    <Splitter.Root
+      defaultSize={[
+        { id: 'a', size: 50 },
+        { id: 'b', size: 50 },
+      ]}
+    >
+      <Splitter.Panel id="a">A</Splitter.Panel>
+      <Splitter.ResizeTrigger id="a:b" aria-label="Resize A and B panels" />
+      <Splitter.Panel id="b">B</Splitter.Panel>
+    </Splitter.Root>
+  )
+}

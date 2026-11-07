@@ -1,0 +1,49 @@
+import type { StepDetails } from '@destyler/tour'
+import { useRef } from 'react'
+import { Tour, useTour } from '@destyler-ui/react'
+
+export function Basic() {
+  const targetRef = useRef<HTMLButtonElement>(null)
+
+  const steps: StepDetails[] = [
+    {
+      id: 'step-1',
+      type: 'tooltip',
+      title: 'Welcome',
+      description: 'Welcome to the tour!',
+      target: () => targetRef.current,
+      arrow: true,
+      backdrop: true,
+    },
+  ]
+
+  const tour = useTour({ steps })
+
+  return (
+    <main>
+      <button type="button" ref={targetRef} onClick={() => tour.start()}>
+        Start tour
+      </button>
+
+      <Tour.Root tour={tour}>
+        <Tour.Backdrop />
+        <Tour.Spotlight />
+        <Tour.Positioner>
+          <Tour.Content>
+            <Tour.Arrow>
+              <Tour.ArrowTip />
+            </Tour.Arrow>
+            <Tour.Title />
+            <Tour.Description />
+            <Tour.ProgressText />
+            <Tour.Control>
+              <Tour.ActionTrigger action={{ action: 'prev', label: 'Prev' }}>Prev</Tour.ActionTrigger>
+              <Tour.ActionTrigger action={{ action: 'dismiss', label: 'Finish' }}>Finish</Tour.ActionTrigger>
+            </Tour.Control>
+            <Tour.CloseTrigger>X</Tour.CloseTrigger>
+          </Tour.Content>
+        </Tour.Positioner>
+      </Tour.Root>
+    </main>
+  )
+}

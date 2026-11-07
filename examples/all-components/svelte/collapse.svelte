@@ -1,0 +1,19 @@
+<script lang="ts">
+  import type { CollapseRootProps } from '@destyler-ui/svelte/collapse'
+  import { Collapse } from '@destyler-ui/svelte/collapse'
+  const props: CollapseRootProps = $props()
+  const items = [
+    { value: 'React' },
+    { value: 'Solid' },
+    { value: 'Svelte', disabled: true },
+    { value: 'Vue' },
+  ]
+</script>
+<Collapse.Root defaultValue={['Vue']} collapsible {...props}>
+  {#each items as item (item.value)}
+    <Collapse.Item value={item.value} disabled={item.disabled}>
+      <Collapse.ItemTrigger>{item.value} trigger <Collapse.ItemIndicator>⌄</Collapse.ItemIndicator></Collapse.ItemTrigger>
+      <Collapse.ItemContent>{item.value} Content</Collapse.ItemContent>
+    </Collapse.Item>
+  {/each}
+</Collapse.Root>

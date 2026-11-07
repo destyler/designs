@@ -1,0 +1,4 @@
+.build/
+.ssr/
+.client/
+.verification/

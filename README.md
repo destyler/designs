@@ -34,7 +34,7 @@ Nothing is persisted or sent. Astro statically server-renders the site and origi
 
 ## Where the design comes from
 
-The source is pinned to shadcn/ui commit `4aaea19d9cff3e0908e12a8c1d504b8c5ec34610` (2026-11-02). `vendor/shadcn/` preserves seven exact component source files, canonical theme definitions and the complete MIT license. `docs/shadcn-sources.json` records source URLs and SHA-256 values.
+The source is pinned to shadcn/ui commit `4aaea19d9cff3e0908e12a8c1d504b8c5ec34610` (2026-11-02). `vendor/shadcn/` preserves 36 exact component source files, canonical theme definitions and the complete MIT license. `docs/shadcn-sources.json` records the original seven components; `docs/shadcn-gallery-sources.json` records the 29 additional gallery sources, pinned inventory and dependency versions.
 
 `npm run sync:shadcn` extracts default-variant class recipes from those files and the exact Zinc token values for the earlier React/Vue recipe comparison. The current four-framework CSS-only package adapts the same native design values to `data-scope`, `data-part` and state selectors. The reference imports the unmodified source, using build aliases for the upstream utility and button imports.
 
@@ -73,16 +73,18 @@ The source checks independently assert byte-identical vendor files, deterministi
 
 ## Deliberately limited scope
 
+The following describes the original style-package proofs. The broader `/components/` gallery is described separately below.
+
 - This is a runnable vertical slice, **not a complete shadcn port**. The original comparison covers default component variants in React and Vue. The separate Switch/Dialog proof below also covers Solid, Svelte, and SSR/hydration; a general migration CLI is not implemented.
 - The earlier Tailwind examples/reference retain their own reset inside isolated documents. The current CSS-only package has no global reset: it selects Switch/Dialog anatomy in `@layer destyler`. Its import opts all matching anatomy in that document into this design.
 - Every current preview owns an iframe document theme, so body portals inherit it without style classes. Pure CSS cannot carry a local ancestor theme into a detached portal; such applications must mirror their scope or choose a portal target inside it. The earlier independent synchronizer remains a separate experiment.
-- The Astro host and fixed reference use React; each Destyler consumer loads only its selected framework. Legacy examples remain separately built. The installed Destyler aggregate export also produces an upstream date-package build warning; no date component is used here.
+- The Astro host and fixed reference use React; each Destyler consumer loads only its selected framework. Legacy examples remain separately built. The installed Destyler aggregate export also produces an upstream date-package build warning; the root Switch/Dialog comparison does not use a date component, while the full gallery includes Calendar.
 - No npm publication, UI/core package changes, or user-computer access are part of this work.
 - Current Switch/Dialog previews use the CSS-only package and class-free component sources. Only these two components are migrated; no whole-library or pixel-perfect browser-parity claim is made. See `docs/css-only-integration-verification.md` for verification and remaining browser limits.
 
 ## CSS-only package
 
-`packages/css-only` exports only `styles.css`, with no runtime or peer dependencies. Add `import '@destyler/designs-css-only-poc/styles.css'` alongside the existing headless UI imports. All current documentation examples use this contract. See [package contract](packages/css-only/README.md), [consumers](examples/css-only/README.md) and [integration verification](docs/css-only-integration-verification.md).
+`packages/css-only` exports only `styles.css`, with no runtime or peer dependencies. Add `import '@destyler/designs-css-only-poc/styles.css'` alongside the existing headless UI imports. The root Switch/Dialog documentation examples use this contract; the broader gallery uses a separate demonstration theme and is not a released all-component styling package. See [package contract](packages/css-only/README.md), [consumers](examples/css-only/README.md) and [integration verification](docs/css-only-integration-verification.md).
 
 The source editor's component, import and CSS tabs are the exact files used by Preview. The documentation host still uses normal layout classes; the original shadcn reference keeps its upstream Tailwind classes. Neither is a class-binding requirement for Destyler consumers.
 
@@ -97,3 +99,9 @@ No repository-wide license is assigned here. The owner must select a license for
 A separate Switch/Dialog-only package and standalone React/Vue/Solid/Svelte + UnoCSS consumers now live under [`packages/vanilla-extract`](packages/vanilla-extract/README.md) and [`examples/vanilla-extract`](examples/vanilla-extract/README.md). Run `npm run build` to build the Astro comparison site plus `/vanilla-extract/react/`, `/vanilla-extract/vue/`, `/vanilla-extract/solid/`, and `/vanilla-extract/svelte/`. The consumers compare the existing Tailwind recipes against precompiled vanilla-extract CSS, without either compiler plugin in their Vite config. They expose independent themes, explicit token overrides, UnoCSS overrides, and body portals.
 
 This is an opt-in proof, not a migration or a published package. [`docs/vanilla-extract-verification.md`](docs/vanilla-extract-verification.md) distinguishes package/SSR/hydration results from actual-browser coverage.
+
+## Reconstructed all-component gallery
+
+A new `/components/` gallery covers 46 component families across React, Vue, Solid and Svelte using UI 0.0.4. It is a new reconstruction, not the missing earlier candidate. The original Switch/Dialog comparison remains at `/`. See [source, build commands, verification and remaining acceptance limits](docs/all-components-reconstruction.md).
+
+The full gallery also restores the original shadcn reference above the four framework cards, with direct/composed/absent coverage made explicit. See [shadcn comparison restoration](docs/shadcn-gallery-restoration.md).

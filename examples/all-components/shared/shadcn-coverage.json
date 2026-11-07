@@ -1,0 +1,520 @@
+{
+  "aspect-ratio": {
+    "status": "direct",
+    "title": "AspectRatio",
+    "explanation": "Original AspectRatio wrapper. The illustration is application-authored content.",
+    "components": [
+      "aspect-ratio"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/aspect-ratio.tsx"
+    ]
+  },
+  "avatar": {
+    "status": "direct",
+    "title": "Avatar",
+    "explanation": "Original Avatar, AvatarImage and AvatarFallback. Image loading and fallback are handled by the upstream primitive.",
+    "components": [
+      "avatar"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/avatar.tsx"
+    ]
+  },
+  "breadcrumbs": {
+    "status": "direct",
+    "title": "Breadcrumb",
+    "explanation": "Original Breadcrumb composition. The plural Destyler family maps to the singular upstream component.",
+    "components": [
+      "breadcrumb"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/breadcrumb.tsx"
+    ]
+  },
+  "calendar": {
+    "status": "direct",
+    "title": "Calendar",
+    "explanation": "Original Calendar surface backed by React Day Picker, with day selection and month/year dropdowns. This narrower reference does not reproduce Destyler Calendar\u2019s input/popover, presets or separate month/year grid views.",
+    "components": [
+      "calendar"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/calendar.tsx"
+    ]
+  },
+  "carousel": {
+    "status": "direct",
+    "title": "Carousel",
+    "explanation": "Original Carousel backed by Embla, using the same five illustrations and previous/next controls. This reference does not add the separate autoplay plugin or Destyler indicator/autoplay controls.",
+    "components": [
+      "carousel"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/carousel.tsx"
+    ]
+  },
+  "checkbox": {
+    "status": "direct",
+    "title": "Checkbox",
+    "explanation": "Original Radix-backed Checkbox, initially unchecked, with the same Checkbox label.",
+    "components": [
+      "checkbox",
+      "label"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/checkbox.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx"
+    ]
+  },
+  "clipboard": {
+    "status": "composed",
+    "title": "Clipboard composition",
+    "explanation": "Application-authored copy action using the original shadcn Button and the browser Clipboard API. There is no upstream Clipboard primitive; secure-context permissions and feedback are handled by this demo, not by shadcn.",
+    "components": [
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "collapse": {
+    "status": "direct",
+    "title": "Accordion",
+    "explanation": "Original Accordion is the disclosure-list counterpart to Destyler Collapse. Names and APIs differ; this is not the same primitive as Collapsible.",
+    "components": [
+      "accordion"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/accordion.tsx"
+    ]
+  },
+  "collapsible": {
+    "status": "direct",
+    "title": "Collapsible",
+    "explanation": "Original Collapsible with a separate trigger and expandable content.",
+    "components": [
+      "collapsible",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/collapsible.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "color-picker": {
+    "status": "none",
+    "title": "Color Picker",
+    "explanation": "No ColorPicker component exists in the pinned upstream UI directory. A color input would not be equivalent to Destyler color spaces, channels, swatches and picker interaction.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "combobox": {
+    "status": "direct",
+    "title": "Combobox",
+    "explanation": "This revision includes an original Base UI Combobox. The demo uses its exported Trigger with an explicit accessible name and a labeled original Button for clearing, rather than the unnamed convenience icons. It is not a native select or Popover/Command imitation.",
+    "components": [
+      "combobox",
+      "label",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/combobox.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "dialog": {
+    "status": "direct",
+    "title": "Dialog",
+    "explanation": "Original Dialog with Radix portal, overlay, title, description and explicit cancel action.",
+    "components": [
+      "dialog",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/dialog.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "dynamic": {
+    "status": "none",
+    "title": "Dynamic",
+    "explanation": "No dynamic/tag-input primitive exists in the pinned upstream UI directory. Combobox chips are selection UI, not an equivalent free-form dynamic-input state machine.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "edit": {
+    "status": "none",
+    "title": "Edit",
+    "explanation": "No inline-edit primitive exists in the pinned upstream UI directory. Input plus buttons would require application-authored commit, cancel and focus behavior.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "field": {
+    "status": "direct",
+    "title": "Field",
+    "explanation": "Original Field, FieldLabel, FieldDescription and FieldError. Validation state is application-authored; no claim of identical Destyler validation behavior.",
+    "components": [
+      "field",
+      "input"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/field.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input.tsx"
+    ]
+  },
+  "fieldset": {
+    "status": "direct",
+    "title": "FieldSet",
+    "explanation": "Original FieldSet and FieldLegend exported by field.tsx, with the same legend/help/error copy and a labeled Input. Validation is application state, not an equivalent Destyler fieldset state machine.",
+    "components": [
+      "field",
+      "input"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/field.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input.tsx"
+    ]
+  },
+  "file-upload": {
+    "status": "none",
+    "title": "File Upload",
+    "explanation": "No FileUpload primitive exists in the pinned upstream UI directory. Input type=file would not provide equivalent dropzone, file-list, validation or removal behavior.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "floating-panel": {
+    "status": "none",
+    "title": "Floating Panel",
+    "explanation": "No FloatingPanel primitive exists in the pinned upstream UI directory. Popover and Dialog do not provide an equivalent draggable/resizable panel lifecycle.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "hover-card": {
+    "status": "direct",
+    "title": "HoverCard",
+    "explanation": "Original HoverCard with trigger and portalled content. Pointer timing and focus behavior require real-browser verification.",
+    "components": [
+      "hover-card",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/hover-card.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "label": {
+    "status": "direct",
+    "title": "Label",
+    "explanation": "Original Label linked to the original Input by htmlFor and id.",
+    "components": [
+      "label",
+      "input"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input.tsx"
+    ]
+  },
+  "menu": {
+    "status": "direct",
+    "title": "DropdownMenu",
+    "explanation": "Original DropdownMenu with checkbox, radio items and a submenu. This reference does not include the distinct ContextMenu trigger shown by the Destyler menu example.",
+    "components": [
+      "dropdown-menu",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/dropdown-menu.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "navigation-menu": {
+    "status": "direct",
+    "title": "NavigationMenu",
+    "explanation": "Original NavigationMenu with link content and viewport. Links stay within this demo.",
+    "components": [
+      "navigation-menu"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/navigation-menu.tsx"
+    ]
+  },
+  "number-input": {
+    "status": "none",
+    "title": "Number Input",
+    "explanation": "No NumberInput primitive exists in the pinned upstream UI directory. A native numeric Input would not be equivalent to Destyler stepping, formatting and interaction behavior.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "otp-input": {
+    "status": "direct",
+    "title": "InputOTP",
+    "explanation": "Original InputOTP with grouped slots. This is an OTP input example, not authentication or code verification.",
+    "components": [
+      "input-otp",
+      "label"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/input-otp.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx"
+    ]
+  },
+  "pagination": {
+    "status": "direct",
+    "title": "Pagination",
+    "explanation": "Original Pagination link composition. Current-page state is application-authored; no data fetching is performed.",
+    "components": [
+      "pagination"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/pagination.tsx"
+    ]
+  },
+  "popover": {
+    "status": "direct",
+    "title": "Popover",
+    "explanation": "Original Popover with a trigger and a portalled content panel.",
+    "components": [
+      "popover",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/popover.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "presence": {
+    "status": "none",
+    "title": "Presence",
+    "explanation": "No standalone Presence primitive exists in the pinned upstream UI directory. Internal animation/mount behavior is not a public counterpart to Destyler Presence.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "progress": {
+    "status": "direct",
+    "title": "Progress",
+    "explanation": "Original linear Progress starts at 65%; the demo supplies the visual percentage and explicit ARIA value. The pinned wrapper does not forward value to Radix, so its internal data-state remains indeterminate. No circular indicator or full behavioral equivalence is claimed.",
+    "components": [
+      "progress",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/progress.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "qr-code": {
+    "status": "none",
+    "title": "Qr Code",
+    "explanation": "No QRCode component exists in the pinned upstream UI directory. An image or placeholder would not demonstrate equivalent QR generation.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "radio": {
+    "status": "direct",
+    "title": "RadioGroup",
+    "explanation": "Original RadioGroup and RadioGroupItem. The Destyler Radio family maps to the upstream RadioGroup.",
+    "components": [
+      "radio-group",
+      "label"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/radio-group.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx"
+    ]
+  },
+  "scroll-area": {
+    "status": "direct",
+    "title": "ScrollArea",
+    "explanation": "Original ScrollArea and ScrollBar. Actual overflow geometry, wheel and touch behavior require real-browser verification.",
+    "components": [
+      "scroll-area",
+      "separator"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/scroll-area.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/separator.tsx"
+    ]
+  },
+  "select": {
+    "status": "direct",
+    "title": "Select",
+    "explanation": "Original Radix-backed Select with the same four frameworks and disabled Svelte. It has no separate clear trigger in this demo; this is not a native select imitation.",
+    "components": [
+      "select",
+      "label"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/select.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx"
+    ]
+  },
+  "separator": {
+    "status": "direct",
+    "title": "Separator",
+    "explanation": "Original Separator in both horizontal and vertical orientations.",
+    "components": [
+      "separator"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/separator.tsx"
+    ]
+  },
+  "signature": {
+    "status": "none",
+    "title": "Signature",
+    "explanation": "No Signature primitive exists in the pinned upstream UI directory. A canvas alone would not demonstrate equivalent drawing, clearing and export behavior.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "slider": {
+    "status": "direct",
+    "title": "Slider",
+    "explanation": "Original Slider with an application-controlled range. Pointer geometry requires real-browser verification.",
+    "components": [
+      "slider"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/slider.tsx"
+    ]
+  },
+  "splitter": {
+    "status": "direct",
+    "title": "Resizable",
+    "explanation": "Original ResizablePanelGroup, ResizablePanel and ResizableHandle, backed by react-resizable-panels v4. This is the splitter counterpart with a different API.",
+    "components": [
+      "resizable"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/resizable.tsx"
+    ]
+  },
+  "steps": {
+    "status": "none",
+    "title": "Steps",
+    "explanation": "No Steps/Stepper primitive exists in the pinned upstream UI directory. Tabs or numbered buttons would not be an equivalent workflow state machine.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "switch": {
+    "status": "direct",
+    "title": "Switch",
+    "explanation": "Original Radix-backed Switch, initially unchecked, with the same Label copy.",
+    "components": [
+      "switch",
+      "label"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/switch.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/label.tsx"
+    ]
+  },
+  "tabs": {
+    "status": "direct",
+    "title": "Tabs",
+    "explanation": "Original Radix-backed Tabs with React, Solid, Vue and disabled Svelte, initially showing React.",
+    "components": [
+      "tabs"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/tabs.tsx"
+    ]
+  },
+  "timer": {
+    "status": "none",
+    "title": "Timer",
+    "explanation": "No Timer primitive exists in the pinned upstream UI directory. A custom interval would be application logic, not original shadcn UI.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "toast": {
+    "status": "direct",
+    "title": "Sonner",
+    "explanation": "Original shadcn Toaster wrapper around Sonner. The upstream toast counterpart is Sonner, not a hand-built notification div.",
+    "components": [
+      "sonner",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/sonner.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "toggle": {
+    "status": "direct",
+    "title": "Toggle",
+    "explanation": "Original Toggle with pressed and unpressed states.",
+    "components": [
+      "toggle"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/toggle.tsx"
+    ]
+  },
+  "toggle-group": {
+    "status": "direct",
+    "title": "ToggleGroup",
+    "explanation": "Original ToggleGroup and ToggleGroupItem with single-selection behavior.",
+    "components": [
+      "toggle-group"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/toggle-group.tsx"
+    ]
+  },
+  "tooltip": {
+    "status": "direct",
+    "title": "Tooltip",
+    "explanation": "Original TooltipProvider, TooltipTrigger and TooltipContent. Pointer/focus timing and assistive technology remain browser checks.",
+    "components": [
+      "tooltip",
+      "button"
+    ],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/tooltip.tsx",
+      "https://github.com/shadcn-ui/ui/blob/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui/button.tsx"
+    ]
+  },
+  "tour": {
+    "status": "none",
+    "title": "Tour",
+    "explanation": "No Tour primitive exists in the pinned upstream UI directory. Popover or Dialog alone would not provide equivalent target tracking and multi-step tour behavior.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  },
+  "tree": {
+    "status": "none",
+    "title": "Tree",
+    "explanation": "No Tree primitive exists in the pinned upstream UI directory. Nested Collapsible panels would not supply an equivalent tree selection, navigation and keyboard model.",
+    "components": [],
+    "sourceUrls": [
+      "https://github.com/shadcn-ui/ui/tree/4aaea19d9cff3e0908e12a8c1d504b8c5ec34610/apps/v4/registry/new-york-v4/ui"
+    ]
+  }
+}
