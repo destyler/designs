@@ -26,6 +26,7 @@ const testProps = ref<string[]>([])
       <Combobox.Positioner data-testid="positioner">
         <Combobox.Content>
           <Combobox.ItemGroup>
+            <Combobox.ItemGroupLabel class="parity-sr-only">Frameworks</Combobox.ItemGroupLabel>
 
             <Combobox.Item v-for="item in frameworks.items" :key="item.value" :item="item">
               <Combobox.ItemText>{{ item.label }}</Combobox.ItemText>

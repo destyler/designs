@@ -38,6 +38,7 @@
   <Combobox.Positioner data-testid="positioner">
     <Combobox.Content>
       <Combobox.ItemGroup>
+            <Combobox.ItemGroupLabel class="parity-sr-only">Frameworks</Combobox.ItemGroupLabel>
 
         {#each collection.items as item (item.value)}
           <Combobox.Item {item}>

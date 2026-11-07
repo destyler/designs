@@ -46,6 +46,7 @@ export function Basic() {
         <Combobox.Content>
           {collection().items.length === 0 && <p>No frameworks found.</p>}
           <Combobox.ItemGroup>
+            <Combobox.ItemGroupLabel class="parity-sr-only">Frameworks</Combobox.ItemGroupLabel>
             {collection().items.map((item) => (
               <Combobox.Item item={item}>
                 <Combobox.ItemText>{item.label}</Combobox.ItemText>
