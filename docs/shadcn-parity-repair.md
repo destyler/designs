@@ -16,3 +16,28 @@ The previous gallery copied Destyler Basic examples and recolored them. Restorin
 This is a default-example adaptation, not a claim of complete API or behavioral equivalence. The 13 missing reference families remain explicitly labeled. Source contracts, types, builds and simulated DOM tests cannot prove rendered geometry, native keyboard/focus/pointer behavior or assistive-technology accessibility. Real-browser visual acceptance remains pending.
 
 No upstream vendor files, production deployment, published UI/core package or original root Switch/Dialog page is changed. Work remains on the existing draft PR and Preview only.
+
+## CSS integration correction (2026-11-08)
+
+The earlier revision still loaded a separately adapted Basic stylesheet into every
+native frame. It did not load the existing CSS-only package for Switch/Dialog.
+Some high-specificity Basic rules also overrode the later shadcn adaptations, and
+Calendar used native dropdown chrome and text arrows rather than the reference
+caption structure. Equal theme tokens did not establish equal styling.
+
+- Switch/Dialog now await a separate stylesheet entry that imports the unchanged
+  `packages/css-only/styles.css`. Their frames never load the Basic fallback sheet.
+  The small composition sheet supplies the isolated reset/canvas and the reference
+  example's explicit outline-button variant, header/footer and icon close button.
+- Other families keep Basic rules in a lower cascade layer. Explicit reference
+  adaptations now win over old specificity. Dark buttons, Tabs hover, centered
+  wrappers and Slider label typography have direct regression contracts.
+- Calendar keeps native selects and public state callbacks, but overlays them on
+  visible caption labels with matching SVG glyphs. No fake dropdown interaction.
+- The Code view exports the actual selected CSS: package plus composition for the
+  two existing package families, and the adapted shared sheet for other families.
+
+These changes fix known source/integration errors, not an assertion of complete
+visual parity. Browser rendering, focus/pointer behavior and assistive-technology
+acceptance remain open; the remaining families are still adaptations rather than
+exports of the two-family package.

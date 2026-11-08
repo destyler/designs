@@ -1,7 +1,7 @@
 import { onMount } from 'solid-js'
 import { render } from 'solid-js/web'
 import { examples, type Family } from './registry'
-import '../shared/theme.css'
+import { loadFamilyStyles } from '../shared/load-family-styles'
 
 const params = new URLSearchParams(window.location.search)
 const requested = params.get('component') ?? 'checkbox'
@@ -10,6 +10,7 @@ const family: Family = knownFamily ? requested as Family : 'checkbox'
 const requestedTheme = params.get('theme')
 const theme = requestedTheme === 'dark' ? 'dark' : 'light'
 const validSelection = knownFamily && (requestedTheme === null || requestedTheme === 'light' || requestedTheme === 'dark')
+void loadFamilyStyles(family).then(() => {
 document.documentElement.dataset.theme = theme
 document.body.className = `${family}-basic`
 document.body.dataset.framework = 'solid'
@@ -30,3 +31,5 @@ function App() {
 }
 render(() => <App />, root)
 mounted = true
+
+}).catch(error => console.error('Example stylesheet failed to load', error))

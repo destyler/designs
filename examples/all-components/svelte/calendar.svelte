@@ -9,9 +9,9 @@
       <Calendar.Context>
         {#snippet render(api)}
           <Calendar.ViewControl>
-            <Calendar.PrevTrigger aria-label="Go to the previous month">‹</Calendar.PrevTrigger>
-            <div class="parity-calendar-caption"><Calendar.MonthSelect aria-label="Choose month" /><Calendar.YearSelect aria-label="Choose year" /></div>
-            <Calendar.NextTrigger aria-label="Go to the next month">›</Calendar.NextTrigger>
+            <Calendar.PrevTrigger aria-label="Go to the previous month"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg></Calendar.PrevTrigger>
+            <div class="parity-calendar-caption"><div class="parity-calendar-dropdown"><Calendar.MonthSelect aria-label="Choose month" /><span class="parity-calendar-caption-label" aria-hidden="true">{new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(2026, api().visibleRange.start.month - 1, 1))}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></span></div><div class="parity-calendar-dropdown"><Calendar.YearSelect aria-label="Choose year" /><span class="parity-calendar-caption-label" aria-hidden="true">{api().visibleRange.start.year}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></span></div></div>
+            <Calendar.NextTrigger aria-label="Go to the next month"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></Calendar.NextTrigger>
           </Calendar.ViewControl>
           <Calendar.Table>
             <Calendar.TableHead><Calendar.TableRow>{#each api().weekDays as day}<Calendar.TableHeader>{day.short}</Calendar.TableHeader>{/each}</Calendar.TableRow></Calendar.TableHead>

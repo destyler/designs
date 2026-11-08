@@ -1,13 +1,14 @@
 import { mount, tick } from 'svelte'
 import App from './App.svelte'
 import { examples, type Family } from './registry'
-import '../shared/theme.css'
+import { loadFamilyStyles } from '../shared/load-family-styles'
 const params = new URLSearchParams(location.search)
 const requested = params.get('component') ?? 'checkbox'
 const family: Family = Object.hasOwn(examples, requested) ? requested as Family : 'checkbox'
 const requestedTheme = params.get('theme')
 const theme = requestedTheme === 'dark' ? 'dark' : 'light'
 const validSelection = Object.hasOwn(examples, requested) && (requestedTheme === null || requestedTheme === 'dark' || requestedTheme === 'light')
+void loadFamilyStyles(family).then(() => {
 document.documentElement.dataset.theme = theme
 document.body.className = `${family}-basic`
 document.body.dataset.framework = 'svelte'
@@ -22,3 +23,5 @@ void tick().then(() => {
     window.parent.postMessage({ type: 'destyler:all-components-ready', framework: 'svelte', family, theme }, location.origin)
   }
 })
+
+}).catch(error => console.error('Example stylesheet failed to load', error))

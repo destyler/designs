@@ -2,7 +2,7 @@ import { tokenizeSource } from '../shadcn/components/source-view'
 import catalog from './shared/catalog.json'
 import shadcnCoverage from './shared/shadcn-coverage.json'
 
-type SourceFile = { name: string; code: string }
+type SourceFile = { name: string; code: string; repositoryPath?: string }
 type SourceResponse = { files: SourceFile[] }
 type ReferenceCoverage = { status: 'direct' | 'composed' | 'none'; explanation: string; sourceUrls: string[] }
 const coverage: Record<string, ReferenceCoverage> = shadcnCoverage as Record<string, ReferenceCoverage>
@@ -71,7 +71,7 @@ export function initializeGallery(doc: Document, win: Window) {
     const editor = card.querySelector<HTMLElement>('.gallery-source-editor')!
     editor.setAttribute('aria-labelledby', `${card.dataset.framework}-file-${index}`)
     card.querySelector<HTMLElement>('.gallery-source-path')!.textContent = file.name
-    const path = file.name === 'theme.css' ? 'examples/all-components/shared/theme.css' : card.dataset.framework === 'shadcn' ? file.name : `examples/all-components/${card.dataset.framework}/${file.name}`
+    const path = file.repositoryPath ?? (file.name === 'theme.css' ? 'examples/all-components/shared/theme.css' : card.dataset.framework === 'shadcn' ? file.name : `examples/all-components/${card.dataset.framework}/${file.name}`)
     card.querySelector<HTMLAnchorElement>('.gallery-source-link')!.href = `https://github.com/destyler/designs/blob/rebuild/all-components-20261106/${path}`
     if (focus) (tabs.children[index] as HTMLButtonElement).focus()
   }
@@ -93,7 +93,12 @@ export function initializeGallery(doc: Document, win: Window) {
         source = { files: [...(value as SourceResponse).files] }
         // The reference exports its own shadcn/Tailwind sources. Destyler's shared
         // theme belongs only to the four implementation cards.
-        if (framework !== 'shadcn') {
+        if (framework !== 'shadcn' && (family === 'switch' || family === 'dialog')) {
+          const cssResponse = await win.fetch('/all-components/source/css-only-gallery.json')
+          if (!cssResponse.ok) throw new Error(`CSS-only source request failed (${cssResponse.status})`)
+          const cssSource = await cssResponse.json() as SourceResponse
+          source.files.push(...cssSource.files)
+        } else if (framework !== 'shadcn') {
           sharedCss ??= win.fetch('/all-components/source/theme.css').then(response => {
             if (!response.ok) throw new Error(`Theme source request failed (${response.status})`)
             return response.text()

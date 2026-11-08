@@ -38,6 +38,8 @@ for (const framework of catalog.frameworks) {
 }
 assert.equal(exported.length, 184)
 await copyFile(join(sourceRoot, 'shared/theme.css'), join(destination, 'theme.css'))
+const cssOnlyFiles = await Promise.all(['examples/all-components/shared/css-only-gallery.css', 'packages/css-only/styles.css'].map(async repositoryPath => ({ name: repositoryPath, repositoryPath, code: await readFile(join(root, repositoryPath), 'utf8') })))
+await writeFile(join(destination, 'css-only-gallery.json'), JSON.stringify({ files: cssOnlyFiles }) + '\n')
 await writeFile(join(destination, 'catalog.json'), JSON.stringify({ ...catalog, examples: exported }, null, 2) + '\n')
 console.log(`Exported ${exported.length} actual example source sets and one shared CSS file.`)
 

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFile, mkdir, writeFile } from 'node:fs/promises'
+import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises'
 import { join, resolve, sep, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Window } from 'happy-dom'
@@ -38,6 +38,8 @@ try {
   assert.deepEqual(report.externalAssets, [])
   const expectedCss = await readFile(join(root, 'examples/all-components/shared/theme.css'), 'utf8')
   assert.equal(await readFile(join(dist, 'all-components/source/theme.css'), 'utf8'), expectedCss)
+  const cssOnlySource = JSON.parse(await readFile(join(dist, 'all-components/source/css-only-gallery.json'), 'utf8'))
+  for (const file of cssOnlySource.files) assert.equal(file.code, await readFile(join(root, file.repositoryPath), 'utf8'), 'CSS-only source exact bytes')
   for (const framework of catalog.frameworks) for (const family of catalog.families) {
     const source = JSON.parse(await readFile(join(dist, 'all-components/source', framework, family + '.json'), 'utf8'))
     assert.equal(source.family, family); assert.equal(source.framework, framework)
@@ -49,6 +51,20 @@ try {
       report.sourceFiles++
     }
     report.sources++
+  }
+  for (const framework of catalog.frameworks) {
+    const html = await readFile(join(dist, 'all-components', framework, 'index.html'), 'utf8')
+    assert.doesNotMatch(html, /rel="stylesheet"/, 'Family CSS must not be eagerly shared')
+    const directory = join(dist, 'all-components', framework, 'assets')
+    const files = await readdir(directory)
+    const dedicated = files.find(file => /^css-only-gallery-.*\.css$/.test(file))
+    const fallback = files.find(file => /^theme-.*\.css$/.test(file))
+    assert.ok(dedicated && fallback, 'Two isolated CSS chunks are built')
+    const cssOnly = await readFile(join(directory, dedicated), 'utf8')
+    assert.match(cssOnly, /--dy-primary/)
+    assert.doesNotMatch(cssOnly, /--demo-coral|checkbox-basic/)
+    const entry = await readFile(join(directory, files.find(file => /^index-.*\.js$/.test(file))), 'utf8')
+    assert.ok(entry.includes(dedicated) && entry.includes(fallback), 'Both selectable CSS chunks are referenced')
   }
   assert.equal(report.sources, 184)
   const coverage = JSON.parse(await readFile(join(root, 'examples/all-components/shared/shadcn-coverage.json'), 'utf8'))

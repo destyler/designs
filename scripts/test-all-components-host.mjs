@@ -47,6 +47,7 @@ const testSourceInterruptions = async html => {
       let oldConsumed = false
       const stale = new Promise(resolve => { releaseOld = resolve })
       win.fetch = async input => {
+        if (String(input).endsWith('/css-only-gallery.json')) return sourceResponse('packages/css-only/styles.css', '/* CSS-only package fixture */')
         if (String(input).endsWith('/theme.css')) return new Response('/* Shared theme fixture */')
         if (String(input).endsWith('/checkbox.json')) return stale
         assert.equal(String(input), `/all-components/source/${framework}/dialog.json`)
@@ -69,7 +70,8 @@ const testSourceInterruptions = async html => {
       await sourceScenario(html, framework, async ({ win, card }) => {
         let attempts = 0
         win.fetch = async input => {
-          if (String(input).endsWith('/theme.css')) return new Response('/* Shared theme fixture */')
+          if (String(input).endsWith('/css-only-gallery.json')) return sourceResponse('packages/css-only/styles.css', '/* CSS-only package fixture */')
+        if (String(input).endsWith('/theme.css')) return new Response('/* Shared theme fixture */')
           assert.equal(String(input), `/all-components/source/${framework}/checkbox.json`)
           if (++attempts === 1) {
             if (failure === 'http') return new Response('Unavailable', { status: 503 })
@@ -128,7 +130,7 @@ try {
   win.fetch = async input => {
     const url = new URL(String(input), win.location.href)
     assert.equal(url.origin, win.location.origin)
-    assert.match(url.pathname, /^\/all-components\/source\/(theme\.css|(?:shadcn|react|vue|solid|svelte)\/[a-z-]+\.json)$/)
+    assert.match(url.pathname, /^\/all-components\/source\/(theme\.css|css-only-gallery\.json|(?:shadcn|react|vue|solid|svelte)\/[a-z-]+\.json)$/)
     fetchCount++
     if (url.pathname.endsWith('/theme.css')) cssFetchCount++
     const body = await readFile(join(root, 'public', url.pathname.slice(1)), 'utf8')
@@ -273,6 +275,17 @@ try {
   const reactCard = cards.find(card => card.dataset.framework === 'react')
   reactCard.querySelector('[data-view=code]').click(); await until(() => [...reactCard.querySelectorAll('option')].some(option => /TreeNode/.test(option.textContent)))
   check('source includes required recursive helpers', () => assert.ok([...reactCard.querySelectorAll('option')].some(option => /TreeNode/.test(option.textContent))))
+  for (const family of ['switch', 'dialog']) {
+    win.location.hash = family; win.dispatchEvent(new win.HashChangeEvent('hashchange'))
+    reactCard.querySelector('[data-view=code]').click()
+    await until(() => !reactCard.querySelector('pre code').textContent.includes('Loading source') && [...reactCard.querySelectorAll('option')].some(option => option.textContent === 'packages/css-only/styles.css'))
+    const files = reactCard.querySelector('.gallery-source-select')
+    assert.ok(![...files.options].some(option => option.textContent === 'theme.css'))
+    files.value = String(files.options.length - 1); files.dispatchEvent(new win.Event('change'))
+    assert.equal(reactCard.querySelector('pre code').textContent, await readFile(join(root, 'packages/css-only/styles.css'), 'utf8'))
+    assert.ok(reactCard.querySelector('.gallery-source-link').href.endsWith('/packages/css-only/styles.css'))
+  }
+  report.checks.push('Switch/Dialog Code view shows the exact reused package and no inactive Basic theme')
   const absentFamily = catalog.families.find(family => coverage[family].status === 'none')
   assert.ok(absentFamily, 'Reference gaps must be explicit')
   win.location.hash = absentFamily; win.dispatchEvent(new win.HashChangeEvent('hashchange'))

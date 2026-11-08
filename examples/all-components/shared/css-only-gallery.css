@@ -1,0 +1,40 @@
+/* Switch/Dialog use the existing CSS-only package, not copied Basic recipes.
+ * This file owns the isolated demo reset, canvas and application composition.
+ * Package anatomy, tokens, states and movement remain in the imported file. */
+@layer gallery-reset, destyler;
+@import "../../../packages/css-only/styles.css";
+
+@layer gallery-reset {
+  *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; }
+  html { font-family: ui-sans-serif, system-ui, sans-serif; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; min-width: 0; font-size: 16px; }
+  button, input { font: inherit; color: inherit; margin: 0; padding: 0; background: transparent; }
+  button { cursor: pointer; }
+  p, h1, h2, h3, h4, h5, h6 { margin: 0; }
+  svg { display: block; vertical-align: middle; }
+}
+html { color-scheme: var(--dy-color-scheme); background: var(--dy-background); color: var(--dy-foreground); }
+body :is(#app, #root) { box-sizing: border-box; min-height: 340px; width: 100%; padding: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.ds-example-content { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.parity-dialog-header { display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.parity-dialog-footer { display: flex; flex-direction: column-reverse; gap: 8px; }
+/* The reference demo explicitly selects outline buttons. This is app composition,
+ * not a replacement for the package's default primary-button recipe. */
+[data-scope="dialog"]:is([data-part="trigger"],[data-part="close-trigger"]) { border: 1px solid var(--dy-border); background: var(--dy-background); color: var(--dy-foreground); box-shadow: 0 1px 2px rgb(0 0 0 / .05); }
+[data-scope="dialog"]:is([data-part="trigger"],[data-part="close-trigger"]):hover { background: oklch(0.967 0.001 286.375); }
+:root[data-theme="dark"] [data-scope="dialog"]:is([data-part="trigger"],[data-part="close-trigger"]) { border-color: var(--dy-input); background: color-mix(in oklab, var(--dy-input) 30%, transparent); }
+:root[data-theme="dark"] [data-scope="dialog"]:is([data-part="trigger"],[data-part="close-trigger"]):hover { background: color-mix(in oklab, var(--dy-input) 50%, transparent); }
+.parity-dialog-close { position: absolute; top: 16px; right: 16px; display: inline-flex; justify-content: center; align-items: center; width: 16px; height: 16px; border: 0; border-radius: 2px; padding: 0; background: transparent; color: inherit; opacity: .7; }
+.parity-dialog-close:hover { opacity: 1; }
+.parity-dialog-close:focus-visible { outline: 2px solid var(--dy-ring); outline-offset: 2px; }
+.parity-dialog-close svg { width: 16px; height: 16px; }
+[hidden]:not([hidden="until-found"]) { display: none !important; }
+@media (min-width: 640px) {
+  .parity-dialog-header { text-align: left; }
+  .parity-dialog-footer { flex-direction: row; justify-content: flex-end; }
+}
+@media (max-width: 560px) { body :is(#app, #root) { padding: 24px 16px; } }
+@media (forced-colors: active) {
+  :root { --dy-background: Canvas; --dy-foreground: CanvasText; --dy-primary: Highlight; --dy-primary-foreground: HighlightText; --dy-input: ButtonBorder; --dy-border: ButtonBorder; --dy-ring: Highlight; --dy-muted-foreground: CanvasText; }
+  .parity-dialog-close:focus-visible { outline-color: Highlight; }
+}
