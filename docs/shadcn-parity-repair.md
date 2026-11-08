@@ -41,3 +41,10 @@ These changes fix known source/integration errors, not an assertion of complete
 visual parity. Browser rendering, focus/pointer behavior and assistive-technology
 acceptance remain open; the remaining families are still adaptations rather than
 exports of the two-family package.
+
+## Gallery browser acceptance preparation
+
+The dedicated [gallery browser plan](gallery-browser-acceptance.md) now targets
+the actual `/components/` iframes for Checkbox, Tabs and Calendar. Its runner is
+prepared and syntax/helper-tested only; it has not been run in this executor.
+The earlier `/css-only/` browser suite is not substituted for this gallery check.

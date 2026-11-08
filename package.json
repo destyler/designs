@@ -35,7 +35,8 @@
     "check:all-components": "tsc -p examples/all-components/tsconfig.json && tsc -p examples/all-components/react/tsconfig.json && vue-tsc --noEmit -p examples/all-components/vue/tsconfig.json && tsc -p examples/all-components/solid/tsconfig.json && svelte-check --tsconfig examples/all-components/svelte/tsconfig.json && tsc -p examples/all-components/shadcn/tsconfig.json",
     "test:all-components:host": "node scripts/test-all-components-host.mjs",
     "test:all-components": "node scripts/verify-all-components.mjs",
-    "test:all-components:reference": "node examples/all-components/shadcn/verify.mjs"
+    "test:all-components:reference": "node examples/all-components/shadcn/verify.mjs",
+    "test:all-components:browser": "node scripts/test-all-components-browser.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.6.0",
