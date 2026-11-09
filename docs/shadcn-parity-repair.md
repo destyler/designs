@@ -48,3 +48,28 @@ The dedicated [gallery browser plan](gallery-browser-acceptance.md) now targets
 the actual `/components/` iframes for Checkbox, Tabs and Calendar. Its runner is
 prepared and syntax/helper-tested only; it has not been run in this executor.
 The earlier `/css-only/` browser suite is not substituted for this gallery check.
+
+## State corrections (2026-11-09)
+
+- Checkbox now maps its real hidden-input focus-visible state to the reference's
+  ring/border and puts disabled opacity on control/label rather than the ancestor.
+  The prior group opacity already produced about 50% overall; this is an explicit
+  part-state mapping, not a claim that a double-opacity bug had been observed.
+- Tabs uses the pinned dark inactive text, selected surface and focus ring/outline.
+  The generic forced 2px focus outline no longer overrides these three families.
+- Calendar no longer hides outside-month cells. Day/navigation state styling is
+  adapted, and visual focus follows actual DOM focus rather than persistent
+  `data-focus`, which is the native roving-tabstop date even after blur.
+- The reference application demo now derives its today marker from the current
+  UTC day, matching native Calendar's default timezone instead of freezing Nov 6.
+  The pinned upstream shadcn component files are unchanged.
+
+A remaining behavioral difference is explicit: core 0.3.4 disables dates outside
+its visible month (date `isDateDisabled` includes `isDateOutsideVisibleRange`),
+whereas the reference's default outside days are selectable. Showing those native
+cells does not change their disabled semantics. This work does not patch headless
+behavior or pretend that CSS alone makes the two interactions equivalent.
+
+The browser runner's selected/focus/blur/disabled and four-sided border coverage
+has been expanded, but remains unexecuted. Source and simulated-DOM results are
+not a rendered-state or assistive-technology approval.

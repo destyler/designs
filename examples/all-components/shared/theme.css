@@ -6933,7 +6933,7 @@ body[class$="-basic"] { min-width: 0; max-width: none; }
 }
 
 /* Visible keyboard focus wins over the upstream focus outline resets. */
-body :focus-visible {
+body:not(.checkbox-basic):not(.tabs-basic):not(.calendar-basic) :focus-visible {
   outline: 2px solid var(--demo-coral-focus-ring) !important;
   outline-offset: 3px;
 }
@@ -6972,7 +6972,7 @@ body .parity-stack { display: flex; flex-direction: column; align-items: stretch
 body[class$="-basic"] .parity-button.parity-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 8px 16px; border: 1px solid var(--border); border-radius: calc(var(--radius) * .8); color: var(--foreground); background: var(--background); box-shadow: var(--demo-shadow-xs); font: 500 14px/20px ui-sans-serif, system-ui, sans-serif; white-space: nowrap; cursor: pointer; }
 body[class$="-basic"] .parity-button.parity-button:hover { background: var(--accent); color: var(--accent-foreground); }
 :root[data-theme="dark"] body[class$="-basic"] .parity-button.parity-button { border-color: var(--input); background: color-mix(in oklab, var(--input) 30%, transparent); }
-body :is(button, [role="button"], input, [data-part="control"]):focus-visible { outline: 2px solid var(--ring) !important; outline-offset: 2px; }
+body:not(.checkbox-basic):not(.tabs-basic):not(.calendar-basic) :is(button, [role="button"], input, [data-part="control"]):focus-visible { outline: 2px solid var(--ring) !important; outline-offset: 2px; }
 body [data-disabled], body :disabled { cursor: not-allowed; }
 /* aspect-ratio */
 body.aspect-ratio-basic main { width: 100%; max-width: 384px; }
@@ -6994,6 +6994,15 @@ body.checkbox-basic [data-part="indicator"]::before { content: none; }
 body.checkbox-basic [data-part="indicator"] svg { width: 14px; height: 14px; }
 body.checkbox-basic [data-part="label"] { font-size: 14px; line-height: 14px; font-weight: 500; }
 :root[data-theme="dark"] body.checkbox-basic [data-part="control"][data-state="unchecked"] { background: color-mix(in oklab, var(--input) 30%, transparent); }
+/* Match hidden-input-driven focus/disabled states to the upstream button states. */
+body.checkbox-basic [data-part="root"][data-disabled] { opacity: 1; }
+body.checkbox-basic [data-part="control"] { outline: none; outline-offset: 0; transition: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); }
+body.checkbox-basic [data-part="control"][data-disabled], body.checkbox-basic [data-part="label"][data-disabled] { opacity: .5; cursor: not-allowed; }
+body.checkbox-basic [data-part="control"][data-focus-visible] { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), var(--demo-shadow-xs); }
+body.checkbox-basic [data-part="control"][data-invalid] { border-color: var(--destructive); box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), var(--demo-shadow-xs); }
+:root[data-theme="dark"] body.checkbox-basic [data-part="control"][data-invalid] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), var(--demo-shadow-xs); }
+/* Tailwind's data-state=checked border utility follows focus/invalid variants. */
+body.checkbox-basic [data-part="control"][data-state="checked"]:is([data-focus-visible], [data-invalid]) { border-color: var(--primary); }
 /* switch */
 body.switch-basic [data-part="root"] { gap: 12px; }
 body.switch-basic [data-part="control"] { width: 32px; height: 1.15rem; --thumb-size: 16px; border: 1px solid transparent; padding: 0; background: var(--input); box-shadow: var(--demo-shadow-xs); }
@@ -7006,14 +7015,22 @@ body.switch-basic [data-part="label"] { font-size: 14px; line-height: 14px; }
 /* tabs */
 body.tabs-basic [data-part="root"] { width: 100%; max-width: 448px; min-width: 0; gap: 8px; }
 body.tabs-basic [data-part="list"] { display: inline-flex; align-items: center; justify-content: center; width: fit-content; max-width: 100%; height: 36px; padding: 3px; gap: 0; border: 0; border-radius: var(--radius); background: var(--muted); }
-body.tabs-basic [data-part="trigger"] { height: calc(100% - 1px); flex: 1; padding: 4px 8px; border: 1px solid transparent; border-radius: calc(var(--radius) * .8); font-size: 14px; font-weight: 500; line-height: 20px; color: color-mix(in oklab, var(--foreground) 60%, transparent); background: transparent; }
+body.tabs-basic [data-part="trigger"] { outline: none; outline-offset: 0; box-shadow: none; --parity-tab-shadow: 0 0 #0000; height: calc(100% - 1px); flex: 1; padding: 4px 8px; border: 1px solid transparent; border-radius: calc(var(--radius) * .8); font-size: 14px; font-weight: 500; line-height: 20px; color: color-mix(in oklab, var(--foreground) 60%, transparent); background: transparent; }
 body.tabs-basic [data-part="trigger"]:hover { color: var(--foreground); background: transparent; }
-body.tabs-basic [data-part="trigger"][data-selected] { color: var(--foreground); background: var(--background); box-shadow: var(--demo-shadow-sm); }
+body.tabs-basic [data-part="trigger"][data-selected] { color: var(--foreground); background: var(--background); --parity-tab-shadow: var(--demo-shadow-sm); box-shadow: var(--parity-tab-shadow); }
 body.tabs-basic [data-part="trigger"][data-disabled] { opacity: .5; }
 body.tabs-basic [data-part="indicator"] { display: none; }
 body.tabs-basic [data-part="content"] { padding: 16px; border: 1px solid var(--border); border-radius: calc(var(--radius) * .8); color: var(--foreground); font-size: 16px; line-height: 24px; }
 :root[data-theme="dark"] body.tabs-basic [data-part="trigger"]:hover { color: var(--foreground); background: transparent; }
 :root[data-theme="dark"] body.tabs-basic [data-part="trigger"][data-selected] { border-color: var(--input); background: color-mix(in oklab, var(--input) 30%, transparent); }
+/* Native Tabs maps data-selected to shadcn's data-state=active. */
+body.tabs-basic [data-part="trigger"]:is([data-disabled], :disabled) { pointer-events: none; opacity: .5; }
+:root[data-theme="dark"] body.tabs-basic [data-part="trigger"]:not([data-selected]):not(:hover) { color: var(--muted-foreground); }
+body.tabs-basic [data-part="trigger"]:focus-visible,
+:root[data-theme="dark"] body.tabs-basic [data-part="trigger"]:focus-visible { border-color: var(--ring); outline: 1px solid var(--ring); outline-offset: 0; box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), var(--parity-tab-shadow); }
+body.tabs-basic [data-part="content"] { outline: none; }
+/* The reference's dark active border utility wins over focus:border-ring. */
+:root[data-theme="dark"] body.tabs-basic [data-part="trigger"][data-selected]:focus-visible { border-color: var(--input); }
 /* clipboard: application composition, not an upstream primitive */
 body.clipboard-basic [data-part="root"] { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 body.clipboard-basic [data-part="label"] { font-size: 14px; line-height: 20px; font-weight: 500; }
@@ -7145,7 +7162,18 @@ body.calendar-basic [data-part="table-cell"] { padding: 0; width: 32px; height: 
 body.calendar-basic [data-part="table-cell-trigger"] { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: calc(var(--radius) * .8); background: transparent; color: var(--foreground); font-size: 14px; font-weight: 400; }
 body.calendar-basic [data-part="table-cell-trigger"][data-today] { background: var(--accent); color: var(--accent-foreground); }
 body.calendar-basic [data-part="table-cell-trigger"][data-selected] { background: var(--primary); color: var(--primary-foreground); }
-body.calendar-basic [data-part="table-cell-trigger"][data-outside-range] { color: var(--muted-foreground); }
+body.calendar-basic [data-part="table-cell-trigger"][data-outside-range] { visibility: visible; }
+body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected]) { color: var(--muted-foreground); }
+/* Ghost day/nav controls use the original reference's state feedback. */
+body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]) { border: 0 solid var(--border); outline: none; outline-offset: 0; box-shadow: none; }
+body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):hover { background: var(--accent); color: var(--accent-foreground); }
+:root[data-theme="dark"] body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):hover { background: color-mix(in oklab, var(--accent) 50%, transparent); color: var(--accent-foreground); }
+:root:not([data-theme="dark"]) body.calendar-basic [data-part="table-cell-trigger"][data-selected]:hover { background: var(--primary); color: var(--primary-foreground); }
+body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):is([data-disabled], :disabled, [aria-disabled="true"]) { pointer-events: none; opacity: .5; }
+body.calendar-basic [data-part="table-cell-trigger"][data-disabled] { color: var(--muted-foreground); }
+body.calendar-basic [data-part="table-cell-trigger"]:focus,
+body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):focus-visible { position: relative; z-index: 10; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }
+
 /* carousel: match reference's 384px wrapper with 48px navigation gutters */
 body.carousel-basic [data-part="root"] { width: 100%; max-width: 384px; position: relative; padding-inline: 48px; }
 body.carousel-basic [data-part="item-group"] { width: 100%; border-radius: 0; }
@@ -7224,6 +7252,12 @@ body.calendar-basic .parity-calendar-dropdown:focus-within { border-color: var(-
     --demo-error: CanvasText;
   }
   body :focus-visible { outline-color: Highlight !important; }
+  /* Box shadows can be suppressed in forced colors; retain an explicit focus edge. */
+  body.checkbox-basic [data-part="control"][data-focus-visible],
+  body.tabs-basic [data-part="trigger"]:focus-visible,
+  body.calendar-basic [data-part="table-cell-trigger"]:focus,
+  body.calendar-basic :is([data-part="prev-trigger"],[data-part="next-trigger"]):focus-visible,
+  body.calendar-basic .parity-calendar-dropdown:focus-within { outline: 2px solid Highlight !important; outline-offset: 2px; }
   :where(button, input, select, textarea, [role="button"], [role="slider"]) { border-color: ButtonBorder; }
   :where([aria-selected="true"], [aria-checked="true"], [data-selected]) { outline: 1px solid Highlight; }
   :where([data-part="control"], [data-part="item-control"])[data-state="checked"],

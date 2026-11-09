@@ -76,3 +76,22 @@ node --test test/gallery-browser-contract.test.mjs
 These validate parsing, target handling, coverage arithmetic, comparison tolerances,
 reporting rules and source safeguards. They do not validate the Playwright locators
 against a rendered page, perform keyboard actions, or create browser screenshots.
+
+## State coverage expansion (prepared only)
+
+The runner now requires 260 planned state snapshots across the 60 frame cases:
+Checkbox default/checked-keyboard-focus/checked-blurred/unchecked-keyboard-focus;
+Tabs default/selected-keyboard-focus/unselected/disabled/selected-blurred; Calendar
+default/focused-unselected-day/selected-keyboard-focus-day/selected-blurred-day.
+It compares every state to the matching successfully measured reference state,
+including all four border colors, widths and styles, outline offset, opacity and
+pointer-events. Each state records DOM attributes and actual focus evidence as
+well as the intended screenshot path. Missing state evidence cannot pass.
+
+Disabled coverage uses the gallery's real disabled Svelte tab. Checkbox has no
+disabled fixture and Calendar has no matching disabled-date fixture in both
+implementations; those are explicitly reported as not covered. No disabled DOM
+attributes or fake states are injected merely to get a passing comparison.
+
+This expansion has only syntax and pure helper/source-contract validation here.
+There are still no real-browser results or generated screenshots from this runner.

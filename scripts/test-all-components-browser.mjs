@@ -3,13 +3,13 @@
 import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { families, frameworks, themes, viewports, styleKeys, targetUrl, styleDifferences, resultStatus } from './lib/gallery-browser-contract.mjs'
+import { families, frameworks, themes, viewports, styleKeys, targetUrl, styleDifferences, resultStatus, requiredStates, disabledCoverage, missingStates } from './lib/gallery-browser-contract.mjs'
 
 if (process.env.RUN_BROWSER_ACCEPTANCE !== '1') throw new Error('Not started. Run only in an authorized browser-capable environment with RUN_BROWSER_ACCEPTANCE=1 and BASE_URL.')
 if (!process.env.BASE_URL) throw new Error('BASE_URL is required; never silently inspect an unrelated localhost server')
 const base = new URL(targetUrl(process.env.BASE_URL, families[0])).origin
 const out = process.env.ARTIFACT_DIR || 'artifacts/all-components/browser'
-const report = { status: 'running', pass: false, target: base, operatorProvidedCommit: process.env.EXPECTED_COMMIT || null, startedAt: new Date().toISOString(), cases: [], errors: [], limitations: ['This covers Checkbox, Tabs and Calendar, not all 46 families.', 'Computed properties and screenshots support visual review; they are not a pixel-diff approval or screen-reader acceptance.', 'Keyboard cases use the real browser; manual assistive-technology review remains required.'] }
+const report = { status: 'running', pass: false, target: base, operatorProvidedCommit: process.env.EXPECTED_COMMIT || null, startedAt: new Date().toISOString(), cases: [], errors: [], limitations: ['This covers Checkbox, Tabs and Calendar, not all 46 families.', 'Computed properties and screenshots support visual review; they are not a pixel-diff approval or screen-reader acceptance.', 'Keyboard cases use the real browser; manual assistive-technology review remains required.', 'Disabled styles/behavior cover only the real disabled Tabs fixture; Checkbox and Calendar disabled states are explicitly not covered.'] }
 await mkdir(out, { recursive: true })
 const save = () => writeFile(join(out, 'verification.json'), JSON.stringify(report, null, 2) + '\n')
 await save()
@@ -55,11 +55,20 @@ async function checked(frame, reference) {
   await input.focus(); await input.press('Space'); await eventually(async () => assert.equal(await input.isChecked(), true))
   return input
 }
-async function keyboard(frame, family, reference) {
+async function keyboard(frame, family, reference, capture) {
   if (family === 'checkbox') {
     const input = await checked(frame, reference)
-    await input.press('Space'); await eventually(async () => assert.equal(await input.isChecked(), false))
-    return ['Space checks and unchecks; focusable real checkbox']
+    const control = parts(frame, family, reference).control
+    await eventually(async () => assert.equal(await input.evaluate(el => el === document.activeElement && el.matches(':focus-visible')), true, 'Checkbox has actual keyboard focus'))
+    if (!reference) await eventually(async () => assert.equal(await control.evaluate(el => el.hasAttribute('data-focus-visible')), true, 'Native visual control reflects hidden-input keyboard focus'))
+    await capture('checked-keyboard-focus', parts(frame, family, reference))
+    await input.evaluate(el => el.blur())
+    assert.equal(await input.evaluate(el => el === document.activeElement), false)
+    await capture('checked-blurred', parts(frame, family, reference))
+    await input.focus(); await input.press('Space'); await eventually(async () => assert.equal(await input.isChecked(), false))
+    assert.equal(await input.evaluate(el => el === document.activeElement && el.matches(':focus-visible')), true)
+    await capture('unchecked-keyboard-focus', parts(frame, family, reference))
+    return ['Space checks and unchecks; real keyboard-focus and blurred states measured']
   }
   if (family === 'tabs') {
     const tab = name => frame.getByRole('tab', { name: `${name} Trigger`, exact: true })
@@ -72,6 +81,17 @@ async function keyboard(frame, family, reference) {
     }
     await tab('React').focus()
     await select('ArrowRight', 'Solid')
+    assert.equal(await tab('Solid').evaluate(el => el.matches(':focus-visible')), true, 'Tab selection retains keyboard focus-visible')
+    await capture('selected-keyboard-focus', { tab: tab('Solid'), panel: frame.getByRole('tabpanel').filter({ visible: true }) })
+    assert.equal(await tab('React').getAttribute('aria-selected'), 'false')
+    await capture('unselected', { tab: tab('React') })
+    assert.equal(await tab('Svelte').isDisabled(), true)
+    assert.equal(await tab('Svelte').getAttribute('aria-selected'), 'false')
+    await capture('disabled', { tab: tab('Svelte') })
+    await tab('Solid').evaluate(el => el.blur())
+    assert.equal(await tab('Solid').evaluate(el => el === document.activeElement), false)
+    await capture('selected-blurred', { tab: tab('Solid'), panel: frame.getByRole('tabpanel').filter({ visible: true }) })
+    await tab('Solid').focus()
     await select('ArrowRight', 'Vue') // Disabled Svelte must be skipped.
     await select('Home', 'React'); await select('End', 'Vue'); await select('Home', 'React')
     assert.equal(await tab('Svelte').isDisabled(), true)
@@ -94,8 +114,19 @@ async function keyboard(frame, family, reference) {
   const day = await one(dayButton(frame, reference, 15))
   await day.focus(); await day.press('ArrowRight')
   await eventually(async () => assert.equal((await frame.locator(':focus').innerText()).trim(), '16'))
-  await frame.locator(':focus').press('Enter')
+  const focusedDay = await one(dayButton(frame, reference, 16))
+  assert.equal(await focusedDay.evaluate(el => el === document.activeElement && el.matches(':focus-visible')), true, 'Calendar day has actual keyboard focus')
+  const isSelected = () => focusedDay.evaluate((el, reference) => reference ? el.getAttribute('data-selected-single') === 'true' : el.hasAttribute('data-selected'), reference)
+  assert.equal(await isSelected(), false)
+  await capture('focused-unselected-day', { day: focusedDay })
+  await focusedDay.press('Enter')
   await eventually(async () => assert.equal((await frame.getByRole('status').innerText()).trim(), 'Selected: 2026-11-16'))
+  await eventually(async () => assert.equal(await isSelected(), true, 'Selected day DOM state agrees with status'))
+  await capture('selected-keyboard-focus-day', { day: focusedDay })
+  await focusedDay.evaluate(el => el.blur())
+  assert.equal(await focusedDay.evaluate(el => el === document.activeElement), false)
+  await capture('selected-blurred-day', { day: focusedDay })
+  await focusedDay.focus()
   await frame.locator(':focus').press('Escape')
   assert.equal(await frame.locator('table').isVisible(), true, 'Inline Calendar remains visible')
   return ['Month/year options update actual day cells', 'previous/next month work', 'ArrowRight + Enter selects the adjacent date', 'Escape leaves inline calendar visible']
@@ -137,23 +168,37 @@ try {
       const baseline = await styles(frames.shadcn.frame, family, true)
       await page.screenshot({ path: join(out, `${prefix}-gallery.png`), fullPage: true })
       for (const framework of frameworks) {
-        const item = { viewport: viewport.name, family, theme, framework, pass: false, styleDifferences: [], keyboard: [], screenshot: `${prefix}-${framework}.png` }
+        const item = { viewport: viewport.name, family, theme, framework, pass: false, styleDifferences: [], stateStyles: {}, stateSemantics: {}, stateScreenshots: {}, disabledCoverage: disabledCoverage[family], keyboard: [], screenshot: `${prefix}-${framework}.png` }
         report.cases.push(item)
         try {
           const { frame, card } = frames[framework]
           await card.locator('iframe').screenshot({ path: join(out, item.screenshot) })
-          const actual = await styles(frame, family, framework === 'shadcn')
-          item.styles = actual
-          for (const [part, expected] of Object.entries(baseline)) item.styleDifferences.push(...styleDifferences(expected, actual[part]).map(diff => ({ part, state: 'default', ...diff })))
-          item.keyboard = await keyboard(frame, family, framework === 'shadcn')
-          if (family === 'checkbox') {
-            await checked(frame, framework === 'shadcn'); await pause(page)
-            item.checkedStyles = await styles(frame, family, framework === 'shadcn')
-            await card.locator('iframe').screenshot({ path: join(out, `${prefix}-${framework}-checked.png`) })
-            if (framework !== 'shadcn') {
-              const reference = report.cases.find(row => row.viewport === viewport.name && row.family === family && row.theme === theme && row.framework === 'shadcn').checkedStyles
-              assert.ok(reference, 'Reference checked-state measurement is required')
-              for (const [part, expected] of Object.entries(reference)) item.styleDifferences.push(...styleDifferences(expected, item.checkedStyles[part]).map(diff => ({ part, state: 'checked+keyboard-focus', ...diff })))
+          const capture = async (state, locators) => {
+            await pause(page)
+            const measured = {}
+            const semantics = {}
+            for (const [part, locator] of Object.entries(locators)) {
+              measured[part] = await snapshot(await one(locator))
+              semantics[part] = await locator.evaluate(el => ({ activeElement: el === document.activeElement, focusVisible: el.matches(':focus-visible'), disabled: el.matches(':disabled') || el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('data-disabled'), ariaSelected: el.getAttribute('aria-selected'), dataSelected: el.hasAttribute('data-selected'), dataSelectedSingle: el.getAttribute('data-selected-single'), dataFocusVisible: el.hasAttribute('data-focus-visible'), dataState: el.getAttribute('data-state') }))
+            }
+            item.stateStyles[state] = measured
+            item.stateSemantics[state] = semantics
+            const filename = `${prefix}-${framework}-${state}.png`
+            await card.locator('iframe').screenshot({ path: join(out, filename) })
+            item.stateScreenshots[state] = filename
+            await save()
+          }
+          await capture('default', parts(frame, family, framework === 'shadcn'))
+          item.keyboard = await keyboard(frame, family, framework === 'shadcn', capture)
+          assert.deepEqual(missingStates(family, item.stateStyles), [], 'Every planned state needs actual measurements')
+          const referenceCase = framework === 'shadcn' ? item : report.cases.find(row => row.viewport === viewport.name && row.family === family && row.theme === theme && row.framework === 'shadcn')
+          assert.ok(referenceCase && !referenceCase.error, 'Reference state sequence must have succeeded')
+          assert.deepEqual(missingStates(family, referenceCase.stateStyles), [], 'Missing reference states cannot pass')
+          for (const state of requiredStates[family]) {
+            const expectedParts = state === 'default' ? baseline : referenceCase.stateStyles[state]
+            for (const [part, expected] of Object.entries(expectedParts)) {
+              assert.ok(item.stateStyles[state][part], `Missing actual ${state}/${part}`)
+              item.styleDifferences.push(...styleDifferences(expected, item.stateStyles[state][part]).map(diff => ({ part, state, ...diff })))
             }
           }
           item.pass = item.styleDifferences.length === 0
