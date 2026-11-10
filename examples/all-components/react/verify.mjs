@@ -91,7 +91,8 @@ if (!mode) {
       const date=qa('calendar','table-cell-trigger').find(node=>node.dataset.value==='2027-10-15')
       assert.ok(date); date.click(); await pause()
       assert.match(document.querySelector('[role="status"]').textContent,/Selected: 2027-10-15/)
-      actions.push('Inline calendar: initial month, next/previous, year/month changes, actual date selection')
+      await (await import('../../../scripts/lib/calendar-outside-selection.mjs')).verifyOutsideSelection(document, pause)
+      actions.push('Inline calendar: initial month, next/previous, year/month changes, actual date and outside-day selection')
     }
     if (family === 'progress') {
       const advance=[...document.querySelectorAll('button')].find(node=>node.textContent==='Advance')

@@ -30,7 +30,7 @@ test('reference dependencies use exact versions from the same pinned upstream lo
     assert.equal(pkg.dependencies[name], value.resolvedVersion, name)
     assert.equal(lock.packages[`node_modules/${name}`].version, value.resolvedVersion, name)
   }
-  for (const name of catalog.frameworks) assert.equal(pkg.dependencies[`@destyler-ui/${name}`], '0.0.4')
+  for (const name of catalog.frameworks) assert.equal(pkg.dependencies[`@destyler-ui/${name}`], '0.0.5')
 })
 test('all 46 families have honest reference coverage rather than fabricated counterparts', async () => {
   assert.deepEqual(Object.keys(coverage).sort(), [...catalog.families].sort())

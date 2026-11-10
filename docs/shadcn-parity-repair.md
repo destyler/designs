@@ -64,11 +64,17 @@ The earlier `/css-only/` browser suite is not substituted for this gallery check
   UTC day, matching native Calendar's default timezone instead of freezing Nov 6.
   The pinned upstream shadcn component files are unchanged.
 
-A remaining behavioral difference is explicit: core 0.3.4 disables dates outside
-its visible month (date `isDateDisabled` includes `isDateOutsideVisibleRange`),
-whereas the reference's default outside days are selectable. Showing those native
-cells does not change their disabled semantics. This work does not patch headless
-behavior or pretend that CSS alone makes the two interactions equivalent.
+## Outside-day selection opt-in (2026-11-10)
+
+The four gallery Calendars explicitly enable `allowOutsideDays` using UI 0.0.5
+and core Calendar 0.3.5. Outside-month dates are visible and selectable, as in the
+reference example. The library default remains false; this is an example-level
+opt-in, not a CSS override or a change to every consumer's behavior. The existing
+2020–2030 min/max limits remain, and the upstream disabled/unavailable checks
+still apply. The gallery does not introduce disabled/unavailable fixtures.
+
+The four framework simulated-DOM checks exercise actual outside-date selection
+and the selected-date status. These are not native browser interaction results.
 
 The browser runner's selected/focus/blur/disabled and four-sided border coverage
 has been expanded, but remains unexecuted. Source and simulated-DOM results are

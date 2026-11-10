@@ -8,6 +8,7 @@ export function Basic() {
     <div className="parity-stack">
       <Calendar.Root
         open
+        allowOutsideDays
         closeOnSelect={false}
         fixedWeeks={false}
         focusedValue={focused}

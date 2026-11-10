@@ -8,6 +8,7 @@ const selected = ref("");
   <div class="parity-stack">
     <Calendar.Root
       :open="true"
+      :allow-outside-days="true"
       :close-on-select="false"
       :focused-value="focused"
       @focus-change="focused = $event.focusedValue"

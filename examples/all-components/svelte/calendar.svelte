@@ -4,7 +4,7 @@
   let selected = $state('')
 </script>
 <div class="parity-stack">
-  <Calendar.Root open={true} closeOnSelect={false} bind:focusedValue={focused} onValueChange={details => { const day = details.value[0]; selected = day ? `${day.year}-${day.month}-${day.day}` : '' }} min={parseDate('2020-01-01')} max={parseDate('2030-12-31')} ids={{ table: key => `calendar-table-${key.replace(/\s+/g, '-')}` }} class="parity-calendar">
+  <Calendar.Root allowOutsideDays={true} open={true} closeOnSelect={false} bind:focusedValue={focused} onValueChange={details => { const day = details.value[0]; selected = day ? `${day.year}-${day.month}-${day.day}` : '' }} min={parseDate('2020-01-01')} max={parseDate('2030-12-31')} ids={{ table: key => `calendar-table-${key.replace(/\s+/g, '-')}` }} class="parity-calendar">
     <Calendar.Positioner class="parity-calendar-positioner"><Calendar.Content class="parity-calendar-content" role="group" aria-label="Calendar"><Calendar.View view="day">
       <Calendar.Context>
         {#snippet render(api)}

@@ -6,7 +6,7 @@ This is a new reconstruction, not a recovered copy of the earlier unpublished v7
 
 - Designs baseline: merged main `5ec48d94874979d55c6983f7713ff20423020db8` from [dependency upgrade PR #1](https://github.com/destyler/designs/pull/1). Its source tree is identical to the validated dependency candidate `2de461c810960079489647a560b516059f138bfd`.
 - Verified example source: [Destyler UI 0.0.4, commit 77c0653](https://github.com/destyler/ui/tree/77c065367954fe170ee71f6a6782929fd6ecd6f2).
-- Runtime: React, Vue, Solid and Svelte UI packages pinned to `0.0.4`; core packages remain `0.3.4`.
+- Current runtime: React, Vue, Solid and Svelte UI packages pinned to `0.0.5`; core packages resolve to `0.3.5`. The four Calendars explicitly enable `allowOutsideDays`; see [the upgrade verification](calendar-0.0.5-upgrade-verification.md).
 - 46 distinct component families and 184 actual framework examples. No placeholders are counted as components.
 - New gallery route: `/components/`, with links such as `/components/#calendar`.
 - The existing `/` Switch/Dialog comparison, its components, CSS and dependency lock are preserved.

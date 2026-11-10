@@ -22,3 +22,12 @@ for (const path of paths) {
     assert.doesNotMatch(source, /[‹›]/)
   })
 }
+
+for (const path of paths) {
+  test(`${path}: gallery opts into outside days without removing date bounds`, async () => {
+    const source = await readFile(new URL(`../examples/all-components/${path}`, import.meta.url), 'utf8')
+    assert.match(source, path.endsWith('.vue') ? /:allow-outside-days="true"/ : /allowOutsideDays(?:=\{true\})?(?:\s|>)/)
+    assert.match(source, /2020-01-01/)
+    assert.match(source, /2030-12-31/)
+  })
+}

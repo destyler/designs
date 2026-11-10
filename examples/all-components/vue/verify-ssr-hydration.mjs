@@ -62,7 +62,8 @@ if (!mode) {
         const initial=cells();await click(q('calendar','next-trigger'));assert(cells()!==initial,'Next month failed');await click(q('calendar','prev-trigger'));assert(cells()===initial,'Previous month failed');
         const year=q('calendar','year-select');year.value='2027';year.dispatchEvent(new window.Event('input',{bubbles:true}));await settle();assert(cells()!==initial,'Year selection failed');
         const month=q('calendar','month-select');month.value='10';month.dispatchEvent(new window.Event('input',{bubbles:true}));await settle();
-        await click(document.querySelector('[data-scope="calendar"][data-part="table-cell-trigger"]:not([data-outside-range])'));assert(document.querySelector('[role="status"]').textContent.includes('Selected:'),'Day selection failed');item.interactions.push('inline calendar; next/previous month; year/month select; day selection');
+        await click(document.querySelector('[data-scope="calendar"][data-part="table-cell-trigger"]:not([data-outside-range])'));assert(document.querySelector('[role="status"]').textContent.includes('Selected:'),'Day selection failed');item.interactions.push('inline calendar; next/previous month; year/month select; day and outside-day selection');
+        await (await import('../../../scripts/lib/calendar-outside-selection.mjs')).verifyOutsideSelection(document, settle)
       }
       if(family==='scroll-area'){const thumbs=[...document.querySelectorAll('[data-scope="scroll-area"][data-part="thumb"]')];assert(thumbs.length===2&&new Set(thumbs.map(el=>el.dataset.orientation)).size===2,'Thumb orientation uniqueness');item.interactions.push('verify vertical/horizontal thumb semantics')}
       if(family==='checkbox') {for(const expected of ['checked','unchecked']){await click(q('checkbox','control'));assert(q('checkbox','control').dataset.state===expected,'Checkbox toggle failed')}item.interactions.push('toggle twice')}

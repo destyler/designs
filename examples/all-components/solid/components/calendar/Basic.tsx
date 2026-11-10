@@ -10,6 +10,7 @@ export function Basic() {
     <div class="parity-stack">
       <Calendar.Root
         open
+        allowOutsideDays
         closeOnSelect={false}
         fixedWeeks={false}
         focusedValue={focused()}

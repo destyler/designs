@@ -86,7 +86,8 @@ if (!mode) {
           const initial=cells();part('calendar','next-trigger').click();await pause();assert.notEqual(cells(),initial);part('calendar','prev-trigger').click();await pause();assert.equal(cells(),initial);
           const year=part('calendar','year-select');year.value='2027';year.dispatchEvent(new win.Event('input',{bubbles:true}));await pause();assert.notEqual(cells(),initial);
           document.querySelector('[data-scope="calendar"][data-part="table-cell-trigger"]:not([data-outside-range])').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Selected:/);
-          current.calendarTableRegression={inline:true,uniqueIds:true,nextPreviousAndYear:true,dateSelection:true};
+          await (await import('../../../scripts/lib/calendar-outside-selection.mjs')).verifyOutsideSelection(document, pause)
+          current.calendarTableRegression={inline:true,uniqueIds:true,nextPreviousAndYear:true,dateSelection:true,outsideDateSelection:true};
         }
         if(['checkbox','switch'].includes(family)){
           const input=document.querySelector('input');const initial=input.checked

@@ -102,6 +102,6 @@ This is an opt-in proof, not a migration or a published package. [`docs/vanilla-
 
 ## Reconstructed all-component gallery
 
-A new `/components/` gallery covers 46 component families across React, Vue, Solid and Svelte using UI 0.0.4. It is a new reconstruction, not the missing earlier candidate. The original Switch/Dialog comparison remains at `/`. See [source, build commands, verification and remaining acceptance limits](docs/all-components-reconstruction.md).
+The `/components/` gallery covers 46 component families across React, Vue, Solid and Svelte using UI 0.0.5 and core 0.3.5. Its four Calendars explicitly opt into outside-month selection; the library default remains unchanged. See [the Calendar upgrade verification](docs/calendar-0.0.5-upgrade-verification.md). It is a new reconstruction, not the missing earlier candidate. The original Switch/Dialog comparison remains at `/`. See [source, build commands, verification and remaining acceptance limits](docs/all-components-reconstruction.md).
 
 The full gallery also restores the original shadcn reference above the four framework cards, with direct/composed/absent coverage made explicit. See [shadcn comparison restoration](docs/shadcn-gallery-restoration.md).

@@ -116,7 +116,8 @@ try {
       month.value='10'; month.dispatchEvent(new window.Event('change',{bubbles:true})); await settle()
       await click(query('[data-scope="calendar"][data-part="table-cell-trigger"][data-value="2027-10-15"]'))
       assert.match(query('[role="status"]').textContent,/Selected: 2027-10-15/)
-      result.interactions.push('inline month navigation, year/month state updates and date selection')
+      await (await import('../../../scripts/lib/calendar-outside-selection.mjs')).verifyOutsideSelection(document, settle)
+      result.interactions.push('inline month navigation, year/month state updates, date and outside-day selection')
     }
     if (family === 'checkbox' || family === 'switch') {
       const input = query(`input[type="checkbox"]`)
