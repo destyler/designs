@@ -3,6 +3,15 @@ export const families = ['checkbox', 'tabs', 'calendar']
 export const frameworks = ['shadcn', 'react', 'vue', 'solid', 'svelte']
 export const themes = ['light', 'dark']
 export const viewports = [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]
+// React/Solid and shadcn include "the"; the native Vue/Svelte selects do not.
+export const calendarControlNames = { month: /^Choose (?:the )?Month$/i, year: /^Choose (?:the )?Year$/i }
+// DayPicker option values are zero-based, while Destyler's are one-based.
+// Select by value so native long labels (December) and reference short labels
+// (Dec) both retain their real options without being rewritten for the test.
+export function calendarMonthValue(month, reference) {
+  if (!Number.isInteger(month) || month < 1 || month > 12) throw new Error('Expected a month from 1 to 12')
+  return String(month - (reference ? 1 : 0))
+}
 export const styleKeys = ['width', 'height', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'borderTopStyle', 'borderRightStyle', 'borderBottomStyle', 'borderLeftStyle', 'borderRadius', 'backgroundColor', 'color', 'fontSize', 'fontWeight', 'lineHeight', 'boxShadow', 'outlineWidth', 'outlineStyle', 'outlineColor', 'outlineOffset', 'opacity', 'pointerEvents']
 // Only naturally present states are accepted. No synthetic attributes are injected.
 export const requiredStates = {

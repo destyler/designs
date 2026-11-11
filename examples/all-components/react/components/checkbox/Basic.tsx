@@ -12,8 +12,10 @@ export function Basic() {
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path d="m20 6-11 11-5-5" />
+            <path d="M20 6 9 17l-5-5" />
           </svg>
         </Checkbox.Indicator>
       </Checkbox.Control>

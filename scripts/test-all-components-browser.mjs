@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { families, frameworks, themes, viewports, styleKeys, targetUrl, styleDifferences, resultStatus, requiredStates, disabledCoverage, missingStates } from './lib/gallery-browser-contract.mjs'
+import { families, frameworks, themes, viewports, styleKeys, targetUrl, styleDifferences, resultStatus, requiredStates, disabledCoverage, missingStates, calendarControlNames, calendarMonthValue } from './lib/gallery-browser-contract.mjs'
 
 if (process.env.RUN_BROWSER_ACCEPTANCE !== '1') throw new Error('Not started. Run only in an authorized browser-capable environment with RUN_BROWSER_ACCEPTANCE=1 and BASE_URL.')
 if (!process.env.BASE_URL) throw new Error('BASE_URL is required; never silently inspect an unrelated localhost server')
@@ -39,11 +39,13 @@ const snapshot = locator => locator.evaluate((element, keys) => {
   }))
 }, styleKeys)
 const one = async locator => { assert.equal(await locator.count(), 1, 'Expected one unambiguous component part'); return locator }
+// DayPicker also has an internal month-announcement status; target app feedback.
+const calendarStatus = frame => frame.locator('p[role="status"]')
 const dayButton = (frame, reference, day) => frame.locator(reference ? 'table button' : '[data-scope="calendar"][data-part="table-cell-trigger"]').filter({ hasText: new RegExp(`^${day}$`) })
 const parts = (frame, family, reference) => {
   if (family === 'checkbox') return { control: frame.locator(reference ? '[data-slot="checkbox"]' : '[data-scope="checkbox"][data-part="control"]'), label: frame.locator(reference ? '[data-slot="label"]' : '[data-scope="checkbox"][data-part="label"]') }
   if (family === 'tabs') return { list: frame.getByRole('tablist'), selectedTab: frame.getByRole('tab', { selected: true }), panel: frame.getByRole('tabpanel').filter({ visible: true }) }
-  return { surface: frame.locator(reference ? '[data-slot="calendar"]' : '.parity-calendar-content'), day: dayButton(frame, reference, 15), status: frame.getByRole('status') }
+  return { surface: frame.locator(reference ? '[data-slot="calendar"]' : '.parity-calendar-content'), day: dayButton(frame, reference, 15), status: calendarStatus(frame) }
 }
 async function styles(frame, family, reference) {
   const result = {}
@@ -99,18 +101,18 @@ async function keyboard(frame, family, reference, capture) {
   }
   const selects = frame.locator('select')
   assert.equal(await selects.count(), 2)
-  const month = frame.getByLabel('Choose the Month', { exact: true })
-  const year = frame.getByLabel('Choose the Year', { exact: true })
+  const month = frame.getByLabel(calendarControlNames.month)
+  const year = frame.getByLabel(calendarControlNames.year)
   await one(month); await one(year)
-  await year.selectOption({ label: '2027' }); await month.selectOption({ label: 'Dec' })
+  await year.selectOption({ value: '2027' }); await month.selectOption({ value: calendarMonthValue(12, reference) })
   // Actual date selection checks the updated grid, not only the select's value.
   await one(dayButton(frame, reference, 15)).then(locator => locator.click())
-  await eventually(async () => assert.equal((await frame.getByRole('status').innerText()).trim(), 'Selected: 2027-12-15'))
-  await year.selectOption({ label: '2026' }); await month.selectOption({ label: 'Nov' })
+  await eventually(async () => assert.equal((await calendarStatus(frame).innerText()).trim(), 'Selected: 2027-12-15'))
+  await year.selectOption({ value: '2026' }); await month.selectOption({ value: calendarMonthValue(11, reference) })
   await frame.getByRole('button', { name: /next month/i }).click()
-  await eventually(async () => assert.equal((await month.locator('option:checked').textContent()).trim(), 'Dec'))
+  await eventually(async () => assert.equal(await month.inputValue(), calendarMonthValue(12, reference)))
   await frame.getByRole('button', { name: /previous month/i }).click()
-  await eventually(async () => assert.equal((await month.locator('option:checked').textContent()).trim(), 'Nov'))
+  await eventually(async () => assert.equal(await month.inputValue(), calendarMonthValue(11, reference)))
   const day = await one(dayButton(frame, reference, 15))
   await day.focus(); await day.press('ArrowRight')
   await eventually(async () => assert.equal((await frame.locator(':focus').innerText()).trim(), '16'))
@@ -120,7 +122,7 @@ async function keyboard(frame, family, reference, capture) {
   assert.equal(await isSelected(), false)
   await capture('focused-unselected-day', { day: focusedDay })
   await focusedDay.press('Enter')
-  await eventually(async () => assert.equal((await frame.getByRole('status').innerText()).trim(), 'Selected: 2026-11-16'))
+  await eventually(async () => assert.equal((await calendarStatus(frame).innerText()).trim(), 'Selected: 2026-11-16'))
   await eventually(async () => assert.equal(await isSelected(), true, 'Selected day DOM state agrees with status'))
   await capture('selected-keyboard-focus-day', { day: focusedDay })
   await focusedDay.evaluate(el => el.blur())

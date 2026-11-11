@@ -26,6 +26,15 @@ test('Checkbox disabled parts use half opacity without dimming them again throug
   assert.match(checkbox, /disabled:opacity-50/)
   assert.equal(declaration('body.checkbox-basic [data-part="root"][data-disabled]', 'opacity'), '1')
   assert.equal(declaration('body.checkbox-basic [data-part="control"][data-disabled], body.checkbox-basic [data-part="label"][data-disabled]', 'opacity'), '.5')
+  assert.equal(declaration('body.checkbox-basic [data-part="label"]', 'color'), 'var(--foreground)')
+})
+test('invalid Checkbox changes ring color without creating a ring before keyboard focus', () => {
+  const invalid = 'body.checkbox-basic [data-part="control"][data-invalid]'
+  assert.equal(declaration(invalid, 'border-color'), 'var(--destructive)')
+  assert.equal(declaration(invalid, 'box-shadow'), undefined)
+  assert.equal(rules(':root[data-theme="dark"] ' + invalid).length, 0)
+  assert.match(declaration(invalid + '[data-focus-visible]', 'box-shadow'), /var\(--destructive\) 20%/)
+  assert.match(declaration(':root[data-theme="dark"] ' + invalid + '[data-focus-visible]', 'box-shadow'), /var\(--destructive\) 40%/)
 })
 test('Checkbox focus ring and checked focus border follow the pinned state recipes', () => {
   assert.match(checkbox, /focus-visible:ring-\[3px\]/)
@@ -53,7 +62,8 @@ test('Tabs retains selected shadow underneath its keyboard ring and correct dark
 test('Calendar outside dates stay visible and selected outside dates keep selected foreground', () => {
   assert.match(calendar, /showOutsideDays = true/)
   assert.equal(declaration('body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]', 'visibility'), 'visible')
-  assert.equal(declaration('body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected])', 'color'), 'var(--muted-foreground)')
+  assert.equal(declaration('body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected]):not(:hover)', 'color'), 'var(--muted-foreground)')
+  assert.equal(rules('body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected])').length, 0, 'Outside text cannot override the light ghost hover foreground')
 })
 test('Calendar focused and disabled controls receive explicit reference state styles', () => {
   assert.match(calendar, /group-data-\[focused=true\]\/day:ring-\[3px\]/)

@@ -1,7 +1,28 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
-import { families, frameworks, themes, viewports, targetUrl, styleDifferences, resultStatus, styleKeys, requiredStates, disabledCoverage, missingStates } from '../scripts/lib/gallery-browser-contract.mjs'
+import { families, frameworks, themes, viewports, targetUrl, styleDifferences, resultStatus, styleKeys, requiredStates, disabledCoverage, missingStates, calendarControlNames, calendarMonthValue } from '../scripts/lib/gallery-browser-contract.mjs'
+
+test('Calendar locators accept actual framework labels and respect native option values', async () => {
+  for (const [framework, path] of Object.entries({ react: 'components/calendar/Basic.tsx', vue: 'calendar/Basic.vue', solid: 'components/calendar/Basic.tsx', svelte: 'calendar.svelte' })) {
+    const source = await readFile(new URL(`../examples/all-components/${framework}/${path}`, import.meta.url), 'utf8')
+    const labels = [...source.matchAll(/aria-label="([^"]+)"/g)].map(match => match[1])
+    for (const name of Object.values(calendarControlNames)) assert.equal(labels.filter(label => name.test(label)).length, 1, framework)
+  }
+  assert.ok(calendarControlNames.month.test('Choose the Month'))
+  assert.ok(calendarControlNames.year.test('Choose the Year'))
+  assert.equal(calendarMonthValue(12, true), '11')
+  assert.equal(calendarMonthValue(12, false), '12')
+  assert.equal(calendarMonthValue(1, true), '0')
+  assert.equal(calendarMonthValue(1, false), '1')
+  for (const month of [0, 13, 1.5, '12']) assert.throws(() => calendarMonthValue(month, false))
+  const runner = await readFile(new URL('../scripts/test-all-components-browser.mjs', import.meta.url), 'utf8')
+  assert.match(runner, /getByLabel\(calendarControlNames\.month\)/)
+  assert.match(runner, /selectOption\(\{ value: calendarMonthValue\(12, reference\)/)
+  assert.doesNotMatch(runner, /selectOption\(\{ label: '(?:Nov|Dec)'/)
+  assert.ok(runner.includes(`frame.locator('p[role="status"]')`), 'Calendar feedback must exclude DayPicker’s separate month-announcement status')
+  assert.doesNotMatch(runner, /frame\.getByRole\('status'\)/)
+})
 
 test('planned gallery coverage is 60 actual frame cases', () => {
   assert.deepEqual(families, ['checkbox', 'tabs', 'calendar'])

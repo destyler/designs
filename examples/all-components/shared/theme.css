@@ -6992,15 +6992,16 @@ body.checkbox-basic [data-part="control"][data-state="checked"] { background: va
 body.checkbox-basic [data-part="indicator"] { width: 14px; height: 14px; display: grid; place-content: center; color: inherit; }
 body.checkbox-basic [data-part="indicator"]::before { content: none; }
 body.checkbox-basic [data-part="indicator"] svg { width: 14px; height: 14px; }
-body.checkbox-basic [data-part="label"] { font-size: 14px; line-height: 14px; font-weight: 500; }
+body.checkbox-basic [data-part="label"] { font-size: 14px; line-height: 14px; font-weight: 500; color: var(--foreground); }
 :root[data-theme="dark"] body.checkbox-basic [data-part="control"][data-state="unchecked"] { background: color-mix(in oklab, var(--input) 30%, transparent); }
 /* Match hidden-input-driven focus/disabled states to the upstream button states. */
 body.checkbox-basic [data-part="root"][data-disabled] { opacity: 1; }
 body.checkbox-basic [data-part="control"] { outline: none; outline-offset: 0; transition: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); }
 body.checkbox-basic [data-part="control"][data-disabled], body.checkbox-basic [data-part="label"][data-disabled] { opacity: .5; cursor: not-allowed; }
 body.checkbox-basic [data-part="control"][data-focus-visible] { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent), var(--demo-shadow-xs); }
-body.checkbox-basic [data-part="control"][data-invalid] { border-color: var(--destructive); box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), var(--demo-shadow-xs); }
-:root[data-theme="dark"] body.checkbox-basic [data-part="control"][data-invalid] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), var(--demo-shadow-xs); }
+body.checkbox-basic [data-part="control"][data-invalid] { border-color: var(--destructive); }
+body.checkbox-basic [data-part="control"][data-invalid][data-focus-visible] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent), var(--demo-shadow-xs); }
+:root[data-theme="dark"] body.checkbox-basic [data-part="control"][data-invalid][data-focus-visible] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 40%, transparent), var(--demo-shadow-xs); }
 /* Tailwind's data-state=checked border utility follows focus/invalid variants. */
 body.checkbox-basic [data-part="control"][data-state="checked"]:is([data-focus-visible], [data-invalid]) { border-color: var(--primary); }
 /* switch */
@@ -7163,7 +7164,7 @@ body.calendar-basic [data-part="table-cell-trigger"] { display: inline-flex; ali
 body.calendar-basic [data-part="table-cell-trigger"][data-today] { background: var(--accent); color: var(--accent-foreground); }
 body.calendar-basic [data-part="table-cell-trigger"][data-selected] { background: var(--primary); color: var(--primary-foreground); }
 body.calendar-basic [data-part="table-cell-trigger"][data-outside-range] { visibility: visible; }
-body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected]) { color: var(--muted-foreground); }
+body.calendar-basic [data-part="table-cell-trigger"][data-outside-range]:not([data-selected]):not(:hover) { color: var(--muted-foreground); }
 /* Ghost day/nav controls use the original reference's state feedback. */
 body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]) { border: 0 solid var(--border); outline: none; outline-offset: 0; box-shadow: none; }
 body.calendar-basic :is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):hover { background: var(--accent); color: var(--accent-foreground); }

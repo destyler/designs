@@ -95,3 +95,15 @@ attributes or fake states are injected merely to get a passing comparison.
 
 This expansion has only syntax and pure helper/source-contract validation here.
 There are still no real-browser results or generated screenshots from this runner.
+
+## Locator review (2026-11-11, no browser)
+
+Source and simulated-DOM inspection found three assumptions that would make the
+Calendar runner fail before completing its intended checks. The runner now accepts
+the actual "Choose month/year" and "Choose the Month/Year" accessible names,
+selects one-based Destyler versus zero-based DayPicker month values instead of
+requiring short option labels, and scopes selected-date feedback to the application
+paragraph rather than also matching DayPicker's separate month-announcement status.
+These corrections have source/helper regression tests, not executed Playwright
+results. The current browser plan still does not exercise outside-date selection,
+repeated selection of the same date or the 2020/2030 boundary-month differences.
