@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { boundaryCell, handleOptionalSelection } from "../calendar-compat";
 import { ref, shallowRef } from "vue";
 import { Calendar, parseDate } from "@destyler-ui/vue";
 const focused = shallowRef(parseDate("2026-11-01"));
@@ -104,6 +105,7 @@ const selected = ref("");
                     <path d="m9 18 6-6-6-6" /></svg
                 ></Calendar.NextTrigger>
               </Calendar.ViewControl>
+              <div @click.capture="handleOptionalSelection($event, api)" @keydown.capture="handleOptionalSelection($event, api)">
               <Calendar.Table view="day" :columns="7">
                 <Calendar.TableHead
                   ><Calendar.TableRow
@@ -118,17 +120,16 @@ const selected = ref("");
                   ><Calendar.TableRow
                     v-for="(week, index) in api.weeks"
                     :key="index"
-                    ><Calendar.TableCell
-                      v-for="day in week"
-                      :key="day.toString()"
-                      :value="day"
-                      ><Calendar.TableCellTrigger>{{
-                        day.day
-                      }}</Calendar.TableCellTrigger></Calendar.TableCell
-                    ></Calendar.TableRow
+                    > <template v-for="day in week" :key="day.toString()">
+                      <td v-if="boundaryCell(day) === 'hidden'" role="gridcell" data-hidden="true" />
+                      <Calendar.TableCell v-else-if="boundaryCell(day) === 'day'" :value="day">
+                        <Calendar.TableCellTrigger>{{ day.day }}</Calendar.TableCellTrigger>
+                      </Calendar.TableCell>
+                    </template></Calendar.TableRow
                   ></Calendar.TableBody
                 >
               </Calendar.Table>
+              </div>
             </Calendar.Context>
           </Calendar.View></Calendar.Content
         ></Calendar.Positioner

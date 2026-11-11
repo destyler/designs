@@ -1,6 +1,16 @@
+import { boundaryCell, handleOptionalSelection } from "../../calendar-compat";
 import { Calendar } from "@destyler-ui/solid";
-import { createSignal, Index } from "solid-js";
+import { createSignal, Index, Show } from "solid-js";
 import { parseDate, type DateValue } from "@destyler-ui/solid";
+// Solid's explicit capture listeners are opt-in typed custom events.
+declare module "solid-js" {
+  namespace JSX {
+    interface CustomCaptureEvents {
+      click: MouseEvent;
+      keydown: KeyboardEvent;
+    }
+  }
+}
 export function Basic() {
   const [focused, setFocused] = createSignal<DateValue>(
     parseDate("2026-11-01"),
@@ -155,6 +165,7 @@ export function Basic() {
                   </Calendar.NextTrigger>
                 </Calendar.ViewControl>
                 <Calendar.View view="day">
+                  <div oncapture:click={(event) => handleOptionalSelection(event, api())} oncapture:keydown={(event) => handleOptionalSelection(event, api())}>
                   <Calendar.Table>
                     <Calendar.TableHead>
                       <Calendar.TableRow>
@@ -173,11 +184,15 @@ export function Basic() {
                           <Calendar.TableRow>
                             <Index each={week()}>
                               {(day) => (
+                                <Show when={boundaryCell(day()) !== "omitted"}>
+                                <Show when={boundaryCell(day()) === "day"} fallback={<td role="gridcell" data-hidden="true" />}>
                                 <Calendar.TableCell value={day()}>
                                   <Calendar.TableCellTrigger>
                                     {day().day}
                                   </Calendar.TableCellTrigger>
                                 </Calendar.TableCell>
+                                </Show>
+                                </Show>
                               )}
                             </Index>
                           </Calendar.TableRow>
@@ -185,6 +200,7 @@ export function Basic() {
                       </Index>
                     </Calendar.TableBody>
                   </Calendar.Table>
+                  </div>
                 </Calendar.View>
               </>
             )}

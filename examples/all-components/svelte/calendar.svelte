@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { boundaryCell, handleOptionalSelection } from './calendar-compat'
   import { Calendar, parseDate } from '@destyler-ui/svelte/calendar'
   let focused = $state(parseDate('2026-11-01'))
   let selected = $state('')
@@ -13,10 +14,12 @@
             <div class="parity-calendar-caption"><div class="parity-calendar-dropdown"><Calendar.MonthSelect aria-label="Choose month" /><span class="parity-calendar-caption-label" aria-hidden="true">{new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(2026, api().visibleRange.start.month - 1, 1))}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></span></div><div class="parity-calendar-dropdown"><Calendar.YearSelect aria-label="Choose year" /><span class="parity-calendar-caption-label" aria-hidden="true">{api().visibleRange.start.year}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></span></div></div>
             <Calendar.NextTrigger aria-label="Go to the next month"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></Calendar.NextTrigger>
           </Calendar.ViewControl>
+          <div onclickcapture={event => handleOptionalSelection(event, api())} onkeydowncapture={event => handleOptionalSelection(event, api())}>
           <Calendar.Table>
             <Calendar.TableHead><Calendar.TableRow>{#each api().weekDays as day}<Calendar.TableHeader>{day.short}</Calendar.TableHeader>{/each}</Calendar.TableRow></Calendar.TableHead>
-            <Calendar.TableBody>{#each api().weeks as week}<Calendar.TableRow>{#each week as day}<Calendar.TableCell value={day}><Calendar.TableCellTrigger>{day.day}</Calendar.TableCellTrigger></Calendar.TableCell>{/each}</Calendar.TableRow>{/each}</Calendar.TableBody>
+            <Calendar.TableBody>{#each api().weeks as week}<Calendar.TableRow>{#each week as day}{#if boundaryCell(day) === 'hidden'}<td role="gridcell" data-hidden="true"></td>{:else if boundaryCell(day) === 'day'}<Calendar.TableCell value={day}><Calendar.TableCellTrigger>{day.day}</Calendar.TableCellTrigger></Calendar.TableCell>{/if}{/each}</Calendar.TableRow>{/each}</Calendar.TableBody>
           </Calendar.Table>
+          </div>
         {/snippet}
       </Calendar.Context>
     </Calendar.View></Calendar.Content></Calendar.Positioner>

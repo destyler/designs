@@ -1,3 +1,4 @@
+import { boundaryCell, handleOptionalSelection } from "../../calendar-compat";
 import { Calendar } from "@destyler-ui/react";
 import { useState } from "react";
 import { parseDate, type DateValue } from "@destyler-ui/react";
@@ -153,6 +154,7 @@ export function Basic() {
                   </Calendar.NextTrigger>
                 </Calendar.ViewControl>
                 <Calendar.View view="day">
+                  <div onClickCapture={(event) => handleOptionalSelection(event, api)} onKeyDownCapture={(event) => handleOptionalSelection(event, api)}>
                   <Calendar.Table>
                     <Calendar.TableHead>
                       <Calendar.TableRow>
@@ -166,7 +168,9 @@ export function Basic() {
                     <Calendar.TableBody>
                       {api.weeks.map((week, index) => (
                         <Calendar.TableRow key={index}>
-                          {week.map((day) => (
+                          {week.map((day) => boundaryCell(day) === "omitted" ? null : boundaryCell(day) === "hidden" ? (
+                            <td key={day.toString()} role="gridcell" data-hidden="true" />
+                          ) : (
                             <Calendar.TableCell
                               key={day.toString()}
                               value={day}
@@ -180,6 +184,7 @@ export function Basic() {
                       ))}
                     </Calendar.TableBody>
                   </Calendar.Table>
+                  </div>
                 </Calendar.View>
               </>
             )}

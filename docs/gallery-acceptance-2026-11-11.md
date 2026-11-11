@@ -67,3 +67,11 @@ the final build and aggregate were rerun together after the corrections.
 
 No vendored shadcn component, UI/core package, production deployment or repository
 security setting was changed. No merge or PR-description update is part of this review.
+
+## Subsequent application compatibility correction
+
+The repeated-selection and boundary-month differences above describe the reviewed
+baseline. The four native examples now implement a local compatibility adapter;
+see [scope and regression coverage](calendar-optional-selection-compatibility.md).
+The library defaults and pinned reference are unchanged. Browser acceptance is
+still pending and is not replaced by these simulated-DOM regressions.
