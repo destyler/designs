@@ -51,7 +51,27 @@ export async function verifyOptionalSelectionAndBounds(document, settle) {
     for (const blank of blanks) assert.equal(blank.querySelector('[tabindex],button,[role="button"]'), null)
     const edge = triggers().find(node => node.getAttribute('data-value') === (y === 2020 ? '2020-01-01' : '2030-12-31'))
     assert.ok(edge && edge.getAttribute('aria-disabled') !== 'true', 'Boundary date remains selectable')
+    const blockedDirection = document.querySelector(`[data-scope="calendar"][data-part="${y === 2020 ? 'prev-trigger' : 'next-trigger'}"]`)
+    assert.ok(blockedDirection && (blockedDirection.disabled || blockedDirection.getAttribute('aria-disabled') === 'true'), 'Navigation cannot leave the bounded month')
     edge.click(); await settle()
     assert.equal(status(), y === 2020 ? 'Selected: 2020-1-1' : 'Selected: 2030-12-31')
   }
+  // Repeated selection and bounds must also survive leap-year/month transitions.
+  await choose(year, 2024); await choose(month, 2)
+  const leapDay = () => triggers().find(node => node.getAttribute('data-value') === '2024-02-29')
+  assert.ok(leapDay(), 'Leap day remains present')
+  leapDay().click(); await settle()
+  assert.equal(status(), 'Selected: 2024-2-29')
+  leapDay().click(); await settle()
+  assert.equal(status(), 'Select a date', 'Leap day supports optional clearing')
+  await choose(year, 2023)
+  assert.equal(triggers().some(node => node.getAttribute('data-value') === '2023-02-29'), false, 'Non-leap February has no invalid day')
+  await choose(month, 3)
+  const marchEnd = triggers().find(node => node.getAttribute('data-value') === '2023-03-31')
+  assert.ok(marchEnd)
+  marchEnd.click(); await settle()
+  await choose(month, 2)
+  assert.equal(status(), 'Selected: 2023-3-31', 'Changing displayed month does not silently mutate selection')
+  assert.equal(month.value, '2', 'Month change clamps focused day into shorter month')
+
 }
