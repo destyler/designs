@@ -1,3 +1,4 @@
+import { HiddenSelect } from './HiddenSelect';
 import { validateSelectOptions } from '../select-options';
 import { createSignal, createUniqueId, createMemo, createEffect, type JSX } from 'solid-js';
 import { Checkbox as C, Select as S, Dialog as D, createListCollection } from '@destyler-ui/solid';
@@ -12,7 +13,7 @@ export function Select(props: SelectProps) {
  const sync=()=>{const input=container?.querySelector('select');if(input?.isConnected){for(const option of input.options)option.toggleAttribute('selected',option.value===value());input.value=value();}};
  createEffect(()=>{value();props.options.map(option=>option.value);queueMicrotask(sync);});
  const collection=createMemo(() => createListCollection({items:validateSelectOptions(props.options)}));
- return <div ref={container} class="rd-component"><S.Root name={props.name} disabled={props.disabled} collection={collection()} value={value() ? [value()] : []} onValueChange={d=>{const next=d.value[0] ?? '';setLocal(next);props.onValueChange?.(next);queueMicrotask(sync);}}><S.Label>{props.label}</S.Label><S.Control><S.Trigger><S.ValueText placeholder={props.placeholder ?? 'Choose an option'} /><S.Indicator><span aria-hidden="true">⌄</span></S.Indicator></S.Trigger></S.Control><S.Positioner><S.Content>{props.options.map(option=><S.Item item={option}><S.ItemText>{option.label}</S.ItemText><S.ItemIndicator><span aria-hidden="true">✓</span></S.ItemIndicator></S.Item>)}</S.Content></S.Positioner><S.HiddenSelect /></S.Root></div>;
+ return <div ref={container} class="rd-component"><S.Root name={props.name} disabled={props.disabled} collection={collection()} value={value() ? [value()] : []} onValueChange={d=>{const next=d.value[0] ?? '';setLocal(next);props.onValueChange?.(next);queueMicrotask(sync);}}><S.Label>{props.label}</S.Label><S.Control><S.Trigger><S.ValueText placeholder={props.placeholder ?? 'Choose an option'} /><S.Indicator><span aria-hidden="true">⌄</span></S.Indicator></S.Trigger></S.Control><S.Positioner><S.Content>{props.options.map(option=><S.Item item={option}><S.ItemText>{option.label}</S.ItemText><S.ItemIndicator><span aria-hidden="true">✓</span></S.ItemIndicator></S.Item>)}</S.Content></S.Positioner><HiddenSelect /></S.Root></div>;
 }
 // Own the optional description link: the primitive only detects its presence when opening.
 export function Dialog(props: DialogProps & { children?: JSX.Element }) {

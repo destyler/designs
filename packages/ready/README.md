@@ -137,3 +137,11 @@ error before creating the collection, even when disabled. The same validation
 runs when options change. Values are never trimmed or silently filtered: `"0"`,
 `" "` and all other nonempty strings remain valid. TypeScript's `string` type
 does not exclude every empty string; runtime validation is authoritative.
+
+## Server rendering and hydration
+
+The Vite source-package contract does not by itself guarantee SSR integration.
+See the [SSR and hydration verification](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-ssr-hydration.md)
+for the tested server/client compilation paths, form-state fixes and limits.
+These checks use real server rendering followed by simulated DOM hydration, not
+browser acceptance or a promise of Next.js, Nuxt, SolidStart or SvelteKit support.

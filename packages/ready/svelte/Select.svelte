@@ -1,4 +1,5 @@
 <script lang="ts">
+  import HiddenSelect from './HiddenSelect.svelte'
   import { tick } from 'svelte'
   import { Select, createListCollection } from '@destyler-ui/svelte/select'
   import type { Option } from '../types'
@@ -23,5 +24,5 @@
 </script>
 <div bind:this={element} class="rd-component"><Select.Root {collection} {name} value={current ? [current] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
   <Select.Label>{label}</Select.Label><Select.Control><Select.Trigger><Select.ValueText {placeholder} /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
-  <Select.Positioner><Select.Content>{#each options as item (item.value)}<Select.Item {item}><Select.ItemText>{item.label}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item>{/each}</Select.Content></Select.Positioner><Select.HiddenSelect />
+  <Select.Positioner><Select.Content>{#each options as item (item.value)}<Select.Item {item}><Select.ItemText>{item.label}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item>{/each}</Select.Content></Select.Positioner><HiddenSelect />
 </Select.Root></div>
