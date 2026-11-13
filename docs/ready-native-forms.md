@@ -67,3 +67,8 @@ checked here, but browser-correct successful-control omission is not proven by
 these simulated submissions. Native validation popup appearance, focus on invalid
 controls, browser submission behavior and assistive-technology announcements
 still require real-browser acceptance. No test result here is a security boundary.
+
+See the [Checkbox form-state regression](./ready-checkbox-form-state.md) for
+repeated native/visible click paths, controlled parent acceptance/refusal,
+serialization/reset assertions, and explicit keyboard-default-action and
+synchronous event-timing limitations in the simulated environment.
