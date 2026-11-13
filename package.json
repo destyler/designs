@@ -33,7 +33,8 @@
     "test:ci": "node --test --test-concurrency=2 test/*.test.mjs",
     "check:ready": "tsc --noEmit -p examples/ready/react/tsconfig.json && vue-tsc --noEmit -p examples/ready/vue/tsconfig.json && tsc --noEmit -p examples/ready/solid/tsconfig.json && svelte-check --tsconfig ./examples/ready/svelte/tsconfig.json",
     "build:ready": "node scripts/ready.mjs build",
-    "check:ready:contracts": "node scripts/verify-ready-types-react-vue.mjs --locked && node scripts/verify-ready-types-solid-svelte.mjs --locked"
+    "check:ready:contracts": "node scripts/verify-ready-types-react-vue.mjs --locked && node scripts/verify-ready-types-solid-svelte.mjs --locked",
+    "build:ready:docs": "tsc --noEmit -p examples/ready-docs/tsconfig.json && node scripts/ready-docs.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.5",

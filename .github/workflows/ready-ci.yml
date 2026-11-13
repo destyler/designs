@@ -39,5 +39,7 @@ jobs:
         run: npm run check:ready
       - name: Verify packed consumer type contracts and negative cases
         run: npm run check:ready:contracts
+      - name: Build interactive Ready documentation
+        run: npm run build:ready:docs
       - name: Build all four Ready demos
         run: npm run build:ready
