@@ -103,3 +103,14 @@ closing, Escape and title/description links. Both framework pairs are exercised;
 Vue/Svelte additionally have explicit frozen-dialog and uncontrolled-mode fixtures.
 A Vite HTTP smoke returned 200 for the two-scope React page. No browser screenshot
 or pixel-equivalence claim is made.
+
+### Multiple Vue applications on one page
+
+Within one Vue application, framework-generated IDs distinguish component instances.
+If a page mounts multiple independent `createApp()` roots, set a different
+`app.config.idPrefix` on each app **before** `app.mount(...)`, for example
+`app.config.idPrefix = "settings"` and `app.config.idPrefix = "billing"`.
+Both the Ready description IDs and the underlying primitive IDs use Vue
+`useId()`, whose default prefix is not unique across independent applications.
+The two-root demo and regression tests configure distinct prefixes explicitly;
+they do not establish support for unconfigured multi-app roots.
