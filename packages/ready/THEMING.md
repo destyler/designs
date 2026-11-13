@@ -86,3 +86,15 @@ General nested modal stacks are not part of this pilot's supported contract.
 Two themes, token definitions, DOM scope retention and generated CSS are checked
 by automated tests. Actual rendering, contrast, zoom, keyboard focus visibility,
 mobile layout and assistive-technology acceptance still need browser testing.
+
+## Built-in contrast checks
+
+The built-in palettes target at least 4.5:1 for normal text and 3:1 for meaningful
+enabled-control boundaries and focus colors against both `--rd-bg` and
+`--rd-surface`. `--rd-on-accent` is for `--rd-accent`, not general surfaces.
+Disabled controls retain lower-opacity styling and are not tested against enabled
+contrast thresholds. Error messages use ordinary text plus ARIA, not color alone.
+
+These are static palette checks, not a guarantee about custom tokens, host
+backgrounds, rendered focus visibility or complete accessibility. See the
+[ratios, regression and limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-theme-contrast.md).
