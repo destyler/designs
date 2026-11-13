@@ -98,3 +98,19 @@ contrast thresholds. Error messages use ordinary text plus ARIA, not color alone
 These are static palette checks, not a guarantee about custom tokens, host
 backgrounds, rendered focus visibility or complete accessibility. See the
 [ratios, regression and limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-theme-contrast.md).
+
+
+## Long Select lists
+
+Select content has a 20rem maximum height, further limited by the positioning
+primitive's `--available-height` when it is available. Before measurement, the
+20rem fallback still bounds the list. Vertical overflow is scrollable and
+overscroll is contained. This adds no theme-specific code or new semantic token.
+It does not implement virtualization: all supplied options are still rendered.
+
+Static CSS checks verify this constraint, and four-framework simulated keyboard
+tests exercise long lists. Neither proves actual scrolling, pointer/touch use,
+clipping or viewport fit. In particular, inline Select content inside Dialog's
+scrollable content can still be clipped; the nested Escape tests are not evidence
+that this layout is production-ready. A portal/theme bridge would require a
+separate design and remains outside this slice.

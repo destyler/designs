@@ -211,3 +211,16 @@ accepted/refused state; see the [timing investigation and submission guidance](h
 Translate built-in text with `Select.emptyMessage` and `Dialog.closeLabel`, along
 with the existing label/placeholder/description/option text props. See the
 [text customization contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-text-customization.md) for defaults, empty-state semantics and accessibility limits.
+
+
+### Additional attributes are not native-control props
+
+Only the documented component props are supported. In Vue, undeclared attributes
+may fall through to the outer wrapper because these are single-root SFCs. Passing
+`id`, `aria-label` or `readonly` this way does **not** configure the native input
+or Select trigger. Other adapters do not promise the same wrapper fallthrough.
+Use `label`, `description`, `disabled`, `required` and `error` for their documented
+purposes; there is no general native-attribute forwarding API in this pilot.
+
+For the remaining acceptance and release gates, see the
+[delivery boundary](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-delivery-status.md).

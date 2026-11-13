@@ -16,7 +16,7 @@
 .rd-component [data-scope="select"][data-part="root"] { display:grid; gap:8px; }
 .rd-component [data-scope="select"][data-part="trigger"] { display:flex; justify-content:space-between; gap:var(--rd-space); width:100%; }
 .rd-component [data-scope="select"][data-part="trigger"][data-disabled] { opacity:.5; }
-.rd-component [data-scope="select"][data-part="content"] { min-width:var(--reference-width); padding:6px; border:1px solid var(--rd-border); border-radius:var(--rd-radius); background:var(--rd-surface); color:var(--rd-text); box-shadow:var(--rd-shadow); }
+.rd-component [data-scope="select"][data-part="content"] { min-width:var(--reference-width); max-height:min(20rem,var(--available-height,20rem)); overflow-y:auto; overscroll-behavior:contain; padding:6px; border:1px solid var(--rd-border); border-radius:var(--rd-radius); background:var(--rd-surface); color:var(--rd-text); box-shadow:var(--rd-shadow); }
 .rd-component [data-scope="select"][data-part="item"] { padding:10px; border-radius:calc(var(--rd-radius)/2); display:flex; gap:12px; justify-content:space-between; cursor:pointer; }
 .rd-component [data-scope="select"][data-part="item"][data-highlighted] { background:var(--rd-accent); color:var(--rd-on-accent); }
 .rd-component [data-scope="select"][data-part="item"][data-disabled] { opacity:.4; }

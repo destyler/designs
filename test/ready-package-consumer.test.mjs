@@ -32,6 +32,8 @@ test('Ready packed source package exposes intentional entries and optional frame
       const js = await readFile(join(output, 'consumer.js'), 'utf8')
       const css = await readFile(join(output, 'consumer.css'), 'utf8')
       assert.match(css, /--rd-accent/)
+      assert.match(css, /max-height:\s*min\(20rem,\s*var\(--available-height,\s*20rem\)\)/, 'Packed CSS retains the long-list height cap')
+      assert.match(css, /overflow-y:\s*auto/, 'Packed CSS retains vertical overflow')
       assert.match(js, /Checkbox/)
       assert.ok(modules.some(id => id.includes(target)), 'Uses unpacked package, not repository source aliases')
       for (const other of ['react', 'vue', 'solid', 'svelte'].filter(name => name !== framework)) assert.ok(!modules.some(id => id.includes(`/@destyler-ui/${other}/`)), `Does not bundle unused ${other} UI adapter`)

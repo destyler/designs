@@ -68,3 +68,11 @@ failure. These scripts are opt-in and are not part of `npm test`.
 No new type/runtime mismatch was found in this pass. The tests do not prove all
 TypeScript versions, all bundlers, runtime input validation, browser behavior or
 assistive-technology acceptance. Existing runtime/SSR regressions remain separate.
+
+
+Vue's undeclared attributes may fall through to its wrapper div; that is not a
+cross-framework native-control forwarding API. In particular, wrapper `id`,
+`aria-label` or `readonly` do not alter the input/trigger's ID, name or behavior.
+Use documented props. Checkbox/Select omit whitespace-only `description`; Dialog
+retains its existing truthy description behavior. Do not generalize either
+component family's optional-text rule to the other.
