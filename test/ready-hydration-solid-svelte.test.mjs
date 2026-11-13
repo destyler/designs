@@ -37,9 +37,13 @@ if(process.argv[2]==='--server'){
  assert.deepEqual(snapshot(),expected,'SSR controlled inputs and enabled form entries')
  const assertLinks=()=>{for(const scope of scopes())for(const el of scope.querySelectorAll('[aria-labelledby],[aria-describedby]'))for(const attr of ['aria-labelledby','aria-describedby'])for(const id of (el.getAttribute(attr)||'').split(/\s+/).filter(Boolean))assert.ok([...scope.querySelectorAll('[id]')].some(node=>node.id===id),`${attr} resolves inside own theme: ${id}`)}
  assertLinks()
+ const checkErrors=()=>{for(const scope of scopes()){assert.equal(scope.querySelectorAll('.rd-error').length,2);for(const node of scope.querySelectorAll('input,select,[data-scope=select][data-part=trigger]')){assert.equal(node.getAttribute('aria-invalid'),'true');const id=node.getAttribute('aria-describedby');assert.equal(document.getElementById(id)?.textContent,'Please correct this field');assert.ok(scope.contains(document.getElementById(id)))}}}
+ checkErrors()
+ const errorLinks=[...document.querySelectorAll('input,select,[data-scope=select][data-part=trigger]')].map(node=>[node,node.getAttribute('aria-describedby')])
+ for(const node of document.querySelectorAll('input,select')){assert.equal(node.required,true);assert.equal(node.validity.customError,false,'SSR ARIA/text do not serialize setCustomValidity state')}
  const assertLabels=()=>scopes().forEach((s,i)=>assert.equal(s.querySelector('[data-part=value-text]').textContent,expected[i].value?expected[i].value.toUpperCase():'Choose an option','Visible selection matches controlled value'))
  assertLabels()
- const retainedSelector='form,input,select,[data-scope=dialog][data-part=content]'
+ const retainedSelector='.rd-error,form,input,select,[data-scope=dialog][data-part=content]'
  const nodes=scopes().map(s=>[...s.querySelectorAll(retainedSelector)])
  const warnings=[];const warn=console.warn,error=console.error;console.warn=(...a)=>warnings.push(a.join(' '));console.error=(...a)=>warnings.push(a.join(' '))
  if(process.argv[5]==='solid')runInThisContext(await readFile(process.argv[4]+'.js','utf8'))
@@ -48,12 +52,20 @@ if(process.argv[2]==='--server'){
  await eventually(()=>{assert.deepEqual(snapshot(),expected)})
  assert.deepEqual(ids(),before,'Hydration preserves server IDs');scopes().forEach((s,i)=>{const current=[...s.querySelectorAll(retainedSelector)];assert.equal(current.length,nodes[i].length);current.forEach((node,j)=>assert.equal(node,nodes[i][j],'Hydrates existing form/input/select/dialog content'))})
  assertLinks();assertLabels();assert.deepEqual(snapshot(),expected,'Hydration preserves form submission')
- assertInitialDialogs()
+ assertInitialDialogs();checkErrors();for(const [node,id] of errorLinks)assert.equal(node.getAttribute('aria-describedby'),id,'Error description IDs stable across hydration')
+ await eventually(()=>{for(const node of document.querySelectorAll('input,select')){assert.equal(node.validity.customError,true,'Hydration installs initial custom validity');if(!node.disabled)assert.equal(node.validationMessage,'Please correct this field');assert.equal(node.checkValidity(),node.disabled)}})
  // This records the focus request in a DOM simulator, not real-browser focus trapping.
  await eventually(()=>assert.ok(focusRequests.some(node=>firstDialog().contains(node)),'Initial open Dialog requests focus inside content'))
  scopes()[0].querySelector(part('close-trigger')).click()
  await eventually(()=>assert.equal(firstDialog().dataset.state,'closed'))
  await eventually(()=>assert.ok(focusRequests.includes(previousFocus),'Close requests focus restoration'))
+ for(const scope of scopes())scope.querySelector('[data-clear-errors]').click()
+ await eventually(()=>{assert.equal(document.querySelectorAll('.rd-error').length,0);for(const node of document.querySelectorAll('input,select')){assert.equal(node.validity.customError,false);assert.equal(node.required,true,'Clearing custom error retains required constraint');assert.notEqual(node.getAttribute('aria-invalid'),'true',node.outerHTML);assert.equal(node.getAttribute('aria-describedby'),null)}})
+ for(const [node] of errorLinks){assert.equal(node.getAttribute('aria-describedby'),null);assert.notEqual(node.getAttribute('aria-invalid'),'true')}
+ assertLinks()
+ assert.equal(scopes()[1].querySelector('input').validity.valueMissing,true)
+ assert.equal(scopes()[2].querySelector('select').validity.valueMissing,true)
+ assert.equal(scopes()[2].querySelector('form').checkValidity(),false)
  for(const [index,s] of scopes().entries()){
  assert.equal(s.querySelectorAll('select').length,1,'One native Select per component')
  if(index===3){assert.equal(s.querySelector('select').disabled,true);assert.equal(s.querySelector('input').disabled,true);continue}
@@ -76,11 +88,11 @@ if(process.argv[2]==='--server'){
  try{
  const {build}=await import('vite');let server,client
  if(framework==='solid'){
- await writeFile(join(folder,'Fixture.tsx'),`import {createSignal} from 'solid-js';import {Checkbox,Select,Dialog} from '${root}packages/ready/solid';export default function App(){return <>{['default','midnight','default','midnight'].map((theme,index)=>{const [checked,setChecked]=createSignal(index===0||index===3);const [value,setValue]=createSignal(['a','b','','b'][index]);const [open,setOpen]=createSignal(index===0);return <section data-rd-theme={theme}><form><Checkbox name="check" label="Check" disabled={index===3} checked={checked()} onCheckedChange={setChecked}/><Select name="choice" label="Choice" disabled={index===3} value={value()} onValueChange={setValue} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" open={open()} onOpenChange={setOpen}>Body</Dialog></form></section>})}</>}`)
+ await writeFile(join(folder,'Fixture.tsx'),`import {createSignal} from 'solid-js';import {Checkbox,Select,Dialog} from '${root}packages/ready/solid';export default function App(){return <>{['default','midnight','default','midnight'].map((theme,index)=>{const [checked,setChecked]=createSignal(index===0||index===3);const [value,setValue]=createSignal(['a','b','','b'][index]);const [open,setOpen]=createSignal(index===0);const [error,setError]=createSignal('Please correct this field');return <section data-rd-theme={theme}><form><Checkbox name="check" label="Check" required error={error()} disabled={index===3} checked={checked()} onCheckedChange={setChecked}/><Select name="choice" label="Choice" required error={error()} disabled={index===3} value={value()} onValueChange={setValue} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" open={open()} onOpenChange={setOpen}>Body</Dialog><button type="button" data-clear-errors onClick={()=>setError('')}>Clear errors</button></form></section>})}</>}`)
  server=`import {renderToString,generateHydrationScript} from 'solid-js/web';import App from './Fixture';export const html=()=>renderToString(()=>App());export const bootstrap=generateHydrationScript();`
  client=`import {hydrate} from 'solid-js/web';import App from './Fixture';export const run=target=>hydrate(()=>App(),target);`
  }else{
- await writeFile(join(folder,'Scope.svelte'),`<script>import {Checkbox,Select,Dialog} from '${root}packages/ready/svelte';let {theme,initialChecked,initialValue,initialOpen=false,disabled=false}=$props();let checked=$state(initialChecked),value=$state(initialValue),open=$state(initialOpen);</script><section data-rd-theme={theme}><form><Checkbox name="check" label="Check" {disabled} {checked} onCheckedChange={v=>checked=v}/><Select name="choice" label="Choice" {disabled} {value} onValueChange={v=>value=v} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" {open} onOpenChange={v=>open=v}>Body</Dialog></form></section>`)
+ await writeFile(join(folder,'Scope.svelte'),`<script>import {Checkbox,Select,Dialog} from '${root}packages/ready/svelte';let {theme,initialChecked,initialValue,initialOpen=false,disabled=false}=$props();let checked=$state(initialChecked),value=$state(initialValue),open=$state(initialOpen),error=$state('Please correct this field');</script><section data-rd-theme={theme}><form><Checkbox name="check" label="Check" required {error} {disabled} {checked} onCheckedChange={v=>checked=v}/><Select name="choice" label="Choice" required {error} {disabled} {value} onValueChange={v=>value=v} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" {open} onOpenChange={v=>open=v}>Body</Dialog><button type="button" data-clear-errors onclick={()=>error=''}>Clear errors</button></form></section>`)
  await writeFile(join(folder,'Fixture.svelte'),`<script>import Scope from './Scope.svelte'</script><Scope theme="default" initialChecked={true} initialValue="a" initialOpen={true}/><Scope theme="midnight" initialChecked={false} initialValue="b"/><Scope theme="default" initialChecked={false} initialValue=""/><Scope theme="midnight" initialChecked={true} initialValue="b" disabled={true}/>`)
  server=`import {render} from 'svelte/server';import App from './Fixture.svelte';export const html=()=>render(App).body;`
  client=`import {hydrate,unmount} from 'svelte';import App from './Fixture.svelte';export const run=target=>{const app=hydrate(App,{target,recover:false});return ()=>unmount(app)};`

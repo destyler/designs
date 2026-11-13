@@ -62,6 +62,9 @@ React required no implementation change. No core/UI release is involved.
 - After hydration, checkbox changes, Select selection and Dialog open/close in
   simulated DOM. A single initially open Dialog is also covered across all four
   adapters, including focus requests and cleanup (details below).
+- Server-rendered error text and associated ARIA, stable error/control nodes,
+  client custom validity after hydration, and dynamic error clearing without
+  losing required constraints. Native custom validity is not serialized by SSR.
 - Existing reset, disabled-control and packed-consumer suites remain separate.
 
 Happy DOM incorrectly includes a disabled native `select` in `FormData`; an

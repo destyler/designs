@@ -58,6 +58,8 @@ if(process.argv[2]==='--ssr'){
   app.error('Own error');await settle();app.error('');await settle()
   assert.equal(input.getAttribute('aria-invalid'),'true','Clearing own error preserves Field invalid');assert.equal(part('select','trigger').getAttribute('aria-invalid'),'true')
   assert.equal(input.getAttribute('aria-describedby'),helpers[0]);assert.equal(part('select','trigger').getAttribute('aria-describedby'),helpers[1])
+  app.field(false);await settle()
+  assert.notEqual(input.getAttribute('aria-invalid'),'true','Dynamic Field invalid=false is inherited');assert.notEqual(part('select','trigger').getAttribute('aria-invalid'),'true')
   assert.equal(form.querySelectorAll('select').length,1)
   for(const [parent,child,expected] of [[undefined,undefined,false],[true,undefined,true],[false,undefined,false],[true,false,false],[false,true,true],[undefined,true,true],[undefined,false,false],[true,undefined,true],[false,undefined,false]]){
     app.parentDisable(parent);app.disable(child);await settle()

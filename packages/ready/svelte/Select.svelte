@@ -26,7 +26,7 @@
   $effect(() => { current; options.map(item => item.value); const timer = setTimeout(syncHidden, 0); return () => clearTimeout(timer) })
   const collection = $derived(createListCollection({ items: validateSelectOptions(options) }))
 </script>
-<div bind:this={element} class="rd-component"><Select.Root {required} invalid={error?true:undefined} {collection} {name} value={current ? [current] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
+<div bind:this={element} class="rd-component"><Select.Root {required} invalid={error?true:(field?.()?.invalid??false)} {collection} {name} value={current ? [current] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
   <Select.Label>{label}</Select.Label><Select.Control><Select.Trigger aria-required={(required??field?.()?.required)||undefined} aria-describedby={describedBy}><Select.ValueText {placeholder} /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
-  <Select.Positioner><Select.Content>{#each options as item (item.value)}<Select.Item {item}><Select.ItemText>{item.label}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item>{/each}</Select.Content></Select.Positioner><HiddenSelect errorId={error?errorId:undefined} invalid={error?true:undefined} />
+  <Select.Positioner><Select.Content>{#each options as item (item.value)}<Select.Item {item}><Select.ItemText>{item.label}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item>{/each}</Select.Content></Select.Positioner><HiddenSelect errorId={error?errorId:undefined} invalid={error?true:(field?.()?.invalid??false)} />
 </Select.Root>{#if error}<span id={errorId} class="rd-error">{error}</span>{/if}</div>

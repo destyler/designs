@@ -53,9 +53,12 @@ The four-framework native-form tests compare real compiled controls against plai
 native control fixtures in Happy DOM. They check required validity, valid values,
 custom error messages and clearing, disabled/re-enabled validity, names and form
 values, reset, and error/helper ARIA association. Simulated `requestSubmit` checks
-exercise the validity gate while preventing navigation. React/Vue additionally
-check error-bearing SSR markup against client-only custom validity; the existing
-four-framework SSR/hydration suites remain separate.
+exercise the validity gate while preventing navigation. The separate four-framework
+SSR/hydration suites also render error-bearing markup without DOM globals, then
+hydrate the original nodes in Happy DOM. They check stable error IDs and ARIA,
+client-only custom validity, and dynamic error clearing while retaining required
+constraints. Clearing an own error restores the surrounding Field invalid state
+(or false without a Field), rather than leaving stale `aria-invalid="true"`.
 
 Happy DOM incorrectly includes a disabled `select` in `FormData`, even for a bare
 native select. Tests expose that control-environment limitation rather than
