@@ -1,6 +1,10 @@
 # Ready naming text and description relationships
 
-Checkbox and Select require a `label` with non-whitespace text. Dialog requires
+Checkbox and Select require a `label` with non-whitespace text. Each Select
+option also requires non-whitespace `option.label`, including disabled entries.
+Option labels are checked before collection creation, during SSR, initial client
+rendering and reactive replacements. Equal nonblank labels with distinct values
+remain allowed, and valid labels are not trimmed. Dialog requires
 non-whitespace `trigger` and `title`. All four adapters reject missing, empty or
 whitespace-only values with a specific Ready runtime error, including reactive
 updates. Validation uses `trim()` only to detect emptiness; valid supplied text is
@@ -30,7 +34,9 @@ documented; these checks do not remove that requirement.
 The regression fixtures compile the actual components in all four frameworks,
 then inspect their DOM in Happy DOM. They check repeated-instance IDs, reference
 resolution, nonempty label/button/title sources, dynamic text updates, helper and
-error composition, and initial/dynamic rejection of blank mandatory text.
+error composition, and initial/dynamic rejection of blank mandatory text. Separate actual server
+renderers running without DOM globals check blank option-label rejection and
+preservation of valid text. These SSR tests do not imply browser acceptance.
 
 These are DOM naming-source and association checks, **not** a complete accessible
 name algorithm, browser accessibility-tree inspection or assistive-technology

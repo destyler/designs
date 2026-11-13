@@ -144,7 +144,10 @@ runs on reactive option replacements. Values are compared exactly, without
 trimming or case folding: `a`, `A`, ` a` and `a ` are distinct. Repeated labels
 with distinct values are allowed. No first/last-wins deduplication is performed;
 applications must provide stable unique keys rather than rely on labels or array
-positions. Handle invalid external data before rendering; this developer error
+positions. Every option also needs a non-whitespace `label`, including disabled
+options. Empty or whitespace-only labels throw a Ready error during initial
+rendering (including SSR) and reactive option replacements. Valid labels retain
+their original whitespace; equal nonblank labels with distinct keys are allowed. Handle invalid external data before rendering; this developer error
 is not a form validation message or an automatic recovery mechanism.
 
 ## Server rendering and hydration

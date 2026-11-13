@@ -10,25 +10,26 @@ const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleK
 const {validateSelectOptions}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'))
 const root=fileURLToPath(new URL('../',import.meta.url))
 const message='Ready Select: option.value must not be empty; empty string is reserved for no selection.'
+const labelMessage='Ready Select: option.label must contain non-whitespace text.'
 const duplicateMessage='Ready Select: option.value must be unique; duplicate value "0".'
 if(process.argv[2]==='--worker') {
  const {Window}=await import('happy-dom');const win=new Window({url:'http://localhost/'})
  for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
  for(const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])globalThis[key]=win[key].bind(win)
  globalThis.window=win;globalThis.document=win.document
- const {run}=await import(pathToFileURL(process.argv[3]));const settle=()=>new Promise(r=>setTimeout(r,100));const valid=[{label:'Same label',value:'0'},{label:'Same label',value:' '}]
- for(const mode of ['legal','initial-empty','initial-disabled','dynamic-empty','dynamic-disabled','initial-duplicate','initial-duplicate-disabled','dynamic-duplicate','dynamic-duplicate-disabled']){
-  const form=document.createElement('form');document.body.append(form);const errors=[];const changes=[];const bad={label:'Conflicting label',value:mode.includes('duplicate')?'0':'',disabled:mode.endsWith('disabled')};let api
+ const {run}=await import(pathToFileURL(process.argv[3]));const settle=()=>new Promise(r=>setTimeout(r,100));const valid=[{label:' Same label ',value:'0'},{label:' Same label ',value:' '}]
+ for(const mode of ['legal','initial-empty','initial-disabled','dynamic-empty','dynamic-disabled','initial-duplicate','initial-duplicate-disabled','dynamic-duplicate','dynamic-duplicate-disabled',...['initial','dynamic'].flatMap(phase=>['empty','whitespace'].flatMap(blank=>[`${phase}-label-${blank}`,`${phase}-label-${blank}-disabled`]))]){
+  const form=document.createElement('form');document.body.append(form);const errors=[];const changes=[];const bad={label:mode.includes('-label-')?(mode.includes('whitespace')?' \t ':''):'Conflicting label',value:mode.includes('-label-')?'bad':mode.includes('duplicate')?'0':'',disabled:mode.endsWith('disabled')};let api
   try {api=run(form,mode.startsWith('initial')?[...valid,bad]:valid,e=>errors.push(e),v=>changes.push(v))}catch(error){errors.push(error)}
   await settle()
   if(mode==='legal'){
-   for(const [value,label] of [['0','Same label'],[' ','Same label']]){
+   for(const [value,label] of [['0',' Same label '],[' ',' Same label ']]){
     form.querySelector('[data-part="trigger"]').click();await settle();const item=[...form.querySelectorAll('[data-part="item"]')].find(n=>n.getAttribute('data-value')===value);assert.ok(item);item.click();await settle();assert.equal(form.querySelector('[data-part="value-text"]').textContent,label);assert.equal(form.querySelector('select').value,value);assert.equal(new win.FormData(form).get('choice'),value)
    }
    assert.deepEqual(changes,['0',' ']);assert.deepEqual(errors,[])
   }else{
    if(mode.startsWith('dynamic')){try{api.update([...valid,bad])}catch(error){errors.push(error)}await settle()}
-   const expected=mode.includes('duplicate')?duplicateMessage:message;assert.ok(errors.some(e=>e.message===expected),`${mode}: expected explicit option validation error, got ${errors.map(e=>e.message)}`);assert.deepEqual(changes,[],'Invalid data must not emit a selection callback')
+   const expected=mode.includes('-label-')?labelMessage:mode.includes('duplicate')?duplicateMessage:message;assert.ok(errors.some(e=>e.message===expected),`${mode}: expected explicit option validation error, got ${errors.map(e=>e.message)}`);assert.deepEqual(changes,[],'Invalid data must not emit a selection callback')
   }
   if(api)await api.cleanup();form.remove();await settle()
  }
@@ -36,8 +37,9 @@ if(process.argv[2]==='--worker') {
 }else{
  test('Select validator rejects empty values without filtering or trimming',()=>{const options=[{label:'Zero',value:'0'},{label:'Space',value:' '}];assert.equal(validateSelectOptions(options),options);for(const disabled of [false,true])assert.throws(()=>validateSelectOptions([{label:'Bad',value:'',disabled}]),{message})})
  test('Select validator rejects exact duplicate keys regardless of label or disabled state',()=>{for(const firstDisabled of [false,true])for(const disabled of [false,true])for(const label of ['First','Other'])assert.throws(()=>validateSelectOptions([{label:'First',value:'0',disabled:firstDisabled},{label,value:'0',disabled}]),{message:duplicateMessage});assert.throws(()=>validateSelectOptions([{label:'A',value:'0'},{label:'B',value:'0'},{label:'Empty',value:''}]),{message});const options=['a','A',' a','a ',' ','__proto__','constructor'].map(value=>({label:'Same',value}));assert.equal(validateSelectOptions(options),options);assert.throws(()=>validateSelectOptions([{label:'A',value:'__proto__'},{label:'B',value:'__proto__'}]),/must be unique/);})
+ test('Select validator rejects blank option labels without rewriting valid labels',()=>{for(const label of ['', ' ', '\n\t', '\u00a0',undefined,null])for(const disabled of [false,true])assert.throws(()=>validateSelectOptions([{label,value:'a',disabled}]),{message:labelMessage});const options=[{label:' Same label ',value:'a'},{label:' Same label ',value:'b'}];assert.equal(validateSelectOptions(options),options);assert.equal(options[0].label,' Same label ');})
  test('Select validation helper is included in the source package whitelist',async()=>{const pkg=JSON.parse(await readFile(new URL('../packages/ready/package.json',import.meta.url),'utf8'));assert.ok(pkg.files.includes('select-options.ts'))})
- for(const framework of ['react','solid','vue','svelte'])test(`Ready ${framework} Select rejects initial/dynamic empty or duplicate keys and preserves distinct keys`,{timeout:120000},async()=>{
+ for(const framework of ['react','solid','vue','svelte'])test(`Ready ${framework} Select rejects initial/dynamic invalid keys or blank labels and preserves valid data`,{timeout:120000},async()=>{
   const folder=await mkdtemp(join(root,'node_modules/.ready-options-'))
   try{
    const {build}=await import('vite');let plugin,code
