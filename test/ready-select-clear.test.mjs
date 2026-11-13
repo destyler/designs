@@ -12,15 +12,18 @@ if(process.argv[2]==='--worker') {
  globalThis.window=win;globalThis.document=win.document
  const observers=[];const NativeObserver=win.MutationObserver
  globalThis.MutationObserver=class extends NativeObserver {observe(target,options){this.target=target;this.active=true;observers.push(this);super.observe(target,options)}disconnect(){this.active=false;super.disconnect()}}
- const {run}=await import(pathToFileURL(process.argv[3]));const form=document.createElement('form');document.body.append(form);const events=[];const api=run(form,v=>events.push(v));const settle=()=>new Promise(r=>setTimeout(r,100));await settle()
+ const {run}=await import(pathToFileURL(process.argv[3]));const form=document.createElement('form');document.body.append(form);const events=[];const api=run(form,v=>events.push(v));const settle=()=>new Promise(r=>setTimeout(r,10))
+ // createRoot can commit inputs before its passive reconciliation effect is installed.
+ // Wait for the entire observable contract, not an assumed 100ms effect schedule.
+ const eventually=async assertion=>{const deadline=Date.now()+2000;for(;;){try{assertion();return}catch(error){if(Date.now()>=deadline)throw error;await settle()}}}
  const check=value=>{assert.equal(form.querySelector('select').value,value,'Native selected value');assert.equal(new win.FormData(form).get('choice'),value,'Submitted value');assert.equal(form.querySelector('[data-part="value-text"]').textContent,value?value.toUpperCase():'Choose an option','Visible value');const selected=[...form.querySelector('select').options].filter(option=>option.hasAttribute('selected'));assert.deepEqual(selected.map(option=>option.value),[value],'Reset defaults match effective value')}
- check('a')
- for(const value of ['', 'b', '', 'a']){api.set(value);await settle();check(value)}
+ await eventually(()=>check('a'))
+ for(const value of ['', 'b', '', 'a']){api.set(value);await eventually(()=>check(value))}
  // A superseded scheduled reconciliation must read the latest parent value.
- api.set('');api.set('b');await settle();check('b')
- api.set(undefined);await settle();check('')
+ api.set('');api.set('b');await eventually(()=>check('b'))
+ api.set(undefined);await eventually(()=>check(''))
  assert.deepEqual(events,[],'Parent prop updates do not invent business callbacks')
- await api.cleanup();await settle();for(const observer of observers.filter(o=>o.target?.matches?.('select,.rd-component')))assert.equal(observer.active,false,'Adapter observation is disconnected on unmount');await win.happyDOM.close();console.log('PASS controlled Select clear and reselect')
+ await api.cleanup();await eventually(()=>{for(const observer of observers.filter(o=>o.target?.matches?.('select,.rd-component')))assert.equal(observer.active,false,'Adapter observation is disconnected on unmount')});await win.happyDOM.close();console.log('PASS controlled Select clear and reselect')
 } else for(const framework of ['react','solid','vue','svelte'])test(`Ready ${framework} Select parent clear keeps visible and submitted values aligned`,{timeout:120000},async()=>{
  const folder=await mkdtemp(join(root,'node_modules/.ready-clear-'))
  try{
