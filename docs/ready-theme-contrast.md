@@ -10,6 +10,10 @@ node --test test/ready-theme-contrast.test.mjs
 The test uses WCAG relative luminance and contrast ratio calculations. It checks
 normal-sized text at 4.5:1 and meaningful enabled-control boundaries/focus colors
 at 3:1, using unrounded ratios for pass/fail. The table rounds for readability.
+Source-level regular-expression checks also verify the explicit CSS declarations
+for accent buttons, checked Checkbox controls and highlighted Select items pair
+`on-accent` text with `accent` backgrounds. They do not evaluate the CSS cascade,
+computed styles, whether `:focus-visible` matches, or clipping/occlusion.
 
 | Foreground / background | Default | Midnight |
 | --- | ---: | ---: |

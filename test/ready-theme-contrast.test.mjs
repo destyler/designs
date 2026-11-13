@@ -31,3 +31,16 @@ test('Measured semantic colors remain wired to errors and focus indicators',()=>
  assert.match(css,/:focus-visible\s*\{[^}]*outline:3px solid var\(--rd-accent\);[^}]*outline-offset:3px/)
  assert.match(css,/:has\(input:focus-visible\)[^}]*outline:3px solid var\(--rd-accent\)/)
 })
+// Source-level declaration checks only: this is not a CSS cascade/computed-style
+// engine and cannot prove that these states are rendered, focused or unclipped.
+for(const [state,selector] of [
+ ['accent button','.rd-component .rd-button'],
+ ['checked Checkbox','.rd-component [data-scope="checkbox"][data-part="control"][data-state="checked"]'],
+ ['highlighted Select item','.rd-component [data-scope="select"][data-part="item"][data-highlighted]'],
+])test(`Ready ${state}: declares the measured on-accent/accent pair`,()=>{
+ const blocks=[...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(([,selectors])=>selectors.trim()===selector)
+ assert.equal(blocks.length,1,`Expected one explicit rule for ${selector}`)
+ const declarations=Object.fromEntries(blocks[0][2].split(';').filter(part=>part.trim()).map(part=>{const colon=part.indexOf(':');return [part.slice(0,colon).trim(),part.slice(colon+1).trim()]}))
+ assert.equal(declarations.background,'var(--rd-accent)',`${state} background must use the measured accent`)
+ assert.equal(declarations.color,'var(--rd-on-accent)',`${state} foreground must use the measured on-accent`)
+})
