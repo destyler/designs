@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtemp, mkdir, readFile, writeFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+const documented = process.argv.includes('--documented')
 const root = fileURLToPath(new URL('../', import.meta.url))
 const folder = await mkdtemp('/tmp/ready-clean-consumers-')
 console.log(`Consumer evidence: ${folder}`)
@@ -23,9 +24,11 @@ for (const [framework, config] of Object.entries(configurations)) {
   const dependencies = Object.fromEntries(['vite', 'typescript', `@destyler-ui/${framework}`, ...config.packages].map(name => [name, versions.dependencies?.[name] ?? versions.devDependencies[name]]))
   for (const [name, version] of Object.entries(dependencies)) assert.ok(version, `Missing exact version: ${name}`)
   dependencies['@destyler/ready-prototype'] = `file:${join(folder, packed.filename)}`
-  await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: `ready-clean-${framework}`, private: true, type: 'module', dependencies }, null, 2))
+  if (documented) run('node', [join(root, 'scripts/create-ready-consumer.mjs'), framework, cwd, join(folder, packed.filename)], root)
+  else await writeFile(join(cwd, 'package.json'), JSON.stringify({ name: `ready-clean-${framework}`, private: true, type: 'module', dependencies }, null, 2))
   try {
     await writeFile(join(cwd, 'install.log'), run('npm', ['install', '--no-audit', '--no-fund', '--cache', '/tmp/ready-clean-npm-cache', '--fetch-retries=0', '--fetch-timeout=30000'], cwd))
+    if (!documented) {
     for (const file of await readdir(join(root, 'examples/ready', framework))) {
       if (file === 'tsconfig.json') continue
       const source = (await readFile(join(root, 'examples/ready', framework, file), 'utf8')).replaceAll('../../../packages/ready/', '@destyler/ready-prototype/').replaceAll('../demo.css', './demo.css')
@@ -37,18 +40,25 @@ for (const [framework, config] of Object.entries(configurations)) {
     tsconfig.exclude = ['node_modules', 'dist']
     await writeFile(join(cwd, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2))
     await writeFile(join(cwd, 'vite.config.mjs'), `${config.plugin};\nexport default {plugins:[${config.pluginCall}],build:{minify:false}}`)
+    }
     const resolveScript = `import assert from 'node:assert/strict';for(const name of ${JSON.stringify([`@destyler/ready-prototype/${framework}`, '@destyler/ready-prototype/theme.css', ...[`@destyler-ui/${framework}`, ...config.packages.filter(n => ['react', 'react-dom', 'vue', 'solid-js', 'svelte'].includes(n))]])}){const path=import.meta.resolve(name);assert.ok(path.startsWith(new URL('./node_modules/', import.meta.url).href),path);console.log(name,path)}`
     await writeFile(join(cwd, 'resolve.mjs'), resolveScript)
     await writeFile(join(cwd, 'resolve.log'), run('node', ['resolve.mjs'], cwd))
     const adapters = await readdir(join(cwd, 'node_modules/@destyler-ui'))
     assert.deepEqual(adapters, [framework], 'Only the selected UI adapter is installed')
     await writeFile(join(cwd, 'peer-tree.json'), run('npm', ['ls', '--all', '--json'], cwd))
-    await writeFile(join(cwd, 'build.log'), run('node', ['node_modules/vite/bin/vite.js', 'build'], cwd))
+    await writeFile(join(cwd, 'build.log'), documented ? run('npm', ['run', 'build'], cwd) : run('node', ['node_modules/vite/bin/vite.js', 'build'], cwd))
     const assets = join(cwd, 'dist/assets')
     const css = (await Promise.all((await readdir(assets)).filter(name => name.endsWith('.css')).map(name => readFile(join(assets, name), 'utf8')))).join('\n')
     assert.match(css, /--rd-accent/)
     assert.match(css, /--rd-backdrop/)
-    await writeFile(join(cwd, 'types.log'), run('node', [`node_modules/${config.check[0]}`, ...config.check.slice(1)], cwd))
+    if (documented) {
+      assert.match(css, /--rd-accent:\s*#5b21b6/)
+      assert.match(css, /--rd-on-accent:\s*#fff/)
+      assert.match(css, /--rd-radius:\s*16px/)
+    }
+    if (documented) assert.match(await readFile(join(cwd, 'dist/index.html'), 'utf8'), /data-rd-theme="default"/)
+    await writeFile(join(cwd, 'types.log'), documented ? run('npm', ['run', 'check'], cwd) : run('node', [`node_modules/${config.check[0]}`, ...config.check.slice(1)], cwd))
     results.push({ framework, install: 'pass', build: 'pass', types: 'pass', adapters })
   } catch (error) {
     const detail = `${error.message}\n${error.stdout ?? ''}\n${error.stderr ?? ''}`

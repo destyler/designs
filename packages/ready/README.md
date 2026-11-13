@@ -18,6 +18,11 @@ Serve artifacts/ready with any static server to use the cross-framework links.
 
 ## Consuming the private source package
 
+For the complete checkout → tarball → clean Vite application commands and minimal
+React/Vue/Solid/Svelte source, follow the [executable quickstart](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-quickstart.md).
+The quickstart generator lives in the repository, not inside this tarball.
+For built-in and custom theme usage, read [THEMING.md](./THEMING.md).
+
 This is a **Vite-compiled source package**, not precompiled JavaScript for direct
 Node execution. It intentionally has no default root component export. Select one
 framework subpath: `@destyler/ready-prototype/react`, `/vue`, `/solid`, or `/svelte`.
@@ -87,7 +92,12 @@ Real-browser form reset and full form-library integration still need validation.
 
 ## Verification commands
 
-- `node scripts/verify-ready-clean-consumers.mjs` (opt-in registry access; fresh npm-installed consumers in `/tmp`, four Vite builds and type checks; see [verification report](../../docs/ready-clean-consumer-verification.md))
+These commands run from a checkout of the **repository root** with its dependencies
+installed (`npm ci`). They are not scripts shipped inside the packed package.
+
+- `node scripts/verify-ready-clean-consumers.mjs --documented` (installs and builds the exact quickstart examples)
+
+- `node scripts/verify-ready-clean-consumers.mjs` (opt-in registry access; fresh npm-installed consumers in `/tmp`, four Vite builds and type checks; see [verification report](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-clean-consumer-verification.md))
 
 - `node --test test/ready-*.test.mjs`
 - `node node_modules/typescript/bin/tsc -p examples/ready/react/tsconfig.json`

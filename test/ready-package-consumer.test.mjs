@@ -11,6 +11,7 @@ test('Ready packed source package exposes intentional entries and optional frame
   try {
     const [packed] = JSON.parse(execFileSync('npm', ['pack', './packages/ready', '--json', '--ignore-scripts', '--pack-destination', folder, '--cache', '/tmp/ready-pack-cache'], { cwd: root, encoding: 'utf8' }))
     assert.ok(packed.files.every(file => !/(?:^|\/)(?:test|examples|node_modules|artifacts)(?:\/|$)/.test(file.path)))
+    assert.ok(packed.files.some(file => file.path === 'THEMING.md'), 'Packed README theme link resolves inside archive')
     const target = join(folder, 'node_modules/@destyler/ready-prototype')
     await mkdir(target, { recursive: true })
     execFileSync('tar', ['-xzf', join(folder, packed.filename), '--strip-components=1', '-C', target])

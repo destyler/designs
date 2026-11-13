@@ -12,7 +12,8 @@
     "types.ts",
     "select-options.ts",
     "theme.css",
-    "README.md"
+    "README.md",
+    "THEMING.md"
   ],
   "exports": {
     "./react": {
