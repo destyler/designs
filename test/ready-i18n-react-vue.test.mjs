@@ -20,9 +20,21 @@ if(process.argv[2]==='--worker'){
    const native=host.querySelector('select'),label=host.querySelector('[data-part=label]');const labelId=label.id;
    let emptyId;const checkEmpty=text=>{const empty=host.querySelector('.rd-empty');assert.ok(empty);assert.equal(empty.textContent,text);assert.equal(empty.getAttribute('role'),null);assert.equal(empty.getAttribute('aria-live'),null);if(emptyId)assert.equal(empty.id,emptyId);emptyId=empty.id;assert.equal(empty.closest('[role=listbox]'),null);const helper=host.querySelector('[data-part=helper-text]'),error=host.querySelector('.rd-error');for(const node of [trigger,native]){const ids=node.getAttribute('aria-describedby').split(/\s+/);assert.deepEqual(new Set(ids),new Set([helper.id,error.id,empty.id]));assert.equal(node.getAttribute('aria-labelledby'),labelId)}assert.equal(host.querySelectorAll('[role=option]').length,0);assert.equal(native.options.length,1);assert.equal(native.value,'')};
    checkEmpty('No options available');trigger.click();await settle();assert.equal(trigger.getAttribute('aria-expanded'),'true');checkEmpty('No options available');
+   // Explicit handler events in simulated DOM, not browser keyboard/default-action proof.
+   const press=(node,key)=>node.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));
+   for(const part of ['trigger','content'])for(const key of ['ArrowDown','ArrowUp','Home','End','Enter']){
+    if(trigger.getAttribute('aria-expanded')!=='true'){trigger.click();await settle()}
+    press(host.querySelector(`[data-scope=select][data-part=${part}]`),key);await settle();
+    checkEmpty('No options available');assert.deepEqual(callbacks,[],`${part}/${key}: empty list never requests a selection`);
+    assert.deepEqual([...new win.FormData(host)],[['plan','']]);
+    for(const node of host.querySelectorAll('[aria-activedescendant]')){const id=node.getAttribute('aria-activedescendant');assert.ok(!id||document.getElementById(id),`${part}/${key}: no dangling active descendant`)}
+    assert.equal(host.querySelectorAll('[role=option][aria-selected=true]').length,0);
+   }
+   if(trigger.getAttribute('aria-expanded')!=='true'){trigger.click();await settle()}
+   press(host.querySelector('[data-scope=select][data-part=content]'),'Escape');await settle();assert.equal(trigger.getAttribute('aria-expanded'),'false','Escape closes empty list');assert.deepEqual(callbacks,[]);
    app.update({placeholder:'请选择',emptyMessage:'  暂无选项  '});await settle();assert.equal(host.querySelector('[data-part=value-text]').textContent,'请选择');checkEmpty('  暂无选项  ');
    app.update({placeholder:''});await settle();assert.equal(host.querySelector('[data-part=value-text]').textContent,'');
-   app.update({options:[{value:'a',label:'甲'}]});await settle();assert.equal(host.querySelector('.rd-empty'),null);assert.equal(host.querySelectorAll('[role=option]').length,1);for(const node of [trigger,native])assert.ok(!node.getAttribute('aria-describedby').split(/\s+/).includes(emptyId));assert.equal(native.value,'');
+   app.update({options:[{value:'a',label:'甲'}]});await settle();assert.equal(host.querySelector('.rd-empty'),null);assert.equal(host.querySelectorAll('[role=option]').length,1);for(const node of [trigger,native])assert.deepEqual(new Set(node.getAttribute('aria-describedby').split(/\s+/)),new Set([host.querySelector('[data-part=helper-text]').id,host.querySelector('.rd-error').id]),'Loading options removes only the empty description');assert.equal(native.value,'');
    app.update({options:[]});await settle();checkEmpty('  暂无选项  ');assert.deepEqual(callbacks,[]);
   }else{
    assert.equal(host.querySelector('[data-part=close-trigger]').textContent,'Close');trigger.click();await settle();assert.equal(trigger.getAttribute('aria-expanded'),'true');

@@ -56,6 +56,12 @@ implemented by these string props.
 Four-framework compiled-component regressions check defaults, translated and
 reactively updated text, blank-value rejection, close behavior, empty/populated
 transitions, and description references without fake options or callbacks.
+Empty-collection keyboard regressions dispatch ArrowUp/ArrowDown, Home/End and
+Enter to the real components: they must not select a value or leave a dangling
+`aria-activedescendant`; Escape closes the popup. After options arrive, the empty
+description is removed while Field help/error associations remain. These are
+simulated keyboard events, not real-browser keyboard or assistive-technology
+acceptance tests.
 The empty-message SSR→hydration checks preserve its node/ID and the error
 association, then remove only the empty-message reference when options arrive.
 They also expose an existing upstream Field limitation: helper text is present
