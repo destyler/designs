@@ -68,8 +68,12 @@ Inline overlays preserve the nearest theme scope. Do not put scopes in clipped,
 transformed or isolated stacking containers; a general portal/theme bridge is not
 implemented. Cross-framework API conventions are native, not forced to identical
 syntax. Async options, custom rendering, validation recipes, plugin registration,
-RTL and nested overlays are not part of this slice. Browser layout, keyboard focus
-trapping, real pointer, mobile and assistive-technology acceptance remain pending;
+RTL, general nested-overlay behavior and multiple-modal stacks are not promised
+by this slice. A Select inside a Dialog has limited simulated-DOM regression
+coverage: Escape closes the Select before the Dialog, with focus restoration and
+cleanup checks. That does not establish arbitrary nesting support or real-browser
+acceptance. Browser layout, keyboard focus trapping, real pointer, mobile and
+assistive-technology acceptance remain pending;
 simulated DOM tests are not substitutes for them.
 
 Form submission names are forwarded to hidden controls. Reset uses the primitive's
