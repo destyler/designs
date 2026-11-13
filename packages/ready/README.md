@@ -67,7 +67,7 @@ This is not a published library or a replacement for every gallery component.
 Inline overlays preserve the nearest theme scope. Do not put scopes in clipped,
 transformed or isolated stacking containers; a general portal/theme bridge is not
 implemented. Cross-framework API conventions are native, not forced to identical
-syntax. Async options, custom rendering, validation recipes, plugin registration,
+syntax. Async fetching/loading lifecycles, custom rendering, validation recipes, plugin registration,
 RTL, general nested-overlay behavior and multiple-modal stacks are not promised
 by this slice. A Select inside a Dialog has limited simulated-DOM regression
 coverage: Escape closes the Select before the Dialog, with focus restoration and
@@ -165,3 +165,13 @@ it removes the custom error without removing `required`. Disabled controls are
 excluded from constraint validation until re-enabled. SSR can render error text
 and ARIA, but custom validity needs JavaScript and is not a server-side check.
 See the [native form contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-native-forms.md).
+
+## Changing Select options
+
+A requested value absent from `options` renders an empty effective selection, not
+the first available option. Its requested value is retained and restored when a
+matching option arrives, without a fabricated change callback. Reordering and
+relabeling preserve value. Disabling an already selected option does not clear it;
+native submission excludes disabled options, so applications should explicitly
+clear or validate withdrawn choices. See the [dynamic options contract and test
+limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-select-dynamic-options.md).

@@ -11,7 +11,9 @@ const element = ref<HTMLDivElement>()
 const errorId=useId(), field=useFieldContext()
 const describedBy=computed(()=>[field?.value?.ariaDescribedby,props.error ? errorId : undefined].filter(Boolean).join(' ') || undefined)
 watchPostEffect(()=>{const error=props.error ?? '';element.value?.querySelector('select')?.setCustomValidity(error)})
-const current = computed(() => props.value ?? local.value)
+const requested = computed(() => props.value ?? local.value)
+// Keep a missing requested key pending without letting native SSR select the first option.
+const current = computed(() => props.options.some(item => item.value === requested.value) ? requested.value : '')
 const collection = computed(() => createListCollection({ items: validateSelectOptions(props.options) }))
 function syncHidden() {
   const value = current.value

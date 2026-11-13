@@ -15,7 +15,9 @@
     local = value; onValueChange?.(value)
     void tick().then(() => setTimeout(syncHidden, 0))
   }
-  const current = $derived(value ?? local)
+  const requested = $derived(value ?? local)
+  // Preserve a pending requested value across option replacement.
+  const current = $derived(options.some(item => item.value === requested) ? requested : '')
   function syncHidden() {
     const value = current
     const select = element?.querySelector('select')

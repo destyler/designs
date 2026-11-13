@@ -10,7 +10,9 @@ export function Checkbox(props: CheckboxProps) {
  return <div ref={container} className="rd-component"><C.Root name={props.name} required={props.required} invalid={props.error ? true : (field?.invalid ?? false)} disabled={props.disabled} checked={props.checked ?? local} onCheckedChange={d => { const value=d.checked === true; setLocal(value); props.onCheckedChange?.(value); }}><C.Control><C.Indicator><span aria-hidden="true">✓</span></C.Indicator></C.Control><C.Label>{props.label}</C.Label><C.HiddenInput aria-describedby={describedBy} /></C.Root>{props.error && <p id={errorId} className="rd-error">{props.error}</p>}</div>;
 }
 export function Select(props: SelectProps) {
- const [local,setLocal]=useState(''); const value=props.value ?? local;
+ const [local,setLocal]=useState(''); const requested=props.value ?? local;
+ // Retain the requested key while async/missing options render an actual empty selection.
+ const value=props.options.some(option=>option.value===requested) ? requested : '';
  const errorId=useId(), field=useFieldContext();
  const describedBy=[field?.ariaDescribedby,props.error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
  const container=useRef<HTMLDivElement>(null); const current=useRef(value);current.current=value;

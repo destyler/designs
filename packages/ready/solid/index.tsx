@@ -11,7 +11,9 @@ export function Checkbox(props: CheckboxProps) {
  return <div ref={container} class="rd-component"><C.Root required={props.required} invalid={props.error?true:(field?.().invalid??false)} name={props.name} disabled={props.disabled} checked={props.checked ?? local()} onCheckedChange={d => { const value=d.checked === true; setLocal(value); props.onCheckedChange?.(value); }}><C.Control><C.Indicator><span aria-hidden="true">✓</span></C.Indicator></C.Control><C.Label>{props.label}</C.Label><C.HiddenInput aria-describedby={describedBy()} /></C.Root>{props.error && <span id={errorId} class="rd-error">{props.error}</span>}</div>;
 }
 export function Select(props: SelectProps) {
- const [local,setLocal]=createSignal(''); const value=() => props.value ?? local();
+ const [local,setLocal]=createSignal(''); const requested=() => props.value ?? local();
+ // Retain a pending requested value while only rendering matching options.
+ const value=() => props.options.some(option=>option.value===requested()) ? requested() : '';
  let container: HTMLDivElement | undefined;
  const errorId=createUniqueId();const field=useFieldContext();const describedBy=()=>[field?.().ariaDescribedby,props.error?errorId:undefined].filter(Boolean).join(' ')||undefined;
  createEffect(()=>{const error=props.error??'';container?.querySelector('select')?.setCustomValidity(error)});
