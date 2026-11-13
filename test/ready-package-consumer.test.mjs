@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
 const root = fileURLToPath(new URL('../', import.meta.url))
@@ -15,6 +15,28 @@ test('Ready packed source package exposes intentional entries and optional frame
     const target = join(folder, 'node_modules/@destyler/ready-prototype')
     await mkdir(target, { recursive: true })
     execFileSync('tar', ['-xzf', join(folder, packed.filename), '--strip-components=1', '-C', target])
+    // Inspect the actual archive, not only the working-tree README. Local links
+    // must stay inside the package; repository links must name tracked docs.
+    const repositoryDocs = 'https://github.com/destyler/designs/blob/feat/ready-components-pilot/'
+    const files = new Set(packed.files.map(file => file.path))
+    const tracked = new Set(execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).trim().split('\n'))
+    for (const doc of ['README.md', 'THEMING.md']) {
+      const markdown = await readFile(join(target, doc), 'utf8')
+      const links = [...markdown.matchAll(/\[[^\]]*\]\(([^)\s]+)\)/g)].map(match => match[1])
+      assert.ok(links.length, `${doc}: expected documentation links`)
+      for (const href of links) {
+        if (href.startsWith('#')) continue
+        if (href.startsWith(repositoryDocs)) {
+          assert.ok(tracked.has(href.slice(repositoryDocs.length).split(/[?#]/)[0]), `${doc}: missing repository document ${href}`)
+        } else if (/^[a-z]+:/i.test(href)) {
+          assert.equal(new URL(href).protocol, 'https:', `${doc}: external links must use HTTPS`)
+        } else {
+          const resolved = posix.normalize(posix.join(posix.dirname(doc), href.split(/[?#]/)[0]))
+          assert.ok(!resolved.startsWith('../') && !posix.isAbsolute(resolved) && files.has(resolved), `${doc}: link escapes or is absent from tarball: ${href}`)
+        }
+      }
+      if (doc === 'README.md') assert.ok(links.includes(repositoryDocs + 'docs/ready-rtl.md'), 'Packed RTL link resolves to repository documentation')
+    }
     const manifest = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'))
     for (const name of ['react', 'vue', 'solid', 'svelte']) assert.ok(manifest.exports[`./${name}`])
     assert.equal(manifest.exports['./theme.css'], './theme.css')
