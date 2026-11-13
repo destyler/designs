@@ -145,3 +145,10 @@ See the [SSR and hydration verification](https://github.com/destyler/designs/blo
 for the tested server/client compilation paths, form-state fixes and limits.
 These checks use real server rendering followed by simulated DOM hydration, not
 browser acceptance or a promise of Next.js, Nuxt, SolidStart or SvelteKit support.
+
+**Known hydration gap:** native form values changed after SSR but before hydration
+can be overwritten or diverge from the visible component state, including a
+Checkbox's first later click not emitting a callback. Automatic preservation is
+not supported. See the [pre-hydration investigation](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-prehydration-input.md)
+for reproduced behavior and the still-proposed explicit adoption policy. Passing
+the unchanged-DOM SSR tests does not resolve this separate input-loss risk.

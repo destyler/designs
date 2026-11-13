@@ -4,6 +4,11 @@ This checks the private Vite source package on the repository's pinned dependenc
 versions. It is not a claim of Next.js, Nuxt, SolidStart or SvelteKit integration,
 streaming SSR, or real-browser acceptance.
 
+**Important:** these fixtures hydrate unchanged server DOM. Values edited or
+restored before hydration expose a separate [known input-preservation gap](./ready-prehydration-input.md),
+including overwritten Select values and divergent Checkbox state. The passing
+checks below do not cover or resolve that gap.
+
 ## Reproduce
 
 From the repository root after `npm ci`:
