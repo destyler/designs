@@ -37,7 +37,24 @@ particular framework happens to coerce or tolerate them.
 
 ## Reproduce the isolated consumer checks
 
-First create installed consumers using the existing opt-in installation check:
+The routine CI path reuses the repository's locked installed compiler/runtime
+dependencies without downloading another set of packages:
+
+```sh
+npm ci --no-audit --no-fund
+npm run check:ready:contracts
+# Equivalent individual commands:
+node scripts/verify-ready-types-react-vue.mjs --locked
+node scripts/verify-ready-types-solid-svelte.mjs --locked
+```
+
+`--locked` links dependencies into temporary consumers but extracts Ready from a
+fresh local tarball. Its package, `/types` and CSS resolve inside those consumers,
+never through an alias to repository Ready source. All root-installed framework
+peers are available in this mode; it is not a minimal-peer or fresh-install test.
+
+Alternatively, preserve the original installed-consumer path mode. First create
+installed consumers using the existing opt-in installation check:
 
 ```sh
 node scripts/verify-ready-clean-consumers.mjs
@@ -63,7 +80,8 @@ inference, options, required/error and framework markup. Negative fixtures cover
 missing required props, wrong prop/option/payload types and unsupported props.
 `@ts-expect-error` assertions must be consumed; dedicated unsuppressed negative
 fixtures also check expected diagnostics rather than accepting arbitrary compiler
-failure. These scripts are opt-in and are not part of `npm test`.
+failure. CI calls these scripts explicitly through `check:ready:contracts`; they
+are still separate from `npm test`.
 
 No new type/runtime mismatch was found in this pass. The tests do not prove all
 TypeScript versions, all bundlers, runtime input validation, browser behavior or

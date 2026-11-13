@@ -1,23 +1,28 @@
-// Opt-in consumer type audit. Reuses a prior clean npm consumer's installed peers,
-// copied (not linked) outside this repository; no claim of a fresh network install.
-// Generate the prerequisite with scripts/verify-ready-clean-consumers.mjs.
+// Packed consumer type audit. --locked links the repository's npm ci dependency tree.
+// A directory argument instead copies prior clean consumers' installed peers.
+// Neither mode is a fresh installation; locked mode is not framework-peer isolation.
+// Generate prior consumers with scripts/verify-ready-clean-consumers.mjs.
 import assert from 'node:assert/strict'
+import {dependencyMode,linkTypeDependencies,assertPackedReady} from './ready-type-dependencies.mjs'
 import {mkdtemp,mkdir,cp,rm,writeFile,readFile} from 'node:fs/promises'
 import {join} from 'node:path'
 import {execFileSync} from 'node:child_process'
 import {fileURLToPath} from 'node:url'
 const root=fileURLToPath(new URL('../',import.meta.url))
-const dependencies=process.argv[2]
-assert.ok(dependencies,'Usage: node scripts/verify-ready-types-react-vue.mjs /tmp/ready-clean-consumers-EXISTING')
+const mode=dependencyMode(process.argv[2],'verify-ready-types-react-vue.mjs')
+const dependencies=mode.directory
+console.log(mode.locked?'Mode: locked repository npm ci dependencies; packed Ready':'Mode: copied prior clean consumer dependencies; packed Ready')
 const evidence=await mkdtemp('/tmp/ready-consumer-types-rv-');console.log(evidence)
 const run=(command,args,cwd)=>execFileSync(command,args,{cwd,encoding:'utf8',env:{...process.env,NODE_PATH:''}})
 const [pack]=JSON.parse(run('npm',['pack','./packages/ready','--ignore-scripts','--json','--pack-destination',evidence,'--cache','/tmp/ready-clean-npm-cache'],root))
 for(const framework of ['react','vue']){
  const cwd=join(evidence,framework);await mkdir(cwd)
- await cp(join(dependencies,framework,'node_modules'),join(cwd,'node_modules'),{recursive:true})
+ if(mode.locked)await linkTypeDependencies(join(root,'node_modules'),join(cwd,'node_modules'))
+ else await cp(join(dependencies,framework,'node_modules'),join(cwd,'node_modules'),{recursive:true})
  const pkg=join(cwd,'node_modules/@destyler/ready-prototype');await rm(pkg,{recursive:true,force:true});await mkdir(pkg,{recursive:true})
  run('tar',['-xzf',join(evidence,pack.filename),'--strip-components=1','-C',pkg],cwd)
  await writeFile(join(cwd,'package.json'),JSON.stringify({private:true,type:'module'}))
+ await assertPackedReady(cwd,framework,run)
  const base={compilerOptions:{target:'ES2022',module:'ESNext',moduleResolution:'Bundler',strict:true,skipLibCheck:true,noEmit:true,lib:['ES2022','DOM','DOM.Iterable'],jsx:'react-jsx',esModuleInterop:true},include:['positive.tsx','positive.vue','contract.ts']}
  await writeFile(join(cwd,'tsconfig.json'),JSON.stringify(base))
  const importPath=`@destyler/ready-prototype/${framework}`
@@ -61,6 +66,15 @@ const wrongOpenCallback:D={trigger:'Open',title:'Title',onOpenChange(value:strin
  else await writeFile(join(cwd,'positive.vue'),`<script setup lang="ts">import {ref} from 'vue';import {Checkbox,Select,Dialog} from '${importPath}';const checked=ref(false),value=ref(''),open=ref(false);function boolean(v:boolean){};function string(v:string){}</script><template><Checkbox label="Consent"/><Checkbox label="Consent" v-model:checked="checked" required error="Required" @checked-change="boolean"/><Select label="Plan" :options="[{value:'a',label:'A'}]" v-model:value="value" @value-change="string"/><Dialog trigger="Open" title="Title" v-model:open="open" @open-change="boolean"><p>Body</p></Dialog></template>`)
  const command=framework==='react'?'node_modules/typescript/bin/tsc':'node_modules/vue-tsc/bin/vue-tsc.js'
  try{await writeFile(join(cwd,'check.log'),run(process.execPath,[command,'--noEmit'],cwd));console.log(framework,'PASS')}catch(error){await writeFile(join(cwd,'check.log'),error.stdout??String(error));throw error}
+ const expectedLines=contract.split('\n').flatMap((line,index)=>line.includes('@ts-expect-error')?[index+2]:[])
+ assert.equal(expectedLines.length,12)
+ await writeFile(join(cwd,'contract.ts'),contract.replaceAll('@ts-expect-error','negative case'))
+ let negative='';try{run(process.execPath,[command,'--noEmit'],cwd);assert.fail('Invalid contracts unexpectedly compiled')}catch(error){if(error.code==='ERR_ASSERTION')throw error;negative=error.stdout??''}
+ await writeFile(join(cwd,'contract-negative.log'),negative)
+ assert.deepEqual([...negative.matchAll(/contract\.ts\((\d+),\d+\): error TS/g)].map(match=>Number(match[1])),expectedLines,negative)
+ assert.equal((negative.match(/error TS/g)||[]).length,12,negative)
+ await writeFile(join(cwd,'contract.ts'),contract)
+ console.log(framework,'PASS exact 12 negative diagnostic locations and packed exports')
  if(framework==='vue'){
   await writeFile(join(cwd,'negative.vue'),`<script setup lang="ts">import {Checkbox,Select,Dialog} from '${importPath}';function bad(v:number){}</script>
 <template>

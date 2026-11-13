@@ -37,5 +37,7 @@ jobs:
         run: npm run test:ci
       - name: Check Ready types in all four frameworks
         run: npm run check:ready
+      - name: Verify packed consumer type contracts and negative cases
+        run: npm run check:ready:contracts
       - name: Build all four Ready demos
         run: npm run build:ready

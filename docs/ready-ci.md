@@ -9,13 +9,15 @@ state of organization Actions policy, billing or required branch-protection rule
 manual dispatch once the workflow is available on the default branch. There are
 no path filters or draft exclusions. The job installs the committed lockfile,
 builds the existing style artifacts, runs the full Node regression suite with two file workers, checks the Ready
-React/Vue/Solid/Svelte types, then builds all four Ready demos.
+React/Vue/Solid/Svelte types, verifies packed consumer positive/negative type
+contracts, then builds all four Ready demos.
 
 ```sh
 npm ci --no-audit --no-fund
 npm run build:designs
 npm run test:ci
 npm run check:ready
+npm run check:ready:contracts
 npm run build:ready
 ```
 
@@ -32,8 +34,19 @@ vanilla-extract artifact regression from silently skipping in a clean checkout.
 The test suite includes real component simulations, separate-process SSR and
 hydration, static theme/contrast checks and current-tarball builds imported by
 package subpath for each framework. The tarball test reuses the locked repository
-runtime dependencies. It is not the separate opt-in fresh per-framework install
-matrix, which remains available through `verify-ready-clean-consumers.mjs`.
+runtime dependencies. The additional `check:ready:contracts` step extracts the
+current tarball into separate consumer directories, asserts that framework/types/
+CSS exports resolve there, and checks positive markup plus expected type errors.
+It links compiler/runtime dependencies from the locked root install; it does not
+alias Ready to repository source or perform another registry install.
+
+This is intentionally preferred to running the fresh per-framework installation
+matrix on every PR: negative contracts detect accidental API widening that a
+successful build misses, without four extra network installations and their
+unlocked transitive resolution. `verify-ready-clean-consumers.mjs` remains the
+opt-in check for minimal-peer installation and the documented install experience.
+The CI type consumers have access to all root-installed adapters; they do not
+prove absence of unwanted peers or replace that clean-install matrix.
 
 Opt-in architectural investigations and pre-hydration observations are not
 silently promoted into passing acceptance checks. Real browser/assistive-
