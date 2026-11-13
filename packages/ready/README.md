@@ -4,9 +4,9 @@ Three composed controls, four framework adapters, one semantic CSS contract.
 Use the explicit framework package subpath and import theme.css once. Wrap consumers in data-rd-theme="default" or "midnight". Components never
 branch on theme names. Override the same --rd-* variables for a custom style.
 
-Checkbox accepts label, checked, disabled, name and a boolean change callback.
+Checkbox accepts label, checked, disabled, required, error, name and a boolean change callback.
 Select accepts label, options ({label,value,disabled?}), value, placeholder,
-disabled, name and a string change callback. Dialog accepts trigger, title,
+disabled, required, error, name and a string change callback. Dialog accepts trigger, title,
 description, open and a boolean change callback; its body is children/default slot.
 Controlled values are optional; absent values use local state. Vue uses update:checked, update:value and update:open events, consumed as
 v-model:checked, v-model:value and v-model:open. Hidden form inputs, native disabled handling and primitive ARIA are
@@ -156,3 +156,12 @@ An [experimental controlled adoption recipe](https://github.com/destyler/designs
 shows the narrow explicitly accepted snapshot path in four frameworks. Rejection,
 field identity, reset and concurrent edits remain open policies; it is not a
 production-ready or default restoration capability.
+
+## Native form validation
+
+`required` forwards the native constraint. A nonempty `error` displays an
+associated message and sets native custom validity after client mount; clearing
+it removes the custom error without removing `required`. Disabled controls are
+excluded from constraint validation until re-enabled. SSR can render error text
+and ARIA, but custom validity needs JavaScript and is not a server-side check.
+See the [native form contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-native-forms.md).

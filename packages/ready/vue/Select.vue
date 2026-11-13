@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watchPostEffect } from 'vue'
-import { Select, createListCollection } from '@destyler-ui/vue'
+import { ref, computed, nextTick, watchPostEffect, useId } from 'vue'
+import { Select, createListCollection, useFieldContext } from '@destyler-ui/vue'
 import HiddenSelect from './HiddenSelect.vue'
 import type { Option } from '../types'
 import { validateSelectOptions } from '../select-options'
-const props = defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean }>()
+const props = withDefaults(defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean; required?: boolean; error?: string }>(), { required: undefined })
 const emit = defineEmits<{ 'update:value': [value: string]; valueChange: [value: string] }>()
 const local = ref('')
 const element = ref<HTMLDivElement>()
+const errorId=useId(), field=useFieldContext()
+const describedBy=computed(()=>[field?.value?.ariaDescribedby,props.error ? errorId : undefined].filter(Boolean).join(' ') || undefined)
+watchPostEffect(()=>{const error=props.error ?? '';element.value?.querySelector('select')?.setCustomValidity(error)})
 const current = computed(() => props.value ?? local.value)
 const collection = computed(() => createListCollection({ items: validateSelectOptions(props.options) }))
 function syncHidden() {
@@ -25,8 +28,8 @@ function change(values: string[]) {
 }
 </script>
 <template>
-  <div ref="element" class="rd-component"><Select.Root :collection="collection" :model-value="current ? [current] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
-    <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger><Select.ValueText :placeholder="placeholder ?? 'Choose an option'" /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
-    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect />
-  </Select.Root></div>
+  <div ref="element" class="rd-component"><Select.Root :required="required" :invalid="error ? true : undefined" :collection="collection" :model-value="current ? [current] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
+    <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger :aria-describedby="describedBy" :aria-required="required ?? field?.required"><Select.ValueText :placeholder="placeholder ?? 'Choose an option'" /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
+    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :described-by="describedBy" />
+  </Select.Root><p v-if="error" :id="errorId" class="rd-error">{{ error }}</p></div>
 </template>

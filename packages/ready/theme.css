@@ -27,3 +27,6 @@
 .rd-component [data-scope="dialog"][data-part="description"] { margin:0; color:var(--rd-muted); line-height:1.6; }
 .rd-dialog-body { padding-block:var(--rd-space); }
 .rd-component [hidden] { display:none!important; }
+
+/* Error meaning is conveyed by text and ARIA, not color alone. */
+.rd-component .rd-error { display:block; color:var(--rd-text); font-size:.875rem; line-height:1.5; margin:8px 0 0; }
