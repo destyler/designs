@@ -195,3 +195,7 @@ text. Initial and reactive blank values throw a descriptive Ready error; valid
 text is preserved, not trimmed. Optional placeholder/description can be empty.
 There is no icon-only or alternate aria-label API in this pilot. See the
 [naming-source contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-accessible-names.md).
+
+For callback payloads, controlled ownership, runtime validation boundaries and
+reproducible packed-consumer positive/negative type checks, see the
+[consumer type contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-type-contract.md).
