@@ -55,7 +55,8 @@ React required no implementation change. No core/UI release is involved.
 - Reuse of the server-rendered nodes rather than a silent client-only replacement.
 - No captured hydration warnings for the tested fixtures.
 - After hydration, checkbox changes, Select selection and Dialog open/close in
-  simulated DOM. Dialogs start closed; initially open modals are not covered.
+  simulated DOM. A single initially open Dialog is also covered across all four
+  adapters, including focus requests and cleanup (details below).
 - Existing reset, disabled-control and packed-consumer suites remain separate.
 
 Happy DOM incorrectly includes a disabled native `select` in `FormData`; an
@@ -69,3 +70,21 @@ no-JavaScript usability, screen-reader behavior, portal placement or general
 nested modal support. Theme checks concern markup/DOM scope, not rendered pixels.
 See [React/Vue detail](./ready-ssr-react-vue.md) for that pair's isolated-process
 method and the original Vue failure.
+
+## Initially open Dialog coverage
+
+The initially open fixtures render one modal open on the server, with the other
+scopes closed. React/Vue retain separate all-closed, default-scope-open and
+midnight-scope-open cases; Solid/Svelte exercise an initially open default scope
+alongside closed scopes. No simultaneous multi-modal stack is implied.
+
+Hydration preserves server IDs, ARIA links, original nodes and theme containment.
+The simulated active element moves into the dialog. Closing requests focus back
+to the element focused before hydration, not an unclicked dialog trigger. Reopen
+and active-dialog disposal checks verify global styles/locks are cleaned up;
+React/Vue also assert background aria-hidden restoration. These cases produced
+no captured hydration warnings and required no component implementation change.
+
+This is evidence about actual framework hydration and simulated focus requests,
+not native browser focus navigation, visual layout, screen-reader announcements
+or safe use of arbitrary multiple/nested modal stacks.

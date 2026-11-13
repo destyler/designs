@@ -59,7 +59,10 @@ reset/cancelled-reset behavior, parent acceptance/refusal and submitted values.
 This is true server rendering followed by **simulated DOM hydration**, not a real
 browser or screen-reader test. It does not establish layout, native focus/Tab
 behavior, portal placement, pixel equivalence, streaming SSR, a specific SSR
-meta-framework, or no-JavaScript usability. Dialogs start closed. Multiple
+meta-framework, or no-JavaScript usability. Separate cases start all Dialogs
+closed or exactly one open in the default/midnight scope. Initially open cases
+check simulated focus entry, return to the pre-hydration active element, global
+lock installation/restoration and active-dialog unmount cleanup. Multiple
 independent applications still need distinct Vue `app.config.idPrefix` values;
 this test uses one application with multiple component scopes. Solid/Svelte
 results are recorded separately and are not inferred from these adapters.

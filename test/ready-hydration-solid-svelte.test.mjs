@@ -15,9 +15,18 @@ if(process.argv[2]==='--server'){
  for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
  for(const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])globalThis[key]=win[key].bind(win)
  globalThis.window=win;globalThis.document=win.document
- document.body.innerHTML=await readFile(process.argv[4],'utf8')
+ const previousFocus=document.createElement('button');previousFocus.textContent='Before dialog';document.body.append(previousFocus)
+ const target=document.createElement('main');document.body.append(target);target.innerHTML=await readFile(process.argv[4],'utf8')
+ previousFocus.focus()
  const scopes=()=>[...document.querySelectorAll('[data-rd-theme]')]
  const ids=()=>[...document.querySelectorAll('[id]')].map(e=>e.id)
+ const part=name=>`[data-scope=dialog][data-part=${name}]`
+ const firstDialog=()=>scopes()[0].querySelector(part('content'))
+ const assertInitialDialogs=()=>scopes().forEach((s,i)=>{const content=s.querySelector(part('content'));assert.ok(content);assert.equal(content.dataset.state,i===0?'open':'closed');assert.equal(content.hidden,i!==0);assert.equal(content.closest('[data-rd-theme]'),s)})
+ assertInitialDialogs()
+ const focusRequests=[];const nativeFocus=win.HTMLElement.prototype.focus
+ win.HTMLElement.prototype.focus=function(...args){focusRequests.push(this);return nativeFocus.apply(this,args)}
+ const originalBodyStyle=document.body.getAttribute('style')
  const before=ids();assert.equal(new Set(before).size,before.length,'SSR IDs unique across themes');assert.equal(scopes().length,4)
  const snapshot=()=>scopes().map(s=>({checked:s.querySelector('input').checked,value:s.querySelector('select').value,data:s.querySelector('select').disabled?null:[...new win.FormData(s.querySelector('form'))]}))
  const expected=[{checked:true,value:'a',data:[['check','on'],['choice','a']]},{checked:false,value:'b',data:[['choice','b']]},{checked:false,value:'',data:[['choice','']]},{checked:true,value:'b',data:null}]
@@ -34,11 +43,17 @@ if(process.argv[2]==='--server'){
  const nodes=scopes().map(s=>[...s.querySelectorAll(retainedSelector)])
  const warnings=[];const warn=console.warn,error=console.error;console.warn=(...a)=>warnings.push(a.join(' '));console.error=(...a)=>warnings.push(a.join(' '))
  if(process.argv[5]==='solid')runInThisContext(await readFile(process.argv[4]+'.js','utf8'))
- const {run}=await import(pathToFileURL(process.argv[3]));const cleanup=run(document.body)
+ const {run}=await import(pathToFileURL(process.argv[3]));const cleanup=run(target)
  const eventually=async fn=>{const deadline=Date.now()+2000;for(;;){try{fn();return}catch(e){if(Date.now()>deadline)throw e;await new Promise(r=>setTimeout(r,10))}}}
  await eventually(()=>{assert.deepEqual(snapshot(),expected)})
  assert.deepEqual(ids(),before,'Hydration preserves server IDs');scopes().forEach((s,i)=>{const current=[...s.querySelectorAll(retainedSelector)];assert.equal(current.length,nodes[i].length);current.forEach((node,j)=>assert.equal(node,nodes[i][j],'Hydrates existing form/input/select/dialog content'))})
  assertLinks();assertLabels();assert.deepEqual(snapshot(),expected,'Hydration preserves form submission')
+ assertInitialDialogs()
+ // This records the focus request in a DOM simulator, not real-browser focus trapping.
+ await eventually(()=>assert.ok(focusRequests.some(node=>firstDialog().contains(node)),'Initial open Dialog requests focus inside content'))
+ scopes()[0].querySelector(part('close-trigger')).click()
+ await eventually(()=>assert.equal(firstDialog().dataset.state,'closed'))
+ await eventually(()=>assert.ok(focusRequests.includes(previousFocus),'Close requests focus restoration'))
  for(const [index,s] of scopes().entries()){
  assert.equal(s.querySelectorAll('select').length,1,'One native Select per component')
  if(index===3){assert.equal(s.querySelector('select').disabled,true);assert.equal(s.querySelector('input').disabled,true);continue}
@@ -52,18 +67,21 @@ if(process.argv[2]==='--server'){
  expected[index]={checked:nextChecked,value:nextValue,data:[...(nextChecked?[['check','on']]:[]),['choice',nextValue]]}
  assert.deepEqual(snapshot(),expected,'Interaction does not change neighboring scopes');assertLabels()
  }
- console.warn=warn;console.error=error;assert.deepEqual(warnings,[],'No hydration/runtime warnings');await cleanup();await win.happyDOM.close();console.log('PASS SSR hydrate interaction')
+ // Exercise disposal while a modal is open, not only after it has already closed.
+ scopes()[0].querySelector(part('trigger')).click();await eventually(()=>assert.equal(firstDialog().dataset.state,'open'))
+ await cleanup();await eventually(()=>{assert.equal(document.querySelectorAll('[data-rd-theme]').length,0);assert.equal(document.querySelectorAll(part('content')).length,0);assert.equal(document.body.getAttribute('style')||'',originalBodyStyle||'')})
+ console.warn=warn;console.error=error;assert.deepEqual(warnings,[],'No hydration/runtime/cleanup warnings');await win.happyDOM.close();console.log('PASS SSR hydrate interaction')
 }else for(const framework of ['solid','svelte'])test(`Ready ${framework} real server render and client hydration`,{timeout:120000},async()=>{
  const folder=await mkdtemp(join(root,'node_modules/.ready-hydration-'))
  try{
  const {build}=await import('vite');let server,client
  if(framework==='solid'){
- await writeFile(join(folder,'Fixture.tsx'),`import {createSignal} from 'solid-js';import {Checkbox,Select,Dialog} from '${root}packages/ready/solid';export default function App(){return <>{['default','midnight','default','midnight'].map((theme,index)=>{const [checked,setChecked]=createSignal(index===0||index===3);const [value,setValue]=createSignal(['a','b','','b'][index]);const [open,setOpen]=createSignal(false);return <section data-rd-theme={theme}><form><Checkbox name="check" label="Check" disabled={index===3} checked={checked()} onCheckedChange={setChecked}/><Select name="choice" label="Choice" disabled={index===3} value={value()} onValueChange={setValue} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" open={open()} onOpenChange={setOpen}>Body</Dialog></form></section>})}</>}`)
+ await writeFile(join(folder,'Fixture.tsx'),`import {createSignal} from 'solid-js';import {Checkbox,Select,Dialog} from '${root}packages/ready/solid';export default function App(){return <>{['default','midnight','default','midnight'].map((theme,index)=>{const [checked,setChecked]=createSignal(index===0||index===3);const [value,setValue]=createSignal(['a','b','','b'][index]);const [open,setOpen]=createSignal(index===0);return <section data-rd-theme={theme}><form><Checkbox name="check" label="Check" disabled={index===3} checked={checked()} onCheckedChange={setChecked}/><Select name="choice" label="Choice" disabled={index===3} value={value()} onValueChange={setValue} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" open={open()} onOpenChange={setOpen}>Body</Dialog></form></section>})}</>}`)
  server=`import {renderToString,generateHydrationScript} from 'solid-js/web';import App from './Fixture';export const html=()=>renderToString(()=>App());export const bootstrap=generateHydrationScript();`
  client=`import {hydrate} from 'solid-js/web';import App from './Fixture';export const run=target=>hydrate(()=>App(),target);`
  }else{
- await writeFile(join(folder,'Scope.svelte'),`<script>import {Checkbox,Select,Dialog} from '${root}packages/ready/svelte';let {theme,initialChecked,initialValue,disabled=false}=$props();let checked=$state(initialChecked),value=$state(initialValue),open=$state(false);</script><section data-rd-theme={theme}><form><Checkbox name="check" label="Check" {disabled} {checked} onCheckedChange={v=>checked=v}/><Select name="choice" label="Choice" {disabled} {value} onValueChange={v=>value=v} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" {open} onOpenChange={v=>open=v}>Body</Dialog></form></section>`)
- await writeFile(join(folder,'Fixture.svelte'),`<script>import Scope from './Scope.svelte'</script><Scope theme="default" initialChecked={true} initialValue="a"/><Scope theme="midnight" initialChecked={false} initialValue="b"/><Scope theme="default" initialChecked={false} initialValue=""/><Scope theme="midnight" initialChecked={true} initialValue="b" disabled={true}/>`)
+ await writeFile(join(folder,'Scope.svelte'),`<script>import {Checkbox,Select,Dialog} from '${root}packages/ready/svelte';let {theme,initialChecked,initialValue,initialOpen=false,disabled=false}=$props();let checked=$state(initialChecked),value=$state(initialValue),open=$state(initialOpen);</script><section data-rd-theme={theme}><form><Checkbox name="check" label="Check" {disabled} {checked} onCheckedChange={v=>checked=v}/><Select name="choice" label="Choice" {disabled} {value} onValueChange={v=>value=v} options={[{label:'A',value:'a'},{label:'B',value:'b'}]}/><Dialog trigger="Open" title="Title" description="Description" {open} onOpenChange={v=>open=v}>Body</Dialog></form></section>`)
+ await writeFile(join(folder,'Fixture.svelte'),`<script>import Scope from './Scope.svelte'</script><Scope theme="default" initialChecked={true} initialValue="a" initialOpen={true}/><Scope theme="midnight" initialChecked={false} initialValue="b"/><Scope theme="default" initialChecked={false} initialValue=""/><Scope theme="midnight" initialChecked={true} initialValue="b" disabled={true}/>`)
  server=`import {render} from 'svelte/server';import App from './Fixture.svelte';export const html=()=>render(App).body;`
  client=`import {hydrate,unmount} from 'svelte';import App from './Fixture.svelte';export const run=target=>{const app=hydrate(App,{target,recover:false});return ()=>unmount(app)};`
  }
