@@ -1,0 +1,29 @@
+/* One semantic contract; components never select a named theme. */
+[data-rd-theme] { --rd-backdrop:#10182780; --rd-overlay-z:40; --rd-bg:#f8fafc; --rd-surface:#fff; --rd-text:#172033; --rd-muted:#536176; --rd-border:#c3ccda; --rd-accent:#3155d9; --rd-on-accent:#fff; --rd-radius:10px; --rd-control-height:42px; --rd-space:12px; --rd-shadow:0 12px 32px #17203326; --rd-font:Inter,ui-sans-serif,system-ui,sans-serif; font-family:var(--rd-font); color:var(--rd-text); background:var(--rd-bg); }
+[data-rd-theme="midnight"] { --rd-backdrop:#020b08b3; --rd-overlay-z:40; --rd-bg:#101c19; --rd-surface:#1c3029; --rd-text:#edf9ed; --rd-muted:#adccba; --rd-border:#4a7261; --rd-accent:#c8f078; --rd-on-accent:#172614; --rd-radius:3px; --rd-control-height:46px; --rd-space:16px; --rd-shadow:6px 6px 0 #070f0c; --rd-font:Georgia,serif; }
+.rd-component { font-family:var(--rd-font); color:var(--rd-text); }
+.rd-component *, .rd-component *::before, .rd-component *::after { box-sizing:border-box; }
+.rd-component button,.rd-component input { font:inherit; }
+.rd-component .rd-button,.rd-component [data-scope="select"][data-part="trigger"] { min-height:var(--rd-control-height); border:1px solid var(--rd-border); border-radius:var(--rd-radius); background:var(--rd-surface); color:var(--rd-text); padding:8px 14px; cursor:pointer; }
+.rd-component .rd-button { background:var(--rd-accent); color:var(--rd-on-accent); border-color:var(--rd-accent); }
+.rd-component :focus-visible { outline:3px solid var(--rd-accent); outline-offset:3px; }
+.rd-component :is([data-disabled],:disabled) { cursor:not-allowed; }
+.rd-component [data-scope="checkbox"][data-part="root"] { display:flex; align-items:center; gap:var(--rd-space); position:relative; }
+.rd-component [data-scope="checkbox"][data-part="control"] { display:grid; place-items:center; width:22px; height:22px; border:1px solid var(--rd-border); border-radius:calc(var(--rd-radius) / 2); background:var(--rd-surface); }
+.rd-component [data-scope="checkbox"][data-part="control"][data-state="checked"] { background:var(--rd-accent); border-color:var(--rd-accent); color:var(--rd-on-accent); }
+.rd-component [data-scope="checkbox"][data-part="root"]:has(input:focus-visible) [data-part="control"] { outline:3px solid var(--rd-accent); outline-offset:3px; }
+.rd-component [data-scope="checkbox"][data-part="root"][data-disabled] { opacity:.5; }
+.rd-component [data-scope="select"][data-part="root"] { display:grid; gap:8px; }
+.rd-component [data-scope="select"][data-part="trigger"] { display:flex; justify-content:space-between; gap:var(--rd-space); width:100%; }
+.rd-component [data-scope="select"][data-part="trigger"][data-disabled] { opacity:.5; }
+.rd-component [data-scope="select"][data-part="content"] { min-width:var(--reference-width); padding:6px; border:1px solid var(--rd-border); border-radius:var(--rd-radius); background:var(--rd-surface); color:var(--rd-text); box-shadow:var(--rd-shadow); }
+.rd-component [data-scope="select"][data-part="item"] { padding:10px; border-radius:calc(var(--rd-radius)/2); display:flex; gap:12px; justify-content:space-between; cursor:pointer; }
+.rd-component [data-scope="select"][data-part="item"][data-highlighted] { background:var(--rd-accent); color:var(--rd-on-accent); }
+.rd-component [data-scope="select"][data-part="item"][data-disabled] { opacity:.4; }
+.rd-component [data-scope="dialog"][data-part="backdrop"] { position:fixed; inset:0; background:var(--rd-backdrop); z-index:var(--rd-overlay-z); }
+.rd-component [data-scope="dialog"][data-part="positioner"] { position:fixed; inset:0; display:grid; place-items:center; padding:24px; z-index:calc(var(--rd-overlay-z) + 1); }
+.rd-component [data-scope="dialog"][data-part="content"] { width:min(440px,100%); max-height:80vh; overflow:auto; padding:28px; border:1px solid var(--rd-border); border-radius:var(--rd-radius); background:var(--rd-surface); color:var(--rd-text); box-shadow:var(--rd-shadow); }
+.rd-component [data-scope="dialog"][data-part="title"] { margin:0 0 10px; font-size:24px; }
+.rd-component [data-scope="dialog"][data-part="description"] { margin:0; color:var(--rd-muted); line-height:1.6; }
+.rd-dialog-body { padding-block:var(--rd-space); }
+.rd-component [hidden] { display:none!important; }

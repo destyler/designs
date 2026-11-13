@@ -32,10 +32,10 @@
     "test:reference:browser": "node scripts/test-reference-browser.mjs"
   },
   "dependencies": {
-    "@destyler-ui/react": "0.0.4",
-    "@destyler-ui/solid": "0.0.4",
-    "@destyler-ui/svelte": "0.0.4",
-    "@destyler-ui/vue": "0.0.4",
+    "@destyler-ui/react": "0.0.5",
+    "@destyler-ui/solid": "0.0.5",
+    "@destyler-ui/svelte": "0.0.5",
+    "@destyler-ui/vue": "0.0.5",
     "@fontsource-variable/geist": "5.3.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
