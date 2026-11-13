@@ -5,6 +5,7 @@ framework, locale detection, translation dictionaries or RTL layout support.
 
 | Text | Prop / data | Default | Empty string allowed? |
 | --- | --- | --- | --- |
+| Checkbox / Select description | `description` | None | Yes; whitespace-only also omitted |
 | Checkbox / Select visible name | `label` | Required | No |
 | Select option text | `options[].label` | Required | No |
 | Select with no matched value | `placeholder` | `Choose an option` | Yes; its name still comes from label |
@@ -83,16 +84,43 @@ adding that ID unconditionally would create dangling references for fields with
 no helper or after conditional removal. Supplying `Field.Root` custom IDs names
 parts; it does not declare their presence or repair the SSR association.
 
-Ready keeps the upstream confirmed descriptions and adds only its own error and
-empty-message IDs, whose rendered presence it knows. Four-framework regression
+Ready keeps the upstream confirmed descriptions and adds only its own description,
+error and empty-message IDs, whose rendered presence it knows. Four-framework regression
 fixtures cover helper absence, client insertion/removal, and composition with
 those own descriptions. This verifies the client lifecycle but does **not** fix
 the SSR gap for a rendered ancestor helper. Adding another DOM observer inside
 Ready cannot repair server HTML either.
 
-A reliable server-side solution needs an upstream declarative presence contract,
-or a separately designed Ready-owned description API. Neither is introduced by
-this pilot; applications requiring helper association before JavaScript runs
-must not rely on the current automatic Field helper association. This limitation
-also applies to no-JavaScript output. Mutation of helper IDs without mounting or
+For Ready-owned help that must be associated in server HTML, use the optional
+`description` prop below. Repairing automatic ancestor Field helper inheritance
+still requires an upstream declarative presence contract. Do not rely on that
+automatic inheritance before JavaScript runs, including no-JavaScript output. Mutation of helper IDs without mounting or
 removing nodes is not covered by the upstream child-list observer contract.
+
+
+## Ready-owned Checkbox and Select descriptions
+
+Pass optional plain-text `description` for ordinary field instructions without
+assembling Field parts. Ready renders the text and associates its stable ID with
+the control in the server HTML; hydration preserves the ID and updates the
+association when the text is added or removed. Valid text is preserved exactly;
+undefined, empty and whitespace-only text render no description and no reference.
+It is not a label, live region, error or native validation message.
+
+```tsx
+<Checkbox label="接收通知" description="只发送重要更新。" />
+<Select label="套餐" description="可以稍后更改。" options={plans} />
+```
+
+Vue/Svelte use the same prop with their normal component syntax. No Field wrapper
+is required. A present upstream Field helper, own description, error and empty
+message describe separate information and compose without duplicate ID tokens.
+Do not supply the same words both in `description` and `Field.HelperText`: Ready
+cannot infer whether two different text nodes are intentionally distinct, so it
+does not deduplicate their content. Existing Field behavior is unchanged, including
+its documented missing server-side helper reference.
+
+Four-framework tests use real server rendering followed by simulated hydration,
+plus dynamic description insertion, updates and removal alongside Field help,
+errors and empty lists. They check ID references rather than actual screen-reader
+speech or browser accessibility-tree output.

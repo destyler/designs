@@ -90,8 +90,8 @@ import '@destyler/ready-prototype/theme.css'
 import './app.css'
 
 createRoot(document.getElementById('app')!).render(<>
-  <Checkbox label="Email updates" name="updates" />
-  <Select label="Plan" options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
+  <Checkbox label="Email updates" description="Only important product news." name="updates" />
+  <Select label="Plan" description="You can change this later." options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
   <Dialog trigger="About this plan" title="Your workspace"><p>Choose the plan that fits.</p></Dialog>
 </>)
 ```
@@ -105,8 +105,8 @@ import '@destyler/ready-prototype/theme.css'
 import './app.css'
 
 render(() => <>
-  <Checkbox label="Email updates" name="updates" />
-  <Select label="Plan" options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
+  <Checkbox label="Email updates" description="Only important product news." name="updates" />
+  <Select label="Plan" description="You can change this later." options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
   <Dialog trigger="About this plan" title="Your workspace"><p>Choose the plan that fits.</p></Dialog>
 </>, document.getElementById('app')!)
 ```
@@ -132,8 +132,8 @@ app.mount('#app')
 import { Checkbox, Select, Dialog } from '@destyler/ready-prototype/vue'
 </script>
 <template>
-  <Checkbox label="Email updates" name="updates" />
-  <Select label="Plan" :options="[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]" />
+  <Checkbox label="Email updates" description="Only important product news." name="updates" />
+  <Select label="Plan" description="You can change this later." :options="[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]" />
   <Dialog trigger="About this plan" title="Your workspace"><p>Choose the plan that fits.</p></Dialog>
 </template>
 ```
@@ -153,8 +153,8 @@ mount(App, { target: document.getElementById('app')! })
 <script lang="ts">
   import { Checkbox, Select, Dialog } from '@destyler/ready-prototype/svelte'
 </script>
-<Checkbox label="Email updates" name="updates" />
-<Select label="Plan" options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
+<Checkbox label="Email updates" description="Only important product news." name="updates" />
+<Select label="Plan" description="You can change this later." options={[{ value: 'starter', label: 'Starter' }, { value: 'studio', label: 'Studio' }]} />
 <Dialog trigger="About this plan" title="Your workspace"><p>Choose the plan that fits.</p></Dialog>
 ```
 

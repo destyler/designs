@@ -90,6 +90,8 @@ if(process.argv[2]==='--server'){
      assert.equal(state.visible,label,`${mode}/${state.stage}: visible value`);assert.equal(state.nativeValue,value);
      // HappyDOM serializes disabled options incorrectly; compare its native control, not browser semantics.
      assert.deepEqual(state.submitted,state.stage==='selected-b-disabled'?report.nativeDisabledOptionBaseline.submitted:[['plan',value]])
+     const expectedOptions=state.stage==='missing-z-option-arrives'?[['a','A'],['b','B'],['c','C'],['z','Z']]:['selected-b-removed','removed-before-user-replacement'].includes(state.stage)?[['a','A'],['c','C']]:state.stage==='reordered-and-relabeled-b'?[['c','C'],['b','Bee'],['a','A']]:mode==='async'&&state.stage==='initial'?[]:undefined;
+     if(expectedOptions){const expected=(value===''?[['',''],...expectedOptions]:expectedOptions).map(([value,label])=>({value,label,disabled:false}));assert.deepEqual(state.options.map(({value,label,disabled})=>({value,label,disabled})),expected,`${mode}/${state.stage}: native options follow current supplied options, not a stale primitive collection`)}
      assert.ok(state.selectedIndex>=0,'An explicit native option always represents the effective selection')
      const callbacks=mode==='uncontrolled'&&state.stage!=='initial'?['b']:[];if(replacement)callbacks.push('a');assert.deepEqual(state.callbacks,callbacks,'Option changes do not fabricate user changes')
      if(state.stage==='selected-b-disabled')assert.equal(state.options.find(option=>option.value==='b').disabled,true)

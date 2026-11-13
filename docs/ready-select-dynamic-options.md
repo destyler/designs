@@ -74,3 +74,25 @@ value. The primitive retains the original requested value and its existing reset
 listener. No second reset listener or callback remapping is introduced. Canceled
 resets remain canceled. This does not change the separately disclosed contract
 for input edited or restored before hydration.
+
+### Native synchronization regression
+
+During the Ready-owned description verification, the existing React/Vue dynamic
+option regression exposed an empty placeholder option with `defaultSelected=true`
+but `selected=false` and `selectedIndex=-1`. A later run also showed React's
+visible label already updated to Z while the native list still held the older
+options and submitted an empty value. These failures were not dismissed as
+parallel-test noise or hidden by increasing the test delay.
+
+React/Vue now render native options from the same validated current options as
+the effective value, rather than pairing a new effective value with an older
+primitive collection snapshot. HiddenSelect also reconciles native selection
+after primitive snapshot commits; Vue explicitly overrides the normalized raw
+native `value` with the effective value. This retains the primitive ID, form
+binding and original requested reset baseline. It adds no polling, second reset
+listener or core/UI change.
+
+The regressions continue to check missing-value restoration, removal, callbacks,
+reset and SSR/hydration. They establish observed simulated-DOM behavior, not
+browser submission or synchronous callback-time guarantees. The separate
+pre-hydration-input limitations remain unchanged.

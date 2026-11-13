@@ -5,12 +5,13 @@ import { Select, createListCollection, useFieldContext } from '@destyler-ui/vue'
 import HiddenSelect from './HiddenSelect.vue'
 import type { Option } from '../types'
 import { validateSelectOptions } from '../select-options'
-const props = withDefaults(defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; emptyMessage?: string; disabled?: boolean; required?: boolean; error?: string }>(), { required: undefined, disabled: undefined })
+const props = withDefaults(defineProps<{ label: string; description?: string; options: Option[]; value?: string; name?: string; placeholder?: string; emptyMessage?: string; disabled?: boolean; required?: boolean; error?: string }>(), { required: undefined, disabled: undefined })
 const emit = defineEmits<{ 'update:value': [value: string]; valueChange: [value: string] }>()
 const local = ref('')
 const element = ref<HTMLDivElement>()
 const emptyId=useId(), errorId=useId(), field=useFieldContext()
-const describedBy=computed(()=>[field?.value?.ariaDescribedby,props.error ? errorId : undefined,props.options.length===0 ? emptyId : undefined].filter(Boolean).join(' ') || undefined)
+const descriptionId=useId()
+const describedBy=computed(()=>[...new Set([field?.value?.ariaDescribedby,props.description?.trim() ? descriptionId : undefined,props.error ? errorId : undefined,props.options.length===0 ? emptyId : undefined].filter(Boolean).join(' ').split(/\s+/).filter(Boolean))].join(' ') || undefined)
 watchPostEffect(()=>{const error=props.error ?? '';element.value?.querySelector('select')?.setCustomValidity(error)})
 const requested = computed(() => props.value ?? local.value)
 // Keep a missing requested key pending without letting native SSR select the first option.
@@ -34,7 +35,8 @@ function validateText() { validateAccessibleText(props.label, 'Select', 'label')
 <template>
   <div ref="element" :class="validateText()"><Select.Root :required="required" :invalid="error ? true : (field?.invalid ?? false)" :collection="collection" :model-value="requested ? [requested] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
     <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger :data-placeholder-shown="current ? undefined : ''" :aria-describedby="describedBy" :aria-required="required ?? field?.required"><Select.ValueText><span>{{ options.find(item => item.value === current)?.label ?? placeholder ?? 'Choose an option' }}</span></Select.ValueText><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
+    <p v-if="description?.trim()" :id="descriptionId" class="rd-description">{{ description }}</p>
     <p v-if="options.length === 0" class="rd-empty" :id="emptyId">{{ emptyMessage ?? 'No options available' }}</p>
-    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :value="current" :described-by="describedBy" />
+    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :value="current" :options="options" :described-by="describedBy" />
   </Select.Root><p v-if="error" :id="errorId" class="rd-error">{{ error }}</p></div>
 </template>

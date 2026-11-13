@@ -4,10 +4,14 @@ Three composed controls, four framework adapters, one semantic CSS contract.
 Use the explicit framework package subpath and import theme.css once. Wrap consumers in data-rd-theme="default" or "midnight". Components never
 branch on theme names. Override the same --rd-* variables for a custom style.
 
-Checkbox accepts label, checked, disabled, required, error, name and a boolean change callback.
-Select accepts label, options ({label,value,disabled?}), value, placeholder, emptyMessage,
+Checkbox accepts label, description, checked, disabled, required, error, name and a boolean change callback.
+Select accepts label, description, options ({label,value,disabled?}), value, placeholder, emptyMessage,
 disabled, required, error, name and a string change callback. Dialog accepts trigger, title,
 description, closeLabel, open and a boolean change callback; its body is children/default slot.
+Checkbox/Select `description` is optional plain text rendered and associated by Ready,
+including in SSR. Omitted, empty or whitespace-only descriptions render nothing.
+Use it instead of repeating the same text in an ancestor Field.HelperText; distinct
+Field help, errors and empty-list descriptions remain additive.
 Controlled values are optional; absent values use local state. Vue uses update:checked, update:value and update:open events, consumed as
 v-model:checked, v-model:value and v-model:open. Hidden form inputs, native disabled handling and primitive ARIA are
 retained. No library defaults or published packages change.

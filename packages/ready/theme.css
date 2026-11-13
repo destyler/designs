@@ -33,3 +33,5 @@
 
 /* Empty-collection helper text, outside the listbox; no live-region contract. */
 .rd-component .rd-empty { color:var(--rd-muted); font-size:.875rem; line-height:1.5; margin:0; }
+
+.rd-component .rd-description { color:var(--rd-muted); font-size:.875rem; line-height:1.5; margin:8px 0 0; }
