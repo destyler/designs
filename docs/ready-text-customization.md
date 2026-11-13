@@ -72,3 +72,27 @@ Field help. This pass does not fix or conceal that pre-hydration helper gap.
 These are DOM text and naming-source checks in Happy DOM. They do not prove
 screen-reader pronunciation/announcements, browser accessibility trees, text
 layout in every language, font coverage, clipping or RTL behavior.
+
+### Why Ready does not infer Field helper presence during SSR
+
+In the pinned UI primitives, Field context exposes `ids.helperText` even when no
+`Field.HelperText` is rendered. It does not expose a server-side presence flag.
+Presence is discovered from mounted DOM and updated by a child-list observer.
+Ready therefore cannot infer that an ancestor's helper exists from its ID alone:
+adding that ID unconditionally would create dangling references for fields with
+no helper or after conditional removal. Supplying `Field.Root` custom IDs names
+parts; it does not declare their presence or repair the SSR association.
+
+Ready keeps the upstream confirmed descriptions and adds only its own error and
+empty-message IDs, whose rendered presence it knows. Four-framework regression
+fixtures cover helper absence, client insertion/removal, and composition with
+those own descriptions. This verifies the client lifecycle but does **not** fix
+the SSR gap for a rendered ancestor helper. Adding another DOM observer inside
+Ready cannot repair server HTML either.
+
+A reliable server-side solution needs an upstream declarative presence contract,
+or a separately designed Ready-owned description API. Neither is introduced by
+this pilot; applications requiring helper association before JavaScript runs
+must not rely on the current automatic Field helper association. This limitation
+also applies to no-JavaScript output. Mutation of helper IDs without mounting or
+removing nodes is not covered by the upstream child-list observer contract.
