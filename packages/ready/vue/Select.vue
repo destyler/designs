@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watchPostEffect } from 'vue'
 import { Select, createListCollection } from '@destyler-ui/vue'
-type Option = { label: string; value: string; disabled?: boolean }
+import type { Option } from '../types'
+import { validateSelectOptions } from '../select-options'
 const props = defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean }>()
 const emit = defineEmits<{ 'update:value': [value: string]; valueChange: [value: string] }>()
 const local = ref('')
 const element = ref<HTMLDivElement>()
 const current = computed(() => props.value ?? local.value)
-const collection = computed(() => createListCollection({ items: props.options }))
+const collection = computed(() => createListCollection({ items: validateSelectOptions(props.options) }))
 function syncHidden() {
   const value = current.value
   const select = element.value?.querySelector('select')

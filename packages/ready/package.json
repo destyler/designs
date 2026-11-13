@@ -10,6 +10,7 @@
     "solid",
     "svelte",
     "types.ts",
+    "select-options.ts",
     "theme.css",
     "README.md"
   ],

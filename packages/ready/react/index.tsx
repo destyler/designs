@@ -1,3 +1,4 @@
+import { validateSelectOptions } from '../select-options';
 import { useState, useId, useRef, useEffect, type ReactNode } from 'react';
 import { Checkbox as C, Select as S, Dialog as D, createListCollection } from '@destyler-ui/react';
 import type { CheckboxProps, SelectProps, DialogProps } from '../types';
@@ -17,7 +18,7 @@ export function Select(props: SelectProps) {
   const timer=setTimeout(sync,0);
   return ()=>{clearTimeout(timer);observer.disconnect();};
  },[value,props.options]);
- const collection=createListCollection({items:props.options});
+ const collection=createListCollection({items:validateSelectOptions(props.options)});
  return <div ref={container} className="rd-component"><S.Root name={props.name} disabled={props.disabled} collection={collection} value={value ? [value] : []} onValueChange={d=>{const next=d.value[0] ?? '';setLocal(next);props.onValueChange?.(next);setTimeout(sync,0);}}><S.Label>{props.label}</S.Label><S.Control><S.Trigger><S.ValueText placeholder={props.placeholder ?? 'Choose an option'} /><S.Indicator><span aria-hidden="true">⌄</span></S.Indicator></S.Trigger></S.Control><S.Positioner><S.Content>{props.options.map(option=><S.Item key={option.value} item={option}><S.ItemText>{option.label}</S.ItemText><S.ItemIndicator><span aria-hidden="true">✓</span></S.ItemIndicator></S.Item>)}</S.Content></S.Positioner><S.HiddenSelect /></S.Root></div>;
 }
 // Own the optional description link: the primitive only detects its presence when opening.

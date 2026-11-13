@@ -114,3 +114,12 @@ Both the Ready description IDs and the underlying primitive IDs use Vue
 `useId()`, whose default prefix is not unique across independent applications.
 The two-root demo and regression tests configure distinct prefixes explicitly;
 they do not establish support for unconfigured multi-app roots.
+
+## Select option values
+
+An option's `value` must be a nonempty string. Exactly `""` is reserved for no
+selection and the clear callback, so an empty option throws a descriptive runtime
+error before creating the collection, even when disabled. The same validation
+runs when options change. Values are never trimmed or silently filtered: `"0"`,
+`" "` and all other nonempty strings remain valid. TypeScript's `string` type
+does not exclude every empty string; runtime validation is authoritative.

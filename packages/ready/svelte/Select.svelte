@@ -1,7 +1,8 @@
 <script lang="ts">
   import { tick } from 'svelte'
   import { Select, createListCollection } from '@destyler-ui/svelte/select'
-  type Option = { label: string; value: string; disabled?: boolean }
+  import type { Option } from '../types'
+  import { validateSelectOptions } from '../select-options'
   let { label, options, value, name, placeholder = 'Choose an option', disabled = false, onValueChange }: { label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean; onValueChange?: (value: string) => void } = $props()
   let local = $state('')
   let element: HTMLDivElement
@@ -18,7 +19,7 @@
     select.value = value
   }
   $effect(() => { current; options.map(item => item.value); const timer = setTimeout(syncHidden, 0); return () => clearTimeout(timer) })
-  const collection = $derived(createListCollection({ items: options }))
+  const collection = $derived(createListCollection({ items: validateSelectOptions(options) }))
 </script>
 <div bind:this={element} class="rd-component"><Select.Root {collection} {name} value={current ? [current] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
   <Select.Label>{label}</Select.Label><Select.Control><Select.Trigger><Select.ValueText {placeholder} /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
