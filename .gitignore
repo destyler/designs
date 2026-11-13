@@ -8,3 +8,6 @@ coverage/
 artifacts/
 
 .astro/
+
+# Generated exact source downloads for the rebuilt component gallery.
+public/all-components/source/
