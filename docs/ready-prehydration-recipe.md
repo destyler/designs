@@ -62,3 +62,8 @@ than adding automatic restoration to the small component API now. If an actual
 consumer requires this feature, define its acceptance/reset/timing policy first,
 then validate that policy in the target browsers before promoting it to a shared
 hydration boundary or public helper. No default component contract changes here.
+
+A [bounded policy follow-up](./ready-restoration-policy-experiment.md) now explores
+stable keys, stale-capture cancellation, explicit rejection and an original-SSR
+reset baseline. It also reproduces the remaining late-edit overwrite window;
+these experiments do not promote this recipe to a general solution.
