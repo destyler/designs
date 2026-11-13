@@ -11,6 +11,8 @@ With this checkout's dependencies installed, run:
 
 ```sh
 node scripts/experiment-ready-dialog-overlay-react.mjs
+# Focused initial-open comparison (inline / deferred / immediate relocation):
+node scripts/experiment-ready-dialog-overlay-react.mjs --compare
 ```
 
 It creates isolated server/client bundles, renders without DOM globals, hydrates
@@ -68,10 +70,10 @@ move server DOM before hydration or manually append framework-owned nodes.
 - The popup remains inside Dialog.Content and outside the scroll region. Its
   ancestor chain is checked for `aria-hidden`/`inert`; this is not a browser
   accessibility-tree or screen-reader result.
-- **Negative: both Dialog and Select initially open in SSR.** After the popup
-  remount, the first simulated Escape closes both layers rather than only the
-  child. That path fails the desired layered-dismissal contract and is not
-  supported by this experiment.
+- **Negative: both Dialog and Select initially open in SSR.** The first simulated Escape closes both layers rather than only the
+  child. Follow-up controls reproduce this without relocation too; the portal
+  remount is therefore not established as its cause. That path fails the desired
+  layered-dismissal contract and is not supported by this experiment.
 - **Negative: nested theme and overrides.** The trigger's inner opposite theme
   and custom accent ancestor no longer contain the popup after relocation. Only
   the outer theme ancestry survives. No computed color is claimed.
@@ -92,3 +94,63 @@ in [delivery status](./ready-delivery-status.md) remain in force.
 
 No new portal option, theme bridge, dependency, deployment or production release
 is introduced by this experiment.
+
+
+## Follow-up: separating relocation from initial layer behavior
+
+The focused comparison keeps the initial open state the same and varies only the
+relocation policy and Escape target:
+
+| Case | Popup before first Escape | Observed first Escape |
+| --- | --- | --- |
+| Always inline | Original SSR node retained | Both layers close |
+| Defer relocation until Select closes | Original SSR node retained | Both layers close |
+| Portal after hydration | Popup recreated in host | Both layers close |
+| Inline, explicitly focus Select.Content | Original node; Content is key target | Both layers close |
+| Portal, explicitly focus Select.Content | Remounted node; Content is key target | Both layers close |
+
+This rules out “only a trigger-target event” and “only portal remounting” as
+sufficient explanations. Keeping an open popup stationary avoids that remount,
+but did not repair the initial double-open dismissal in this experiment. It
+would also leave that popup inside the original scroll/clipping ancestry until
+it closes. A stable host does not by itself guarantee parent-before-child layer
+registration.
+
+The pinned dismissable implementation listens for Escape at document capture,
+uses registration order rather than DOM nesting to identify the top layer, and
+can dismiss higher registered layers when a lower layer is removed. These are
+relevant mechanisms, not a license to claim an unobserved internal callback path.
+The JSON trace records Content `--layer-index`, node identity, event target,
+active element and public dismissal-related callbacks. In the inline/deferred
+cases, both nodes remain connected, with Dialog at index 2 and Select at index 1.
+The observed callback order is Dialog `escapeKeyDown`, Dialog `openChange(false)`,
+Select `focusOutside`, then Select `openChange(false)`. This supports the parent
+being registered as the top layer rather than the intended nested child. It does
+not isolate focus restoration versus layer cleanup as the sole cause of the
+child's eventual close.
+
+Immediate portal relocation adds a separate failure risk: the disconnected old
+popup still has layer index 1, while the connected replacement popup has no layer
+marker. Recreating DOM did not establish that the existing Select machine's
+active dismissal registration migrated to it. A stable host alone is therefore
+not enough; popup ownership and active primitive registrations must agree.
+No upstream implementation is patched by the experiment.
+
+### Theme and focus choices remain tradeoffs
+
+- Restricting the popup to the Dialog's effective theme avoids a bridge only if
+  the trigger has no deeper theme/token overrides. That restriction would narrow
+  Ready's current nearest-theme behavior, so it is not silently adopted.
+- Copying a theme attribute does not copy custom tokens. A computed-token bridge
+  would need a refresh contract for theme switches, CSS/media changes and reopen;
+  it also cannot run on a DOM-free server. No such bridge is certified here.
+- Delaying the child opening until the parent has registered could change layer
+  ordering, but changes initial-open/SSR behavior. It is not substituted for the
+  requested initial state merely to make a test pass.
+- Global Escape interception or a second independent layer manager would add
+  broader coordination semantics. Neither is introduced for this small trial.
+
+The investigation stops at these boundaries: no reliable default-preserving
+solution has been demonstrated. The initial-open layering issue and the
+clipping/theme/positioning architecture need separate resolution before a
+production implementation or four-framework rollout.
