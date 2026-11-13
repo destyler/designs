@@ -16,8 +16,10 @@ node --test test/ready-prehydration-solid-svelte.mjs
 ```
 
 These opt-in investigations are deliberately outside the default `*.test.mjs`
-suite. Successful execution means the observations were reproduced, **not** that
-pre-hydration input preservation passed acceptance. They use actual server
+suite. Exit status 0 only means each script completed its own assertions; it does
+not verify every entry in the observation table or establish input-preservation
+acceptance. Inspect the emitted phase snapshots, FormData, callbacks and warnings
+to assess the observed behavior. They use actual server
 rendering in a process without a DOM, then simulated client hydration in Happy
 DOM. No component implementation or default value contract is changed here.
 
@@ -43,7 +45,8 @@ still require browser-specific testing.
 | Svelte | Edited native checked value is overwritten | Edited value is overwritten; uncontrolled value briefly survives before settling |
 
 In the React/Vue/Solid Checkbox fixtures, FormData initially reflects the edited
-native value while the visible control remains unchecked. The first subsequent
+native value while the visible control retains its original server/state-machine
+state, which may be checked or unchecked. The first subsequent
 control click restores the native value to the old machine state without emitting
 a change callback. This is an observable inconsistency, not acceptable evidence of
 input preservation. Svelte's first later click changes state and emits a callback,
