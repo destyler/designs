@@ -54,3 +54,8 @@ contracts, not claims about every bundler or all possible JavaScript inputs.
 
 The current long-list change adds a shared height/overflow constraint and
 simulated keyboard regressions. It does not close the real-browser gate above.
+
+
+A [Dialog-local overlay host experiment](./ready-dialog-overlay-host-experiment.md)
+now records topology/focus checks and concrete SSR dismissal/theme-loss limits.
+It does not replace Ready's inline defaults or close the overlay/browser gates.
