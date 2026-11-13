@@ -224,3 +224,7 @@ purposes; there is no general native-attribute forwarding API in this pilot.
 
 For the remaining acceptance and release gates, see the
 [delivery boundary](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-delivery-status.md).
+
+For the limited four-framework locale-provider direction checks and their
+boundaries, see [RTL investigation](../../docs/ready-rtl.md). An ancestor
+`dir="rtl"` alone does not configure primitive direction.
