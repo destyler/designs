@@ -3,6 +3,9 @@
 Select distinguishes the **requested value** (the parent's controlled `value`, or
 its own last selection) from the **effective selection** that exists in `options`.
 This is a narrow data-replacement contract, not an asynchronous fetching API.
+Every replacement must retain unique, nonempty option values, including disabled
+entries. Exact duplicate keys throw a Ready error before creating the collection;
+repeated labels with distinct keys remain valid. No option is silently discarded.
 
 - Reordering options or changing a selected item's label updates its presentation
   without changing its value or emitting a value-change callback.

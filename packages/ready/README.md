@@ -131,12 +131,21 @@ they do not establish support for unconfigured multi-app roots.
 
 ## Select option values
 
-An option's `value` must be a nonempty string. Exactly `""` is reserved for no
+An option's `value` must be a unique, nonempty string. Exactly `""` is reserved for no
 selection and the clear callback, so an empty option throws a descriptive runtime
 error before creating the collection, even when disabled. The same validation
 runs when options change. Values are never trimmed or silently filtered: `"0"`,
 `" "` and all other nonempty strings remain valid. TypeScript's `string` type
-does not exclude every empty string; runtime validation is authoritative.
+cannot prove nonempty values or uniqueness across an array; runtime validation is authoritative.
+
+Duplicate values throw a descriptive Ready error before collection creation,
+including duplicates with identical labels or disabled entries. Validation also
+runs on reactive option replacements. Values are compared exactly, without
+trimming or case folding: `a`, `A`, ` a` and `a ` are distinct. Repeated labels
+with distinct values are allowed. No first/last-wins deduplication is performed;
+applications must provide stable unique keys rather than rely on labels or array
+positions. Handle invalid external data before rendering; this developer error
+is not a form validation message or an automatic recovery mechanism.
 
 ## Server rendering and hydration
 
