@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { validateAccessibleText } from '../accessible-text'
 import { ref, computed, nextTick, watchPostEffect, useId } from 'vue'
 import { Select, createListCollection, useFieldContext } from '@destyler-ui/vue'
 import HiddenSelect from './HiddenSelect.vue'
@@ -28,9 +29,10 @@ function change(values: string[]) {
   // Read the latest parent value after callbacks, including ignored controlled resets.
   void nextTick(() => setTimeout(syncHidden, 0))
 }
+function validateText() { validateAccessibleText(props.label, 'Select', 'label'); return 'rd-component' }
 </script>
 <template>
-  <div ref="element" class="rd-component"><Select.Root :required="required" :invalid="error ? true : (field?.invalid ?? false)" :collection="collection" :model-value="current ? [current] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
+  <div ref="element" :class="validateText()"><Select.Root :required="required" :invalid="error ? true : (field?.invalid ?? false)" :collection="collection" :model-value="current ? [current] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
     <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger :aria-describedby="describedBy" :aria-required="required ?? field?.required"><Select.ValueText :placeholder="placeholder ?? 'Choose an option'" /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
     <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :described-by="describedBy" />
   </Select.Root><p v-if="error" :id="errorId" class="rd-error">{{ error }}</p></div>

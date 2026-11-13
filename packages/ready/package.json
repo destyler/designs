@@ -11,6 +11,7 @@
     "svelte",
     "types.ts",
     "select-options.ts",
+    "accessible-text.ts",
     "theme.css",
     "README.md",
     "THEMING.md"

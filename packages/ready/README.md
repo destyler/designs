@@ -184,3 +184,11 @@ relabeling preserve value. Disabling an already selected option does not clear i
 native submission excludes disabled options, so applications should explicitly
 clear or validate withdrawn choices. See the [dynamic options contract and test
 limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-select-dynamic-options.md).
+
+## Required naming text
+
+Checkbox/Select `label` and Dialog `trigger`/`title` must contain non-whitespace
+text. Initial and reactive blank values throw a descriptive Ready error; valid
+text is preserved, not trimmed. Optional placeholder/description can be empty.
+There is no icon-only or alternate aria-label API in this pilot. See the
+[naming-source contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-accessible-names.md).

@@ -1,8 +1,10 @@
+import { validateAccessibleText } from '../accessible-text';
 import { validateSelectOptions } from '../select-options';
 import { useState, useId, useRef, useEffect, type ReactNode } from 'react';
 import { Checkbox as C, Select as S, Dialog as D, createListCollection, useFieldContext } from '@destyler-ui/react';
 import type { CheckboxProps, SelectProps, DialogProps } from '../types';
 export function Checkbox(props: CheckboxProps) {
+ validateAccessibleText(props.label, 'Checkbox', 'label');
  const [local, setLocal] = useState(false);
  const errorId=useId(), field=useFieldContext(), container=useRef<HTMLDivElement>(null);
  const describedBy=[field?.ariaDescribedby,props.error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
@@ -10,6 +12,7 @@ export function Checkbox(props: CheckboxProps) {
  return <div ref={container} className="rd-component"><C.Root name={props.name} required={props.required} invalid={props.error ? true : (field?.invalid ?? false)} disabled={props.disabled} checked={props.checked ?? local} onCheckedChange={d => { const value=d.checked === true; setLocal(value); props.onCheckedChange?.(value); }}><C.Control><C.Indicator><span aria-hidden="true">✓</span></C.Indicator></C.Control><C.Label>{props.label}</C.Label><C.HiddenInput aria-describedby={describedBy} /></C.Root>{props.error && <p id={errorId} className="rd-error">{props.error}</p>}</div>;
 }
 export function Select(props: SelectProps) {
+ validateAccessibleText(props.label, 'Select', 'label');
  const [local,setLocal]=useState(''); const requested=props.value ?? local;
  // Retain the requested key while async/missing options render an actual empty selection.
  const value=props.options.some(option=>option.value===requested) ? requested : '';
@@ -31,6 +34,8 @@ export function Select(props: SelectProps) {
 }
 // Own the optional description link: the primitive only detects its presence when opening.
 export function Dialog(props: DialogProps & { children?: ReactNode }) {
+ validateAccessibleText(props.trigger, 'Dialog', 'trigger');
+ validateAccessibleText(props.title, 'Dialog', 'title');
  const [local,setLocal]=useState(false); const descriptionId=useId();
  return <div className="rd-component"><D.Root open={props.open ?? local} onOpenChange={d=>{setLocal(d.open);props.onOpenChange?.(d.open);}}><D.Trigger className="rd-button">{props.trigger}</D.Trigger><D.Backdrop /><D.Positioner><D.Content aria-describedby={props.description ? descriptionId : undefined}><D.Title>{props.title}</D.Title>{props.description && <D.Description id={descriptionId}>{props.description}</D.Description>}<div className="rd-dialog-body">{props.children}</div><D.CloseTrigger className="rd-button">Close</D.CloseTrigger></D.Content></D.Positioner></D.Root></div>;
 }
