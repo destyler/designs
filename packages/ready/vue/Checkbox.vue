@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, useId, watchPostEffect } from 'vue'
 import { Checkbox, useFieldContext } from '@destyler-ui/vue'
-const props = withDefaults(defineProps<{ label: string; checked?: boolean; name?: string; disabled?: boolean; required?: boolean; error?: string }>(), { checked: undefined, required: undefined })
+const props = withDefaults(defineProps<{ label: string; checked?: boolean; name?: string; disabled?: boolean; required?: boolean; error?: string }>(), { checked: undefined, required: undefined, disabled: undefined })
 const emit = defineEmits<{ 'update:checked': [value: boolean]; checkedChange: [value: boolean] }>()
 const local = ref(false)
 const element=ref<HTMLDivElement>(), errorId=useId(), field=useFieldContext()

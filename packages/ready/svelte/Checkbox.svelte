@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useFieldContext } from '@destyler-ui/svelte/field'
   import { Checkbox } from '@destyler-ui/svelte/checkbox'
-  let { label, checked, name, required, error, disabled = false, onCheckedChange }: { label: string; checked?: boolean; name?: string; required?: boolean; error?: string; disabled?: boolean; onCheckedChange?: (value: boolean) => void } = $props()
+  let { label, checked, name, required, error, disabled, onCheckedChange }: { label: string; checked?: boolean; name?: string; required?: boolean; error?: string; disabled?: boolean; onCheckedChange?: (value: boolean) => void } = $props()
   let local = $state(false)
   let element:HTMLDivElement
   const errorId=$props.id();const field=useFieldContext()

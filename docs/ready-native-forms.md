@@ -27,8 +27,12 @@ Use the same props with each framework's component syntax. Vue/Svelte do not use
 React's event syntax; their existing callbacks/v-model conventions are unchanged.
 Error messages get stable IDs and are added to the native control and Select
 trigger's `aria-describedby` without discarding a Field helper description.
-Absent props preserve the surrounding Field's required/invalid context rather
-than introducing an explicit false override.
+Absent props preserve the surrounding Field's required/invalid/disabled context
+rather than introducing an explicit false override. In particular, omitting
+`disabled` inherits the Field's current disabled state, including later changes;
+passing `disabled={false}` (or the framework's equivalent binding) explicitly
+overrides a disabled Field and enables that control. An explicit `true` keeps the
+control disabled even when the Field is enabled.
 
 ## Server and reset boundaries
 

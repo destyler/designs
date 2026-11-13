@@ -5,7 +5,7 @@
   import { Select, createListCollection } from '@destyler-ui/svelte/select'
   import type { Option } from '../types'
   import { validateSelectOptions } from '../select-options'
-  let { label, options, value, name, required, error, placeholder = 'Choose an option', disabled = false, onValueChange }: { label: string; options: Option[]; value?: string; name?: string; required?: boolean; error?: string; placeholder?: string; disabled?: boolean; onValueChange?: (value: string) => void } = $props()
+  let { label, options, value, name, required, error, placeholder = 'Choose an option', disabled, onValueChange }: { label: string; options: Option[]; value?: string; name?: string; required?: boolean; error?: string; placeholder?: string; disabled?: boolean; onValueChange?: (value: string) => void } = $props()
   let local = $state('')
   let element: HTMLDivElement
   const errorId=$props.id();const field=useFieldContext()

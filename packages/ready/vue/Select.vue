@@ -4,7 +4,7 @@ import { Select, createListCollection, useFieldContext } from '@destyler-ui/vue'
 import HiddenSelect from './HiddenSelect.vue'
 import type { Option } from '../types'
 import { validateSelectOptions } from '../select-options'
-const props = withDefaults(defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean; required?: boolean; error?: string }>(), { required: undefined })
+const props = withDefaults(defineProps<{ label: string; options: Option[]; value?: string; name?: string; placeholder?: string; disabled?: boolean; required?: boolean; error?: string }>(), { required: undefined, disabled: undefined })
 const emit = defineEmits<{ 'update:value': [value: string]; valueChange: [value: string] }>()
 const local = ref('')
 const element = ref<HTMLDivElement>()
