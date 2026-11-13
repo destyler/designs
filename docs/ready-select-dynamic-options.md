@@ -38,7 +38,10 @@ The four-framework checks cover deletion/reinsertion, disabled/enabled selection
 reordering/relabeling, empty-to-loaded options and controlled missing-value
 restoration, including displayed text, native state and callback behavior. Real
 server rendering without DOM globals also covers an initially missing controlled
-value with nonempty options. This previously emitted no selected option, allowing
+value with nonempty options. The same markup is then hydrated with the actual
+framework API in Happy DOM, checking node/ID reuse, hydration warnings, user
+selection with parent acceptance/refusal, and later matching-option restoration.
+This previously emitted no selected option, allowing
 the parsed native select to choose the first option despite the visible placeholder.
 
 Client and parsed-HTML checks use Happy DOM, not a real browser. Plain native

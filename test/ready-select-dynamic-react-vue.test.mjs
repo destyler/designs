@@ -13,6 +13,28 @@ if(process.argv[2]==='--server'){
  const {Window}=await import('happy-dom');const win=new Window();win.document.body.innerHTML=html
  const form=win.document.querySelector('form'),select=form.querySelector('select')
  await writeFile(process.argv[4],JSON.stringify({requestedValue:'z',options:['a','b'],html,visible:form.querySelector('[data-part=value-text]').textContent,nativeValue:select.value,selectedIndex:select.selectedIndex,serializedSelected:[...select.options].filter(o=>o.hasAttribute('selected')).map(o=>o.value),effectiveSelected:[...select.options].filter(o=>o.selected).map(o=>o.value),required:select.required,valueMissing:select.validity.valueMissing,submitted:[...new win.FormData(form)]},null,2));await win.happyDOM.close()
+}else if(process.argv[2]==='--hydrate'){
+ const {Window}=await import('happy-dom');const win=new Window({url:'http://localhost/'})
+ for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
+ for(const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])globalThis[key]=win[key].bind(win)
+ const target=document.createElement('div');target.innerHTML=JSON.parse(await readFile(process.argv[4],'utf8')).html;document.body.append(target)
+ const accept=process.argv[5]==='accept',form=target.querySelector('form'),select=form.querySelector('select'),trigger=form.querySelector('[data-part=trigger]')
+ const ids=[...target.querySelectorAll('[id]')].map(node=>node.id),nodes=[...target.querySelectorAll('form,select,button,[data-part=value-text]')]
+ const callbacks=[],warnings=[],original={warn:console.warn,error:console.error};console.warn=(...args)=>warnings.push(args.map(String).join(' '));console.error=(...args)=>warnings.push(args.map(String).join(' '))
+ const check=value=>{assert.equal(select.value,value);assert.deepEqual([...new win.FormData(form)],[['plan',value]]);assert.equal(form.querySelector('[data-part=value-text]').textContent,value?value.toUpperCase():'Choose an option');assert.equal(select.required,true);assert.equal(select.validity.valueMissing,value==='')}
+ check('')
+ const {hydrate}=await import(pathToFileURL(process.argv[3]));const app=hydrate(target,value=>callbacks.push(value),accept,warnings)
+ const settle=()=>new Promise(resolve=>setTimeout(resolve,160));await settle();check('')
+ assert.deepEqual([...target.querySelectorAll('[id]')].map(node=>node.id),ids);assert.equal(new Set(ids).size,ids.length)
+ nodes.forEach((node,index)=>assert.equal(node,[...target.querySelectorAll('form,select,button,[data-part=value-text]')][index],'Hydration reuses SSR controls'))
+ assert.deepEqual(callbacks,[],'Hydration does not emit changes for a pending requested key')
+ trigger.click();await settle();form.querySelector('[data-part=item][data-value=a]').click();await settle()
+ assert.deepEqual(callbacks,['a'],'Actual selection requests A exactly once');check(accept?'a':'')
+ app.options([{label:'A',value:'a'},{label:'B',value:'b'},{label:'Z',value:'z'}]);await settle();check(accept?'a':'z')
+ assert.deepEqual(callbacks,['a'],'Option arrival resolves pending Z without a fabricated callback; accepted A is not replaced')
+ assert.equal(form,target.querySelector('form'));assert.equal(select,form.querySelector('select'));assert.equal(trigger,form.querySelector('[data-part=trigger]'))
+ assert.deepEqual(warnings,[],'No hydration or interaction warnings')
+ await app.cleanup();await win.happyDOM.close();console.warn=original.warn;console.error=original.error;console.log(`PASS missing SSR hydration ${accept?'accept':'reject'}`)
 }else if(process.argv[2]==='--worker'){
  const {Window}=await import('happy-dom');const win=new Window({url:'http://localhost/'})
  for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
@@ -73,10 +95,23 @@ if(process.argv[2]==='--server'){
      if(state.stage==='selected-b-disabled')assert.equal(state.options.find(option=>option.value==='b').disabled,true)
     }
    }
-   const server=framework==='react'?`import {createElement as h} from 'react';import {renderToString} from 'react-dom/server';import {Select} from '${source}';export const render=()=>renderToString(h('form',null,h(Select,{label:'Plan',name:'plan',value:'z',required:true,options:[{label:'A',value:'a'},{label:'B',value:'b'}]})))`:`import {createSSRApp,h} from 'vue';import {renderToString} from '@vue/server-renderer';import {Select} from '${source}';export const render=()=>renderToString(createSSRApp({render:()=>h('form',[h(Select,{label:'Plan',name:'plan',value:'z',required:true,options:[{label:'A',value:'a'},{label:'B',value:'b'}]})])}))`
+   let server,hydrateEntry
+   if(framework==='react'){
+    await writeFile(join(folder,'Missing.mjs'),`import {createElement as h,useState} from 'react';import {Select} from '${source}';export function App({controls={},change=()=>{},accept=false}){const [value,setValue]=useState('z'),[options,setOptions]=useState([{label:'A',value:'a'},{label:'B',value:'b'}]);controls.options=setOptions;return h('form',null,h(Select,{label:'Plan',name:'plan',value,required:true,options,onValueChange:next=>{change(next);if(accept)setValue(next)}}))}`)
+    server=`import {createElement as h} from 'react';import {renderToString} from 'react-dom/server';import {App} from './Missing.mjs';export const render=()=>renderToString(h(App))`
+    hydrateEntry=`import {createElement as h} from 'react';import {hydrateRoot} from 'react-dom/client';import {App} from './Missing.mjs';export function hydrate(target,change,accept,warnings){const controls={};const app=hydrateRoot(target,h(App,{controls,change,accept}),{onRecoverableError:error=>warnings.push(String(error))});return{options:items=>controls.options(items),cleanup:()=>app.unmount()}}`
+   }else{
+    await writeFile(join(folder,'Missing.mjs'),`import {createSSRApp,h,ref} from 'vue';import {Select} from '${source}';export function createFixture(controls={},change=()=>{},accept=false){const value=ref('z'),options=ref([{label:'A',value:'a'},{label:'B',value:'b'}]);controls.options=items=>options.value=items;return createSSRApp({render:()=>h('form',[h(Select,{label:'Plan',name:'plan',value:value.value,required:true,options:options.value,'onUpdate:value':next=>{change(next);if(accept)value.value=next}})])})}`)
+    server=`import {renderToString} from '@vue/server-renderer';import {createFixture} from './Missing.mjs';export const render=()=>renderToString(createFixture())`
+    hydrateEntry=`import {createFixture} from './Missing.mjs';export function hydrate(target,change,accept,warnings){const controls={},app=createFixture(controls,change,accept);app.config.warnHandler=message=>warnings.push(message);app.mount(target);return{options:items=>controls.options(items),cleanup:()=>app.unmount()}}`
+   }
    const serverEntry=join(folder,'server.mjs');await writeFile(serverEntry,server)
    await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{ssr:serverEntry,outDir:join(folder,'server'),minify:false,rollupOptions:{output:{entryFileNames:'server.mjs'}}}})
    const missing=join(evidence,`${framework}-ssr-missing.json`);execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--server',join(folder,'server/server.mjs'),missing],{cwd:root,encoding:'utf8',timeout:30000});const ssr=JSON.parse(await readFile(missing,'utf8'));assert.equal(ssr.requestedValue,'z');assert.equal(ssr.visible,'Choose an option');assert.equal(ssr.nativeValue,'');assert.deepEqual(ssr.effectiveSelected,['']);assert.equal(ssr.required,true);assert.equal(ssr.valueMissing,true);assert.deepEqual(ssr.submitted,[['plan','']]);assert.match(ssr.html,/<option[^>]*value=""/)
+   const hydrateFile=join(folder,'hydrate.mjs');await writeFile(hydrateFile,hydrateEntry)
+   await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{outDir:join(folder,'hydrate'),minify:false,lib:{entry:hydrateFile,formats:['es'],fileName:()=> 'client.mjs'}}})
+   for(const decision of ['reject','accept'])assert.match(execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--hydrate',join(folder,'hydrate/client.mjs'),missing,decision],{cwd:root,encoding:'utf8',timeout:30000}),/PASS missing SSR hydration/)
+
 
   }finally{await rm(folder,{recursive:true,force:true})}
  })
