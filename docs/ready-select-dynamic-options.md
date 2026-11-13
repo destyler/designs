@@ -57,3 +57,20 @@ tests record these limitations rather than changing native semantics to match
 Happy DOM. A deliberately selected empty placeholder is different from having no
 selected option. Real browser submission, keyboard and assistive-technology
 acceptance remain unverified.
+
+## Reset baseline while options are missing
+
+The reset baseline is the original **requested** mount value, not the empty
+selection temporarily displayed while options are missing. For example, a
+controlled Select mounted with `value="b"` and `options=[]` retains `b` as its
+logical reset baseline. Loading option `b` must not make a later reset request
+`""`. If the current requested value is already `b`, the primitive may suppress
+the unchanged proposal. After changing to `a`, reset proposes `b`; the parent may
+accept or refuse as usual. If `b` is still unavailable, accepting the proposal
+keeps an empty effective selection until `b` arrives.
+
+Only the native hidden select's rendered/synchronized state uses the effective
+value. The primitive retains the original requested value and its existing reset
+listener. No second reset listener or callback remapping is introduced. Canceled
+resets remain canceled. This does not change the separately disclosed contract
+for input edited or restored before hydration.

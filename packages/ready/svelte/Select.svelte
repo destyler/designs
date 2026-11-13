@@ -17,7 +17,7 @@
     void tick().then(() => setTimeout(syncHidden, 0))
   }
   const requested = $derived(value ?? local)
-  // Preserve a pending requested value across option replacement.
+  // Normalize only the native control; the primitive retains the requested reset baseline.
   const current = $derived(options.some(item => item.value === requested) ? requested : '')
   function syncHidden() {
     const value = current
@@ -30,7 +30,7 @@
   const collection = $derived(createListCollection({ items: validateSelectOptions(options) }))
   const accessibleLabel=$derived(validateAccessibleText(label,'Select','label'))
 </script>
-<div bind:this={element} class="rd-component"><Select.Root {required} invalid={error?true:(field?.()?.invalid??false)} {collection} {name} value={current ? [current] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
-  <Select.Label>{accessibleLabel}</Select.Label><Select.Control><Select.Trigger aria-required={(required??field?.()?.required)||undefined} aria-describedby={describedBy}><Select.ValueText {placeholder} /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
+<div bind:this={element} class="rd-component"><Select.Root {required} invalid={error?true:(field?.()?.invalid??false)} {collection} {name} value={requested ? [requested] : []} {disabled} onValueChange={details => change(details.value[0] ?? '')}>
+  <Select.Label>{accessibleLabel}</Select.Label><Select.Control><Select.Trigger data-placeholder-shown={current?undefined:''} aria-required={(required??field?.()?.required)||undefined} aria-describedby={describedBy}><Select.ValueText {placeholder} /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
   <Select.Positioner><Select.Content>{#each options as item (item.value)}<Select.Item {item}><Select.ItemText>{item.label}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item>{/each}</Select.Content></Select.Positioner><HiddenSelect errorId={error?errorId:undefined} invalid={error?true:(field?.()?.invalid??false)} />
 </Select.Root>{#if error}<span id={errorId} class="rd-error">{error}</span>{/if}</div>

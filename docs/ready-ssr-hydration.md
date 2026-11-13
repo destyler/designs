@@ -51,7 +51,11 @@ a small internal helper. The helper uses public primitive/field context props an
 explicitly serializes selected options, including the empty placeholder. It keeps
 the primitive's name, ID, disabled/focus attributes and existing reset listener;
 no duplicate input or listener is added. Client reconciliation remains in place.
-React required no implementation change. No core/UI release is involved.
+React required no implementation change for that original non-first-option case.
+The later missing-option reset correction also gives React a small internal native
+select helper: all adapters retain the requested value in the primitive (and thus
+its mount reset baseline), while rendering only the effective selection in the
+native select. No core/UI release is involved.
 
 ## Coverage and boundaries
 

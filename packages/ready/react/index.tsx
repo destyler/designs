@@ -1,7 +1,7 @@
 import { validateAccessibleText } from '../accessible-text';
 import { validateSelectOptions } from '../select-options';
 import { useState, useId, useRef, useEffect, type ReactNode } from 'react';
-import { Checkbox as C, Select as S, Dialog as D, createListCollection, useFieldContext } from '@destyler-ui/react';
+import { Checkbox as C, Select as S, Dialog as D, createListCollection, useFieldContext, useSelectContext } from '@destyler-ui/react';
 import type { CheckboxProps, SelectProps, DialogProps } from '../types';
 export function Checkbox(props: CheckboxProps) {
  validateAccessibleText(props.label, 'Checkbox', 'label');
@@ -10,6 +10,11 @@ export function Checkbox(props: CheckboxProps) {
  const describedBy=[field?.ariaDescribedby,props.error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
  useEffect(()=>{container.current?.querySelector('input')?.setCustomValidity(props.error ?? '');},[props.error]);
  return <div ref={container} className="rd-component"><C.Root name={props.name} required={props.required} invalid={props.error ? true : (field?.invalid ?? false)} disabled={props.disabled} checked={props.checked ?? local} onCheckedChange={d => { const value=d.checked === true; setLocal(value); props.onCheckedChange?.(value); }}><C.Control><C.Indicator><span aria-hidden="true">✓</span></C.Indicator></C.Control><C.Label>{props.label}</C.Label><C.HiddenInput aria-describedby={describedBy} /></C.Root>{props.error && <p id={errorId} className="rd-error">{props.error}</p>}</div>;
+}
+// Preserve the primitive's requested reset baseline, but serialize only available options.
+function HiddenSelect({value,describedBy}:{value:string;describedBy?:string}) {
+ const api=useSelectContext(),field=useFieldContext();
+ return <select {...api.getHiddenSelectProps()} defaultValue={value} aria-describedby={describedBy ?? field?.ariaDescribedby}>{!value && <option value="" />}{api.collection.items.map(item=><option key={item.value} value={api.collection.getItemValue(item) ?? ''} disabled={api.collection.getItemDisabled(item)}>{api.collection.stringifyItem(item)}</option>)}</select>;
 }
 export function Select(props: SelectProps) {
  validateAccessibleText(props.label, 'Select', 'label');
@@ -30,7 +35,7 @@ export function Select(props: SelectProps) {
   return ()=>{clearTimeout(timer);observer.disconnect();};
  },[value,props.options]);
  const collection=createListCollection({items:validateSelectOptions(props.options)});
- return <div ref={container} className="rd-component"><S.Root name={props.name} required={props.required} invalid={props.error ? true : (field?.invalid ?? false)} disabled={props.disabled} collection={collection} value={value ? [value] : []} onValueChange={d=>{const next=d.value[0] ?? '';setLocal(next);props.onValueChange?.(next);setTimeout(sync,0);}}><S.Label>{props.label}</S.Label><S.Control><S.Trigger aria-describedby={describedBy} aria-required={props.required ?? field?.required}><S.ValueText placeholder={props.placeholder ?? 'Choose an option'} /><S.Indicator><span aria-hidden="true">⌄</span></S.Indicator></S.Trigger></S.Control><S.Positioner><S.Content>{props.options.map(option=><S.Item key={option.value} item={option}><S.ItemText>{option.label}</S.ItemText><S.ItemIndicator><span aria-hidden="true">✓</span></S.ItemIndicator></S.Item>)}</S.Content></S.Positioner><S.HiddenSelect aria-describedby={describedBy} /></S.Root>{props.error && <p id={errorId} className="rd-error">{props.error}</p>}</div>;
+ return <div ref={container} className="rd-component"><S.Root name={props.name} required={props.required} invalid={props.error ? true : (field?.invalid ?? false)} disabled={props.disabled} collection={collection} value={requested ? [requested] : []} onValueChange={d=>{const next=d.value[0] ?? '';setLocal(next);props.onValueChange?.(next);setTimeout(sync,0);}}><S.Label>{props.label}</S.Label><S.Control><S.Trigger data-placeholder-shown={value ? undefined : ''} aria-describedby={describedBy} aria-required={props.required ?? field?.required}><S.ValueText><span>{props.options.find(option=>option.value===value)?.label ?? props.placeholder ?? 'Choose an option'}</span></S.ValueText><S.Indicator><span aria-hidden="true">⌄</span></S.Indicator></S.Trigger></S.Control><S.Positioner><S.Content>{props.options.map(option=><S.Item key={option.value} item={option}><S.ItemText>{option.label}</S.ItemText><S.ItemIndicator><span aria-hidden="true">✓</span></S.ItemIndicator></S.Item>)}</S.Content></S.Positioner><HiddenSelect value={value} describedBy={describedBy} /></S.Root>{props.error && <p id={errorId} className="rd-error">{props.error}</p>}</div>;
 }
 // Own the optional description link: the primitive only detects its presence when opening.
 export function Dialog(props: DialogProps & { children?: ReactNode }) {

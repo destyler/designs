@@ -6,7 +6,7 @@ export function HiddenSelect(props:{errorId?:string;invalid?:boolean}) {
  const select = useSelectContext();
  const field = useFieldContext();
  return <select {...select().getHiddenSelectProps()} aria-invalid={(props.invalid??field?.().invalid)||undefined} aria-describedby={[field?.().ariaDescribedby,props.errorId].filter(Boolean).join(' ')||undefined}>
-  <Show when={select().value.length === 0}><option value="" selected /></Show>
+  <Show when={!select().collection.items.some(item=>select().value.includes(select().collection.getItemValue(item) ?? ''))}><option value="" selected /></Show>
   <For each={select().collection.items}>{item => <option
    value={select().collection.getItemValue(item) ?? ''}
    disabled={select().collection.getItemDisabled(item)}

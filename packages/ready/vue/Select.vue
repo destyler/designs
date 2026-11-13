@@ -32,8 +32,8 @@ function change(values: string[]) {
 function validateText() { validateAccessibleText(props.label, 'Select', 'label'); return 'rd-component' }
 </script>
 <template>
-  <div ref="element" :class="validateText()"><Select.Root :required="required" :invalid="error ? true : (field?.invalid ?? false)" :collection="collection" :model-value="current ? [current] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
-    <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger :aria-describedby="describedBy" :aria-required="required ?? field?.required"><Select.ValueText :placeholder="placeholder ?? 'Choose an option'" /><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
-    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :described-by="describedBy" />
+  <div ref="element" :class="validateText()"><Select.Root :required="required" :invalid="error ? true : (field?.invalid ?? false)" :collection="collection" :model-value="requested ? [requested] : []" :name="name" :disabled="disabled" @value-change="change($event.value)">
+    <Select.Label>{{ label }}</Select.Label><Select.Control><Select.Trigger :data-placeholder-shown="current ? undefined : ''" :aria-describedby="describedBy" :aria-required="required ?? field?.required"><Select.ValueText><span>{{ options.find(item => item.value === current)?.label ?? placeholder ?? 'Choose an option' }}</span></Select.ValueText><Select.Indicator aria-hidden="true">⌄</Select.Indicator></Select.Trigger></Select.Control>
+    <Select.Positioner><Select.Content><Select.Item v-for="item in options" :key="item.value" :item="item"><Select.ItemText>{{ item.label }}</Select.ItemText><Select.ItemIndicator aria-hidden="true">✓</Select.ItemIndicator></Select.Item></Select.Content></Select.Positioner><HiddenSelect :value="current" :described-by="describedBy" />
   </Select.Root><p v-if="error" :id="errorId" class="rd-error">{{ error }}</p></div>
 </template>

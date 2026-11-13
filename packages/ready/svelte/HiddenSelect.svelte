@@ -8,7 +8,7 @@
 <!-- The polymorphic primitive cannot serialize selected options for SSR.
      Retain its sole native control and all hidden-select/focus/reset attributes. -->
 <select {...select().getHiddenSelectProps()} aria-invalid={(invalid??field?.()?.invalid)||undefined} aria-describedby={[field?.()?.ariaDescribedby,errorId].filter(Boolean).join(' ')||undefined}>
- {#if select().value.length === 0}<option value="" selected></option>{/if}
+ {#if !select().collection.items.some(item=>select().value.includes(select().collection.getItemValue(item) ?? ''))}<option value="" selected></option>{/if}
  {#each select().collection.items as item}
   <option value={select().collection.getItemValue(item) ?? ''}
    disabled={select().collection.getItemDisabled(item)}
