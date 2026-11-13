@@ -1,8 +1,7 @@
 # Ready component slice (private experiment)
 
 Three composed controls, four framework adapters, one semantic CSS contract.
-Import Checkbox, Select and Dialog from the framework folder and import theme.css
-once. Wrap consumers in data-rd-theme="default" or "midnight". Components never
+Use the explicit framework package subpath and import theme.css once. Wrap consumers in data-rd-theme="default" or "midnight". Components never
 branch on theme names. Override the same --rd-* variables for a custom style.
 
 Checkbox accepts label, checked, disabled, name and a boolean change callback.
@@ -16,6 +15,37 @@ retained. No library defaults or published packages change.
 Run `node scripts/ready.mjs dev react` (or vue, solid, svelte). Open the URL printed
 by Vite. Run `node scripts/ready.mjs build` for four static demos under artifacts/ready.
 Serve artifacts/ready with any static server to use the cross-framework links.
+
+## Consuming the private source package
+
+This is a **Vite-compiled source package**, not precompiled JavaScript for direct
+Node execution. It intentionally has no default root component export. Select one
+framework subpath: `@destyler/ready-prototype/react`, `/vue`, `/solid`, or `/svelte`.
+Import `@destyler/ready-prototype/theme.css` once in the application entry.
+Use that framework's normal Vite plugin. TypeScript, Vue and Svelte sources remain
+in the archive so the consumer compiler handles its own framework semantics.
+
+For a local tarball, run `npm pack ./packages/ready`, then install the resulting
+`.tgz` in a Vite application. Install only the matching runtime and UI peer:
+
+- React: `react`, `react-dom`, `@destyler-ui/react@0.0.5`, with `@vitejs/plugin-react`.
+- Vue: `vue`, `@destyler-ui/vue@0.0.5`, with `@vitejs/plugin-vue`.
+- Solid: `solid-js`, `@destyler-ui/solid@0.0.5`, with `vite-plugin-solid`.
+- Svelte: `svelte`, `@destyler-ui/svelte@0.0.5`, with `@sveltejs/vite-plugin-svelte`.
+
+All framework peers are optional at package level so choosing React does not
+install Vue, Solid and Svelte. The selected subpath still requires its own listed
+peers; optional does not mean its runtime can be omitted. Tested version ranges
+and explicit entry points are recorded in package.json. CSS is declared a side
+effect so consumer tree-shaking does not discard an intentional stylesheet import.
+The `files` list excludes demos, tests, build outputs and dependencies from packing.
+No publication is performed by these local packaging commands.
+
+The package consumer regression packs and unpacks the archive into a separate
+consumer tree, imports each framework and CSS by package name, builds with its
+framework plugin, and checks that unused UI adapters are absent. It reuses the
+repository's locked runtime installations, without source aliases or links back
+to packages/ready; it is not a claim of compatibility with every bundler.
 
 ## Contract
 

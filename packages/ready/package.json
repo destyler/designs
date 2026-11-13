@@ -1,1 +1,81 @@
-{"name":"@destyler/ready-prototype","version":"0.0.0","private":true,"type":"module"}
+{
+  "name": "@destyler/ready-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private Vite-source pilot for composed Destyler components; requires the selected framework compiler",
+  "files": [
+    "react",
+    "vue",
+    "solid",
+    "svelte",
+    "types.ts",
+    "theme.css",
+    "README.md"
+  ],
+  "exports": {
+    "./react": {
+      "types": "./react/index.tsx",
+      "default": "./react/index.tsx"
+    },
+    "./vue": {
+      "types": "./vue/index.ts",
+      "default": "./vue/index.ts"
+    },
+    "./solid": {
+      "types": "./solid/index.tsx",
+      "default": "./solid/index.tsx"
+    },
+    "./svelte": {
+      "types": "./svelte/index.ts",
+      "svelte": "./svelte/index.ts",
+      "default": "./svelte/index.ts"
+    },
+    "./theme.css": "./theme.css",
+    "./types": "./types.ts",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "@destyler-ui/react": "0.0.5",
+    "@destyler-ui/vue": "0.0.5",
+    "@destyler-ui/solid": "0.0.5",
+    "@destyler-ui/svelte": "0.0.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "vue": "^3.5.22",
+    "solid-js": "^1.9.17",
+    "svelte": "^5.57.2"
+  },
+  "peerDependenciesMeta": {
+    "@destyler-ui/react": {
+      "optional": true
+    },
+    "@destyler-ui/vue": {
+      "optional": true
+    },
+    "@destyler-ui/solid": {
+      "optional": true
+    },
+    "@destyler-ui/svelte": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
+  }
+}
