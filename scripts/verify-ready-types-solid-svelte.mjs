@@ -4,6 +4,7 @@
 // locked mode is not framework-peer isolation or a fresh installation.
 // Obtain prior consumers using scripts/verify-ready-clean-consumers.mjs.
 import assert from 'node:assert/strict'
+import {stripVTControlCharacters} from 'node:util'
 import {dependencyMode,linkTypeDependencies,assertPackedReady} from './ready-type-dependencies.mjs'
 import {mkdtemp,mkdir,readFile,writeFile} from 'node:fs/promises'
 import {execFileSync} from 'node:child_process'
@@ -70,7 +71,8 @@ const extra:C={label:'C','aria-label':'Alternative'};
  const contract=await readFile(join(folder,'contracts.ts'),'utf8');const expectedLines=contract.split('\n').flatMap((line,index)=>line.includes('@ts-expect-error')?[index+2]:[])
  assert.equal(expectedLines.length,13)
  await writeFile(join(folder,'contracts.ts'),contract.replaceAll('@ts-expect-error','negative case'))
- let negative;try{run(process.execPath,args,folder);throw Error('Invalid cases unexpectedly compiled')}catch(e){if(!e.status)throw e;negative=String(e.stdout)+String(e.stderr)}
+ let negative;try{run(process.execPath,args,folder);throw Error('Invalid cases unexpectedly compiled')}catch(e){if(!e.status)throw e;negative=stripVTControlCharacters(String(e.stdout)+String(e.stderr)).replaceAll('\r\n','\n')}
+ // Hosted CI may color filenames/Error prefixes. Preserve strict diagnostics after removing presentation escapes.
  await writeFile(join(folder,'negative.log'),negative)
  const pattern=framework==='solid'?/contracts\.ts\((\d+),\d+\): error /g:/contracts\.ts:(\d+):\d+\nError:/g
  const lines=[...negative.matchAll(pattern)].map(match=>Number(match[1]));assert.deepEqual(lines,expectedLines,'Exactly one diagnostic at each intended negative fixture line')
