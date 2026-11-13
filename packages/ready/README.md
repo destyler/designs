@@ -87,6 +87,8 @@ Real-browser form reset and full form-library integration still need validation.
 
 ## Verification commands
 
+- `node scripts/verify-ready-clean-consumers.mjs` (opt-in registry access; fresh npm-installed consumers in `/tmp`, four Vite builds and type checks; see [verification report](../../docs/ready-clean-consumer-verification.md))
+
 - `node --test test/ready-*.test.mjs`
 - `node node_modules/typescript/bin/tsc -p examples/ready/react/tsconfig.json`
 - `node node_modules/typescript/bin/tsc -p examples/ready/solid/tsconfig.json`
