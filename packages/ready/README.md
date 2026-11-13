@@ -152,3 +152,7 @@ Checkbox's first later click not emitting a callback. Automatic preservation is
 not supported. See the [pre-hydration investigation](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-prehydration-input.md)
 for reproduced behavior and the still-proposed explicit adoption policy. Passing
 the unchanged-DOM SSR tests does not resolve this separate input-loss risk.
+An [experimental controlled adoption recipe](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-prehydration-recipe.md)
+shows the narrow explicitly accepted snapshot path in four frameworks. Rejection,
+field identity, reset and concurrent edits remain open policies; it is not a
+production-ready or default restoration capability.

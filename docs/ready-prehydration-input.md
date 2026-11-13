@@ -69,9 +69,11 @@ occur without hydration warnings.
 
 A minimal candidate is application-level bootstrap: capture the relevant native
 values before hydration, hydrate against the original server state, then let the
-controlled parent explicitly accept the snapshot. It still requires verification
-of warning-free hydration, callbacks, reset defaults, invalid/stale options and
-subsequent interactions. It is a proposal, not a shipped API or a verified recipe.
+controlled parent explicitly accept the snapshot. An [experimental four-framework recipe](./ready-prehydration-recipe.md) now verifies
+the valid, explicitly accepted snapshot path in simulated DOM, including warning-free
+hydration and subsequent callbacks. Reset defaults, rejection, invalid/stale values
+and edits after capture remain unresolved. It is not a shipped API or a general
+input-preservation guarantee.
 No automatic restoration API or new default contract is introduced by this report.
 
 Until such a policy is implemented and tested, applications must not rely on this
