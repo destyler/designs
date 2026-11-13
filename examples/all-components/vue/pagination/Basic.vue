@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { paginationItems } from '../pagination-items'
 import { ref } from 'vue'
 import { Pagination } from '@destyler-ui/vue'
 const currentPage = ref(1)
@@ -10,7 +11,7 @@ const currentPage = ref(1)
       <span class="visually-hidden">Page</span>
     </Pagination.PrevTrigger>
     <Pagination.Context v-slot="pagination">
-      <template v-for="(page, index) in pagination.pages">
+      <template v-for="(page, index) in paginationItems(pagination.page)">
         <Pagination.Item v-if="page.type === 'page'" :key="index" :value="page.value" :type="page.type">
           {{ page.value }}
         </Pagination.Item>

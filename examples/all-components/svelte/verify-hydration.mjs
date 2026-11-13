@@ -108,6 +108,7 @@ if (!mode) {
           current.interactions={selections:4}
         }
         if(family==='pagination'){
+      await (await import('../../../scripts/lib/pagination-parity.mjs')).verifyPaginationParity(document, pause);
           assert.match(document.querySelector('[role="status"]').textContent,/Page 1 of 10/);part('pagination','next-trigger').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Page 2 of 10/);part('pagination','prev-trigger').click();await pause();assert.match(document.querySelector('[role="status"]').textContent,/Page 1 of 10/);current.interactions={nextBack:true};
         }
         if(family==='progress'){

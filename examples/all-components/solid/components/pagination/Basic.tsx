@@ -1,3 +1,4 @@
+import { paginationItems } from "../../pagination-items";
 import { Pagination } from "@destyler-ui/solid";
 import { createSignal } from "solid-js";
 export function Basic() {
@@ -15,7 +16,7 @@ export function Basic() {
         <Pagination.Context>
           {(api) => (
             <>
-              {api().pages.map((item, index) =>
+              {paginationItems(api().page).map((item, index) =>
                 item.type === "page" ? (
                   <Pagination.Item value={item.value} type="page">
                     {item.value}

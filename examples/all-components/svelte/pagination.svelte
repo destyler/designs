@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { paginationItems } from './pagination-items'
   import { Pagination } from '@destyler-ui/svelte/pagination'
   let currentPage = $state(1)
 </script>
@@ -7,7 +8,7 @@
   <Pagination.PrevTrigger>Previous <span class="visually-hidden">Page</span></Pagination.PrevTrigger>
   <Pagination.Context>
     {#snippet render(pagination)}
-      {#each pagination().pages as page, index}
+      {#each paginationItems(pagination().page) as page, index}
         {#if page.type === 'page'}
           <Pagination.Item value={page.value} type={page.type}>{page.value}</Pagination.Item>
         {:else}

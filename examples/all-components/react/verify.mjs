@@ -104,6 +104,7 @@ if (!mode) {
       actions.push('Progress advances 65→100 and resets to 0 with matching output and ARIA')
     }
     if (family === 'pagination') {
+      await (await import('../../../scripts/lib/pagination-parity.mjs')).verifyPaginationParity(document, pause)
       for (const value of [2,10,9,1]) {
         const trigger=qa('pagination','item').find(node=>node.textContent===String(value))
         assert.ok(trigger); trigger.click(); await pause()
