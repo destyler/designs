@@ -199,3 +199,7 @@ There is no icon-only or alternate aria-label API in this pilot. See the
 For callback payloads, controlled ownership, runtime validation boundaries and
 reproducible packed-consumer positive/negative type checks, see the
 [consumer type contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-type-contract.md).
+
+Checkbox change callbacks are proposals, not DOM commit notifications. Do not
+assume synchronous FormData inside a callback reflects a controlled parent's
+accepted/refused state; see the [timing investigation and submission guidance](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-checkbox-callback-timing.md).

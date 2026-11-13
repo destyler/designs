@@ -36,9 +36,9 @@ verification. The tests do not manually toggle checked state to pretend that
 keyboard activation occurred.
 
 Assertions concern settled framework state. Intermediate values immediately after
-an event, before framework updates flush, may differ. This pass does not guarantee
-that synchronously reading or submitting a form from inside a change callback sees
-the final accepted/refused state. It does not add extra listeners, synthetic
+an event, before framework updates flush, may differ. A subsequent [callback timing investigation](./ready-checkbox-callback-timing.md)
+confirmed that synchronously reading FormData inside a change callback can see
+a tentative or previous value, not the final accepted/refused state. It does not add extra listeners, synthetic
 business events or speculative reconciliation to mask simulator timing.
 
 `FormData` checks inspect serialization without navigating or sending a request.
