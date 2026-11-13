@@ -19,15 +19,21 @@ rendering, rather than use a blank label during loading.
 
 Optional `placeholder` and `description` may remain empty. A Select with an empty
 placeholder still gets its name from its nonempty label. A Dialog without a
-description still gets its name from its title. Its built-in close button retains
-the literal English text `Close`; a localization API is not part of this change.
+description still gets its name from its title. Its built-in close button defaults to `Close`, and `closeLabel` supplies translated
+non-whitespace button text. `emptyMessage` similarly supplies non-whitespace
+Select empty-collection helper text. See [text customization](./ready-text-customization.md).
 
 Field helper text and an application error are descriptions, not labels. Both
-references coexist while an error is present; clearing the error removes only
+references coexist after client mount while an error is present; clearing the error removes only
 that reference and retains the helper. Repeated controls in the same application
 have distinct IDs and reference their own labels/descriptions. Independent Vue
 application roots still require distinct `app.config.idPrefix` values as already
 documented; these checks do not remove that requirement.
+
+**SSR limitation:** the upstream Field helper-presence registration is client-only
+in these fixtures. Its helper text renders on the server but is not automatically
+included in the initial description references. Ready-owned error/empty-message
+IDs are present in SSR; the Field helper reference is added after hydration.
 
 ## Verification and limits
 

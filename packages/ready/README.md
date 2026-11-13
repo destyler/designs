@@ -5,9 +5,9 @@ Use the explicit framework package subpath and import theme.css once. Wrap consu
 branch on theme names. Override the same --rd-* variables for a custom style.
 
 Checkbox accepts label, checked, disabled, required, error, name and a boolean change callback.
-Select accepts label, options ({label,value,disabled?}), value, placeholder,
+Select accepts label, options ({label,value,disabled?}), value, placeholder, emptyMessage,
 disabled, required, error, name and a string change callback. Dialog accepts trigger, title,
-description, open and a boolean change callback; its body is children/default slot.
+description, closeLabel, open and a boolean change callback; its body is children/default slot.
 Controlled values are optional; absent values use local state. Vue uses update:checked, update:value and update:open events, consumed as
 v-model:checked, v-model:value and v-model:open. Hidden form inputs, native disabled handling and primitive ARIA are
 retained. No library defaults or published packages change.
@@ -203,3 +203,7 @@ reproducible packed-consumer positive/negative type checks, see the
 Checkbox change callbacks are proposals, not DOM commit notifications. Do not
 assume synchronous FormData inside a callback reflects a controlled parent's
 accepted/refused state; see the [timing investigation and submission guidance](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-checkbox-callback-timing.md).
+
+Translate built-in text with `Select.emptyMessage` and `Dialog.closeLabel`, along
+with the existing label/placeholder/description/option text props. See the
+[text customization contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-text-customization.md) for defaults, empty-state semantics and accessibility limits.

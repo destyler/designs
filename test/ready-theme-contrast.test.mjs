@@ -27,6 +27,7 @@ test('Measured semantic colors remain wired to errors and focus indicators',()=>
  assert.match(css,/\[data-part="root"\]\[data-disabled\]\s*\{\s*opacity:\.5;/)
  assert.match(css,/\[data-part="trigger"\]\[data-disabled\]\s*\{\s*opacity:\.5;/)
  assert.match(css,/\[data-part="item"\]\[data-disabled\]\s*\{\s*opacity:\.4;/)
+ assert.match(css,/\.rd-component \.rd-empty\s*\{[^}]*color:var\(--rd-muted\)/)
  assert.match(css,/\.rd-component \.rd-error\s*\{[^}]*color:var\(--rd-text\)/)
  assert.match(css,/:focus-visible\s*\{[^}]*outline:3px solid var\(--rd-accent\);[^}]*outline-offset:3px/)
  assert.match(css,/:has\(input:focus-visible\)[^}]*outline:3px solid var\(--rd-accent\)/)

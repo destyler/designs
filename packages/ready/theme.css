@@ -30,3 +30,6 @@
 
 /* Error meaning is conveyed by text and ARIA, not color alone. */
 .rd-component .rd-error { display:block; color:var(--rd-text); font-size:.875rem; line-height:1.5; margin:8px 0 0; }
+
+/* Empty-collection helper text, outside the listbox; no live-region contract. */
+.rd-component .rd-empty { color:var(--rd-muted); font-size:.875rem; line-height:1.5; margin:0; }
