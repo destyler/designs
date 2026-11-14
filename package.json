@@ -29,13 +29,18 @@
     "build:css-consumers": "node scripts/build-css-only-consumers.mjs build",
     "check:css-types": "vue-tsc --noEmit -p examples/css-only/tsconfig.json && tsc --noEmit -p examples/css-only/solid/tsconfig.json && svelte-check --tsconfig ./examples/css-only/svelte/tsconfig.json",
     "test:css": "node scripts/verify-css-only.mjs && node scripts/verify-css-only-ssr.mjs && node scripts/verify-css-only-unocss.mjs",
-    "test:reference:browser": "node scripts/test-reference-browser.mjs"
+    "test:reference:browser": "node scripts/test-reference-browser.mjs",
+    "test:ci": "node --test --test-concurrency=2 test/*.test.mjs",
+    "check:ready": "tsc --noEmit -p examples/ready/react/tsconfig.json && vue-tsc --noEmit -p examples/ready/vue/tsconfig.json && tsc --noEmit -p examples/ready/solid/tsconfig.json && svelte-check --tsconfig ./examples/ready/svelte/tsconfig.json",
+    "build:ready": "node scripts/ready.mjs build",
+    "check:ready:contracts": "node scripts/verify-ready-types-react-vue.mjs --locked && node scripts/verify-ready-types-solid-svelte.mjs --locked",
+    "build:ready:docs": "tsc --noEmit -p examples/ready-docs/tsconfig.json && node scripts/ready-docs.mjs"
   },
   "dependencies": {
-    "@destyler-ui/react": "0.0.4",
-    "@destyler-ui/solid": "0.0.4",
-    "@destyler-ui/svelte": "0.0.4",
-    "@destyler-ui/vue": "0.0.4",
+    "@destyler-ui/react": "0.0.5",
+    "@destyler-ui/solid": "0.0.5",
+    "@destyler-ui/svelte": "0.0.5",
+    "@destyler-ui/vue": "0.0.5",
     "@fontsource-variable/geist": "5.3.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

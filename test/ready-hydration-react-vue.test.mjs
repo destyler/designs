@@ -1,0 +1,125 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { join } from 'node:path'
+import { execFileSync } from 'node:child_process'
+const root = fileURLToPath(new URL('../', import.meta.url))
+if (process.argv[2] === '--server') {
+  assert.equal(typeof window, 'undefined', 'SSR is executed without DOM globals')
+  assert.equal(typeof document, 'undefined', 'SSR is executed without document')
+  const warnings=[];const original={warn:console.warn,error:console.error}
+  console.warn=(...args)=>warnings.push(args.map(String).join(' '));console.error=(...args)=>warnings.push(args.map(String).join(' '))
+  const { render } = await import(pathToFileURL(process.argv[3]))
+  const html=await render();console.warn=original.warn;console.error=original.error
+  assert.deepEqual(warnings,[],'Server rendering emits no warnings')
+  await writeFile(process.argv[4], html)
+} else if (process.argv[2] === '--client') {
+  const { Window } = await import('happy-dom'); const win = new Window({ url: 'http://localhost/' })
+  for (const key of Object.getOwnPropertyNames(win)) if (['window','document','navigator'].includes(key) || /^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)) { try { Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]}) } catch {} }
+  for (const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame']) globalThis[key]=win[key].bind(win)
+  const mode=process.argv[5] || 'closed'
+  const background=document.createElement('button');background.textContent='Pre-hydration focus';document.body.append(background);background.focus()
+  const baseline={pointerEvents:document.body.style.pointerEvents,overflow:document.body.style.overflow,ariaHidden:background.getAttribute('aria-hidden')}
+  const target=document.createElement('div');target.innerHTML=await readFile(process.argv[4],'utf8');document.body.append(target)
+  const snapshot=()=>[...target.querySelectorAll('form')].map(form=>({theme:form.getAttribute('data-rd-theme'),checked:form.querySelector('input').checked,value:form.querySelector('select').value,submitted:new win.FormData(form).get('plan'),ids:[...form.querySelectorAll('[id]')].map(node=>node.id)}))
+  for(const form of target.querySelectorAll('form')) {
+    assert.equal(form.querySelectorAll('select').length,1,'Exactly one native select per composed control')
+    assert.equal(form.querySelector('option[value=disabled]').disabled,true,'SSR keeps disabled options')
+  }
+  const originalErrors=[...target.querySelectorAll('.rd-error')]
+  if(mode==='errors'){
+    assert.equal(originalErrors.length,6,'SSR renders errors for both controls in every scope')
+    for(const form of target.querySelectorAll('form')){
+      const input=form.querySelector('input'),select=form.querySelector('select'),trigger=form.querySelector('[data-scope=select][data-part=trigger]'),errors=[...form.querySelectorAll('.rd-error')]
+      assert.equal(input.required,true);assert.equal(select.required,true);assert.equal(input.validity.customError,false);assert.equal(select.validity.customError,false)
+      assert.equal(input.getAttribute('aria-invalid'),'true');assert.equal(trigger.getAttribute('aria-invalid'),'true')
+      for(const [node,index]of [[input,0],[trigger,1],[select,1]])assert.ok((node.getAttribute('aria-describedby')||'').split(/\s+/).includes(errors[index].id),'SSR error association')
+    }
+    assert.equal(target.querySelector('form').checkValidity(),true,'Satisfied native required remains valid before client error effect')
+  }
+  const before=snapshot(), firstNode=target.firstChild
+  const originalControls=[...target.querySelectorAll('form,input,select,[data-scope=dialog][data-part=content]')]
+  for(const form of target.querySelectorAll('form'))for(const node of form.querySelectorAll('[aria-labelledby],[aria-describedby]'))for(const attr of ['aria-labelledby','aria-describedby'])for(const id of (node.getAttribute(attr)||'').split(/\s+/).filter(Boolean))assert.ok(document.getElementById(id),`SSR ${attr}: ${id}`)
+  const initiallyOpen=[...target.querySelectorAll('[data-scope=dialog][data-part=content]')].filter(node=>!node.hidden)
+  assert.equal(initiallyOpen.length,['closed','errors'].includes(mode)?0:1,'SSR includes exactly the requested open dialog')
+  if(initiallyOpen.length){assert.equal(initiallyOpen[0].closest('[data-rd-theme]').getAttribute('data-rd-theme'),mode);assert.equal(initiallyOpen[0].getAttribute('role'),'dialog');assert.equal(initiallyOpen[0].getAttribute('aria-modal'),'true')}
+  const warnings=[];const original={warn:console.warn,error:console.error};console.warn=(...args)=>warnings.push(args.map(String).join(' '));console.error=(...args)=>warnings.push(args.map(String).join(' '))
+  const { hydrate }=await import(pathToFileURL(process.argv[3]));const cleanup=hydrate(target,warnings)
+  const settle=()=>new Promise(resolve=>setTimeout(resolve,150));await settle()
+  if(mode==='errors'){
+    const hydratedErrors=[...target.querySelectorAll('.rd-error')];originalErrors.forEach((node,index)=>assert.equal(node,hydratedErrors[index],'SSR error node is hydrated in place'))
+    for(const form of target.querySelectorAll('form')){for(const control of form.querySelectorAll('input,select')){assert.equal(control.validity.customError,true);assert.equal(control.validationMessage,'Correct this field')}assert.equal(form.checkValidity(),false,'Hydrated error sets native custom validity')}
+  }
+  const after=snapshot();console.warn=original.warn;console.error=original.error
+  console.log(JSON.stringify({before,after,warnings,reused:firstNode===target.firstChild}))
+  if(initiallyOpen.length){
+    const content=initiallyOpen[0]
+    assert.ok(content.contains(document.activeElement),'Initially open hydration requests focus inside the modal')
+    assert.equal(document.body.style.pointerEvents,'none');assert.equal(document.body.style.overflow,'hidden')
+    assert.equal(background.getAttribute('aria-hidden'),'true')
+    content.querySelector('[data-part=close-trigger]').click();await settle()
+    assert.ok(content.hidden,'Initially open controlled dialog can close')
+    assert.equal(document.activeElement,background,'Without an initiating trigger click, close restores the pre-hydration focused element')
+    assert.equal(document.body.style.pointerEvents,baseline.pointerEvents);assert.equal(document.body.style.overflow,baseline.overflow);assert.equal(background.getAttribute('aria-hidden'),baseline.ariaHidden)
+  }
+  const forms=[...target.querySelectorAll('form')]
+  for(const form of forms){
+    if(mode==='errors'){
+      const input=form.querySelector('input'),select=form.querySelector('select'),trigger=form.querySelector('[data-scope=select][data-part=trigger]'),ids=[...form.querySelectorAll('.rd-error')].map(node=>node.id)
+      let submissions=0;form.addEventListener('submit',event=>{event.preventDefault();submissions++})
+      form.requestSubmit();assert.equal(submissions,0,'Hydrated custom error blocks submission')
+      form.querySelector('[data-clear-error]').click();await settle()
+      assert.equal(input.validity.customError,false);assert.equal(select.validity.customError,false);assert.equal(input.required,true);assert.equal(select.required,true)
+      assert.equal(form.querySelectorAll('.rd-error').length,0)
+      for(const control of [input,select,trigger])for(const id of ids)assert.ok(!(control.getAttribute('aria-describedby')||'').split(/\s+/).includes(id),'Clearing error removes its association')
+      assert.notEqual(input.getAttribute('aria-invalid'),'true');assert.notEqual(trigger.getAttribute('aria-invalid'),'true')
+      assert.equal(form.checkValidity(),input.checked && select.value!=='','Required constraint survives error clearing')
+      form.requestSubmit();assert.equal(submissions,form===forms[0]?1:0)
+    }
+    const part=(family,name)=>form.querySelector(`[data-scope="${family}"][data-part="${name}"]`)
+    const was=form.querySelector('input').checked;part('checkbox','control').click();await settle();assert.equal(form.querySelector('input').checked,!was)
+    part('select','trigger').click();await settle();form.querySelector('[data-scope="select"][data-part="item"][data-value="b"]').click();await settle();assert.equal(new win.FormData(form).get('plan'),'b')
+    part('dialog','trigger').click();await settle();assert.equal(part('dialog','trigger').getAttribute('aria-expanded'),'true');part('dialog','close-trigger').click();await settle();assert.equal(part('dialog','trigger').getAttribute('aria-expanded'),'false')
+    for(const node of form.querySelectorAll('[aria-labelledby],[aria-describedby]'))for(const attr of ['aria-labelledby','aria-describedby'])for(const id of (node.getAttribute(attr)||'').split(/\s+/).filter(Boolean))assert.ok(document.getElementById(id),`${attr}: ${id}`)
+  }
+  assert.equal(firstNode,target.firstChild,'Hydration must reuse SSR DOM')
+  const hydratedControls=[...target.querySelectorAll('form,input,select,[data-scope=dialog][data-part=content]')]
+  assert.equal(hydratedControls.length,originalControls.length)
+  originalControls.forEach((node,index)=>assert.equal(node,hydratedControls[index],'Hydration reuses original form/control nodes'))
+  assert.deepEqual(warnings,[],'Hydration emits no warnings/recoverable errors')
+  assert.deepEqual(after,before,'Hydration preserves IDs and native form state')
+  assert.deepEqual(before.map(({theme,checked,value,submitted})=>({theme,checked,value,submitted})),[{theme:'default',checked:true,value:'a',submitted:'a'},{theme:'midnight',checked:false,value:'b',submitted:'b'},{theme:'default',checked:false,value:'',submitted:''}])
+  const ids=before.flatMap(item=>item.ids);assert.equal(new Set(ids).size,ids.length)
+  const trigger=forms[0].querySelector('[data-scope=dialog][data-part=trigger]');trigger.focus();trigger.click();await settle()
+  assert.equal(trigger.getAttribute('aria-expanded'),'true','Reopen before disposal')
+  assert.equal(document.body.style.pointerEvents,'none');assert.equal(document.body.style.overflow,'hidden');assert.equal(background.getAttribute('aria-hidden'),'true')
+  await cleanup();await settle()
+  assert.equal(document.body.style.pointerEvents,baseline.pointerEvents);assert.equal(document.body.style.overflow,baseline.overflow);assert.equal(background.getAttribute('aria-hidden'),baseline.ariaHidden)
+  background.focus();assert.equal(document.activeElement,background,'No stale focus trap survives disposal')
+  await win.happyDOM.close();console.log('PASS real SSR and simulated hydration')
+} else for(const framework of ['react','vue']) for(const mode of ['closed','default','midnight','errors']) test(`Ready ${framework}: real SSR to simulated hydration (${mode})`,{timeout:120000},async()=>{
+  const folder=await mkdtemp(join(root,'node_modules/.ready-hydration-'))
+  try{
+    const source=`${root}packages/ready/${framework}`
+    let plugin,server,client
+    if(framework==='react'){
+      plugin=(await import('@vitejs/plugin-react')).default()
+      await writeFile(join(folder,'App.tsx'),`import {useState} from 'react';import {Checkbox,Select,Dialog} from '${source}';function Scope({theme,initialChecked,initialValue,initialOpen}){const [checked,setChecked]=useState(initialChecked),[value,setValue]=useState(initialValue),[open,setOpen]=useState(initialOpen),[error,setError]=useState(${JSON.stringify(mode==='errors'?'Correct this field':'')});return <form data-rd-theme={theme}><Checkbox label="Updates" name="updates" required={${mode==='errors'}} error={error} checked={checked} onCheckedChange={setChecked}/><Select label="Plan" name="plan" required={${mode==='errors'}} error={error} value={value} onValueChange={setValue} options={[{label:'A',value:'a'},{label:'B',value:'b'},{label:'Disabled',value:'disabled',disabled:true}]}/><Dialog trigger="Open" title="Preferences" description="Account options" open={open} onOpenChange={setOpen}><p>Body</p></Dialog><button type="button" data-clear-error onClick={()=>setError('')}>Clear error</button></form>}export default function App(){return <><Scope theme="default" initialChecked={true} initialValue="a" initialOpen={${mode==='default'}}/><Scope theme="midnight" initialChecked={false} initialValue="b" initialOpen={${mode==='midnight'}}/><Scope theme="default" initialChecked={false} initialValue="" initialOpen={false}/></>}`)
+      server=`import {createElement} from 'react';import {renderToString} from 'react-dom/server';import App from './App';export const render=()=>renderToString(createElement(App),{identifierPrefix:'ready-'})`
+      client=`import {createElement} from 'react';import {hydrateRoot} from 'react-dom/client';import App from './App';export function hydrate(target,warnings){const root=hydrateRoot(target,createElement(App),{identifierPrefix:'ready-',onRecoverableError:error=>warnings.push(String(error))});return()=>root.unmount()}`
+    }else{
+      plugin=(await import('@vitejs/plugin-vue')).default()
+      await writeFile(join(folder,'Scope.vue'),`<script setup>import {ref} from 'vue';import {Checkbox,Select,Dialog} from '${source}';const props=defineProps(['theme','initialChecked','initialValue','initialOpen']);const checked=ref(props.initialChecked),value=ref(props.initialValue),open=ref(props.initialOpen),error=ref(${JSON.stringify(mode==='errors'?'Correct this field':'')})</script><template><form :data-rd-theme="theme"><Checkbox label="Updates" name="updates" :required="${mode==='errors'}" :error="error" v-model:checked="checked"/><Select label="Plan" name="plan" :required="${mode==='errors'}" :error="error" v-model:value="value" :options="[{label:'A',value:'a'},{label:'B',value:'b'},{label:'Disabled',value:'disabled',disabled:true}]"/><Dialog trigger="Open" title="Preferences" description="Account options" v-model:open="open"><p>Body</p></Dialog><button type="button" data-clear-error @click="error=''">Clear error</button></form></template>`)
+      await writeFile(join(folder,'App.vue'),`<script setup>import Scope from './Scope.vue'</script><template><Scope theme="default" :initial-checked="true" initial-value="a" :initial-open="${mode==='default'}"/><Scope theme="midnight" :initial-checked="false" initial-value="b" :initial-open="${mode==='midnight'}"/><Scope theme="default" :initial-checked="false" initial-value="" :initial-open="false"/></template>`)
+      server=`import {createSSRApp} from 'vue';import {renderToString} from '@vue/server-renderer';import App from './App.vue';export function render(){const app=createSSRApp(App);app.config.idPrefix='ready';return renderToString(app)}`
+      client=`import {createSSRApp} from 'vue';import App from './App.vue';export function hydrate(target,warnings){const app=createSSRApp(App);app.config.idPrefix='ready';app.config.warnHandler=message=>warnings.push(message);app.mount(target);return()=>app.unmount()}`
+    }
+    const {build}=await import('vite')
+    await writeFile(join(folder,'server.mjs'),server);await writeFile(join(folder,'client.mjs'),client)
+    await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{ssr:join(folder,'server.mjs'),outDir:join(folder,'server'),minify:false,rollupOptions:{output:{entryFileNames:'server.mjs'}}}})
+    const html=join(folder,'ssr.html');execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--server',join(folder,'server/server.mjs'),html],{cwd:root,encoding:'utf8',timeout:30000})
+    await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{outDir:join(folder,'client'),minify:false,lib:{entry:join(folder,'client.mjs'),formats:['es'],fileName:()=> 'client.mjs'}}})
+    const output=execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--client',join(folder,'client/client.mjs'),html,mode],{cwd:root,encoding:'utf8',timeout:30000});assert.match(output,/PASS real SSR/)
+  }finally{await rm(folder,{recursive:true,force:true})}
+})

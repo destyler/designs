@@ -1,0 +1,70 @@
+// Dynamic options preserve requested state; only matching values render/submit.
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
+import {execFileSync} from 'node:child_process'
+import {fileURLToPath,pathToFileURL} from 'node:url'
+import {join} from 'node:path'
+import {runInThisContext} from 'node:vm'
+const root=fileURLToPath(new URL('../',import.meta.url))
+if(process.argv[2]==='--server'){assert.equal(typeof window,'undefined');assert.equal(typeof document,'undefined');const warnings=[];console.warn=(...a)=>warnings.push(a.join(' '));console.error=(...a)=>warnings.push(a.join(' '));const {html,bootstrap}=await import(pathToFileURL(process.argv[3]));await writeFile(process.argv[4],html());assert.deepEqual(warnings,[]);if(bootstrap)await writeFile(process.argv[4]+'.js',bootstrap.match(/<script[^>]*>([\s\S]*?)<\/script>/)[1])
+}else if(process.argv[2]==='--worker'){
+ const {Window}=await import('happy-dom');const win=new Window({url:'http://localhost/'})
+ for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
+ for(const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])globalThis[key]=win[key].bind(win)
+ globalThis.window=win;globalThis.document=win.document
+ const ssrProbe=document.createElement('form');ssrProbe.innerHTML=await readFile(process.argv[4],'utf8');document.body.append(ssrProbe);const ssrSelect=ssrProbe.querySelector('select');console.log('SSR_MISSING_VALUE '+JSON.stringify({label:ssrProbe.querySelector('[data-part=value-text]').textContent,native:ssrSelect.value,selectedIndex:ssrSelect.selectedIndex,selectedAttributes:[...ssrSelect.options].filter(o=>o.hasAttribute('selected')).map(o=>o.value),data:[...new win.FormData(ssrProbe)]}));assert.equal(ssrProbe.querySelector('[data-part=value-text]').textContent,'Choose an option');assert.equal(ssrSelect.value,'');assert.equal(ssrProbe.querySelector('[data-part=trigger]').hasAttribute('data-placeholder-shown'),true,'SSR missing selection has placeholder styling');assert.deepEqual([...ssrSelect.options].filter(o=>o.hasAttribute('selected')).map(o=>o.value),['']);assert.deepEqual([...new win.FormData(ssrProbe)],[['choice','']]);assert.equal(ssrSelect.required,true);assert.equal(ssrSelect.validity.valueMissing,true);assert.equal(ssrProbe.checkValidity(),false);
+ if(process.argv[5]==='solid')runInThisContext(await readFile(process.argv[4]+'.js','utf8'))
+ const {run,hydrateRun}=await import(pathToFileURL(process.argv[3]));const pause=()=>new Promise(r=>setTimeout(r,100));const options=[{label:'A',value:'a'},{label:'B',value:'b'}]
+ const warnings=[],warn=console.warn,error=console.error;console.warn=(...a)=>warnings.push(a.join(' '));console.error=(...a)=>warnings.push(a.join(' '))
+ const beforeNodes=[...ssrProbe.querySelectorAll('*')],beforeIds=beforeNodes.filter(n=>n.id).map(n=>n.id),events=[]
+ const hydrated=hydrateRun(ssrProbe,value=>events.push(value))
+ const eventually=async fn=>{const end=Date.now()+2000;for(;;){try{fn();return}catch(e){if(Date.now()>end)throw e;await new Promise(r=>setTimeout(r,10))}}}
+ const check=value=>{assert.equal(ssrSelect.value,value);assert.equal(ssrProbe.querySelector('[data-part=value-text]').textContent,value?value.toUpperCase():'Choose an option');assert.deepEqual([...new win.FormData(ssrProbe)],[['choice',value]])}
+ await eventually(()=>check(''))
+ const afterNodes=[...ssrProbe.querySelectorAll('*')];assert.equal(afterNodes.length,beforeNodes.length);beforeNodes.forEach((n,i)=>assert.equal(afterNodes[i],n,'Hydration reuses every SSR element'));assert.deepEqual(afterNodes.filter(n=>n.id).map(n=>n.id),beforeIds);assert.equal(new Set(beforeIds).size,beforeIds.length)
+ assert.deepEqual(events,[])
+ const chooseA=async()=>{ssrProbe.querySelector('[data-part=trigger]').click();await eventually(()=>assert.equal(ssrProbe.querySelector('[data-part=trigger]').getAttribute('aria-expanded'),'true'));ssrProbe.querySelector('[data-part=item][data-value=a]').click()}
+ await chooseA();await eventually(()=>assert.deepEqual(events,['a']));await eventually(()=>check(''));assert.equal(ssrSelect.validity.valueMissing,true,'Rejected controlled request stays missing')
+ hydrated.options([...options,{label:'X',value:'x'}]);await eventually(()=>check('x'));assert.deepEqual(events,['a'],'Restoring pending option does not fabricate callback')
+ hydrated.options(options);await eventually(()=>check(''));hydrated.accept(true);await chooseA();await eventually(()=>check('a'));assert.deepEqual(events,['a','a'])
+ hydrated.options([...options,{label:'X',value:'x'}]);await eventually(()=>check('a'));assert.deepEqual(events,['a','a'],'Accepted user value supersedes original pending x')
+ await hydrated.cleanup();ssrProbe.remove();console.warn=warn;console.error=error;assert.deepEqual(warnings,[],'No hydration or update warnings')
+ for(const {controlled,initialEmpty} of [{controlled:true,initialEmpty:false},{controlled:false,initialEmpty:false},{controlled:true,initialEmpty:true}]){
+ const target=document.createElement('form');document.body.append(target);const events=[];const api=run(target,controlled,v=>events.push(v),initialEmpty);await pause()
+ if(!controlled){target.querySelector('[data-part=trigger]').click();await pause();target.querySelector('[data-part=item][data-value=b]').click();await pause()}
+ events.length=0;const states=[]
+ const snapshot=phase=>states.push({phase,label:target.querySelector('[data-part=value-text]').textContent,placeholderShown:target.querySelector('[data-part=trigger]').hasAttribute('data-placeholder-shown'),native:target.querySelector('select').value,data:[...new win.FormData(target)],events:[...events],options:[...target.querySelector('select').options].map(o=>({value:o.value,selected:o.selected,disabled:o.disabled}))})
+ if(initialEmpty){snapshot('initial-empty-options');api.options(options);await pause();snapshot('options-populated')}
+ snapshot('selected-b')
+ for(const [phase,items] of [['remove-b',[options[0]]],['restore-b-disabled',[options[0],{...options[1],disabled:true}]],['reorder-rename',[{label:'Bee',value:'b'},options[0]]],['empty',[]],['options-repopulated',options]]){api.options(items);await pause();snapshot(phase)}
+ if(controlled){api.value('x');await pause();snapshot('controlled-missing-x');api.options([...options,{label:'X',value:'x'}]);await pause();snapshot('restore-x')}
+ assert.deepEqual(events,[],'Option and parent updates do not invent callbacks')
+ for(const state of states){const missing=['remove-b','empty','controlled-missing-x','initial-empty-options'].includes(state.phase);const value=missing?'':state.phase==='restore-x'?'x':'b';const label=missing?'Choose an option':state.phase==='restore-x'?'X':state.phase==='reorder-rename'?'Bee':'B';assert.equal(state.native,value,state.phase+' native');assert.equal(state.label,label,state.phase+' visible');assert.equal(state.placeholderShown,missing,state.phase+' placeholder styling');assert.deepEqual(state.options.filter(o=>o.selected).map(o=>o.value),[value],state.phase+' selected option');if(state.phase!=='restore-b-disabled')assert.deepEqual(state.data,[['choice',value]],state.phase+' submitted value');else assert.equal(state.options.find(o=>o.value==='b').disabled,true)}if(!controlled){api.options([options[0]]);await pause();assert.equal(target.querySelector('select').value,'');target.querySelector('[data-part=trigger]').click();await pause();target.querySelector('[data-part=item][data-value=a]').click();await pause();api.options(options);await pause();assert.equal(target.querySelector('select').value,'a','Explicit new selection replaces pending removed b');assert.equal(target.querySelector('[data-part=value-text]').textContent,'A');assert.deepEqual(events,['a'])}
+ await api.cleanup();target.remove()
+ }
+ // Native controls reproduce HappyDOM's empty/missing and disabled-option
+ // FormData results; these are observations, not browser serialization guarantees.
+ const native=document.createElement('form');document.body.append(native);const nativeCases=[]
+ for(const html of ['<option value="a">A</option>','<option value="b" disabled selected>B</option>','']){native.innerHTML='<select name="choice">'+html+'</select>';const select=native.querySelector('select');if(html.includes('value="a"'))select.value='missing';nativeCases.push({html,value:select.value,index:select.selectedIndex,data:[...new win.FormData(native)]})}
+ console.log('NATIVE_SIMULATOR_CONTROLS '+JSON.stringify(nativeCases))
+ await win.happyDOM.close();console.log('PASS dynamic options regression')
+}else for(const framework of ['solid','svelte'])test(`Ready ${framework} dynamic Select matching and SSR fallback`,{timeout:120000},async()=>{
+ const folder=await mkdtemp(join(root,'node_modules/.ready-dynamic-'));try{
+ const {build}=await import('vite');let plugin,code
+ if(framework==='solid'){plugin=(await import('vite-plugin-solid')).default({ssr:true});code=`import {render} from 'solid-js/web';import {createComponent,createSignal} from 'solid-js';import {Select} from '${root}packages/ready/solid';export function run(target,controlled,change,initialEmpty){const [value,setValue]=createSignal('b'),[options,setOptions]=createSignal(initialEmpty?[]:[{label:'A',value:'a'},{label:'B',value:'b'}]);const cleanup=render(()=>createComponent(Select,{label:'Choice',name:'choice',get value(){return controlled?value():undefined},get options(){return options()},onValueChange:change}),target);return{value:setValue,options:setOptions,cleanup}}`
+ }else{plugin=(await import('@sveltejs/vite-plugin-svelte')).svelte({configFile:false});await writeFile(join(folder,'Fixture.svelte'),`<script>import {Select} from '${root}packages/ready/svelte';let {controlled,change,initialEmpty}=$props();let value=$state('b'),options=$state(initialEmpty?[]:[{label:'A',value:'a'},{label:'B',value:'b'}]);export function setValue(v){value=v}export function setOptions(v){options=v}</script><Select label="Choice" name="choice" value={controlled?value:undefined} {options} onValueChange={change}/>`);code=`import {mount,unmount} from 'svelte';import Fixture from './Fixture.svelte';export function run(target,controlled,change,initialEmpty){const app=mount(Fixture,{target,props:{controlled,change,initialEmpty}});return{value:app.setValue,options:app.setOptions,cleanup:()=>unmount(app)}}`}
+ const serverEntry=join(folder,'server.mjs');let serverCode
+ if(framework==='solid'){
+ await writeFile(join(folder,'SSR.tsx'),`import {createSignal} from 'solid-js';import {Select} from '${root}packages/ready/solid';export default function SSR(props){const [value,setValue]=createSignal('x'),[options,setOptions]=createSignal([{label:'A',value:'a'},{label:'B',value:'b'}]),[accept,setAccept]=createSignal(false);props.expose?.({options:setOptions,accept:setAccept});return <Select name="choice" label="Choice" required value={value()} options={options()} onValueChange={v=>{props.change?.(v);if(accept())setValue(v)}}/>}`)
+ serverCode=`import {renderToString,generateHydrationScript} from 'solid-js/web';import {createComponent} from 'solid-js';import SSR from './SSR';export const html=()=>renderToString(()=>createComponent(SSR,{}));export const bootstrap=generateHydrationScript();`
+ code+=`;import {hydrate} from 'solid-js/web';import SSR from './SSR';export function hydrateRun(target,change){let api;const cleanup=hydrate(()=>createComponent(SSR,{change,expose:v=>api=v}),target);return{options:v=>api.options(v),accept:v=>api.accept(v),cleanup}}`
+ }else{
+ await writeFile(join(folder,'SSR.svelte'),`<script>import {Select} from '${root}packages/ready/svelte';let {change}=$props();let value=$state('x'),options=$state([{label:'A',value:'a'},{label:'B',value:'b'}]),accept=$state(false);export function setOptions(v){options=v}export function setAccept(v){accept=v}</script><Select name="choice" label="Choice" required {value} {options} onValueChange={v=>{change?.(v);if(accept)value=v}}/>`)
+ serverCode=`import {render} from 'svelte/server';import SSR from './SSR.svelte';export const html=()=>render(SSR).body;`
+ code+=`;import {hydrate} from 'svelte';import SSR from './SSR.svelte';export function hydrateRun(target,change){const app=hydrate(SSR,{target,props:{change},recover:false});return{options:app.setOptions,accept:app.setAccept,cleanup:()=>unmount(app)}}`
+ }
+ await writeFile(serverEntry,serverCode);await build({root,configFile:false,logLevel:'error',plugins:[plugin],ssr:{noExternal:true},build:{ssr:serverEntry,outDir:join(folder,'server'),minify:false,rollupOptions:{output:{entryFileNames:'server.mjs',inlineDynamicImports:true}}}});const ssrHtml=join(folder,'ssr.html');execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--server',join(folder,'server/server.mjs'),ssrHtml,framework],{cwd:root,encoding:'utf8',timeout:30000})
+ const entry=join(folder,'entry.mjs');await writeFile(entry,code);await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{outDir:join(folder,'out'),minify:false,lib:{entry,formats:['es'],fileName:()=> 'client.mjs'}}});const result=execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--worker',join(folder,'out/client.mjs'),ssrHtml,framework],{cwd:root,encoding:'utf8',timeout:30000});console.log(framework,result);assert.match(result,/PASS dynamic options regression/)
+ }finally{await rm(folder,{recursive:true,force:true})}
+})
