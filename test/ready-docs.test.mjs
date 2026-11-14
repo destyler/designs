@@ -50,6 +50,17 @@ if (process.argv[2] === '--worker') {
     assert.match(document.querySelector('#installation pre code').textContent, new RegExp(`framework=${framework.toLowerCase()}`))
   }
 
+  const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
+  assert.ok(disabledNote && !disabledNote.closest('details'), 'Select submission caveat is visible without expanding API details')
+  assert.match(disabledNote.textContent, /仍会显示并保留选中状态/)
+  assert.match(disabledNote.textContent, /禁用选项不会作为该字段的提交值/)
+  assert.match(disabledNote.textContent, /不要依赖 required/)
+  assert.match(disabledNote.textContent, /Happy DOM.*浏览器不同/)
+  const nativeNote = document.querySelector('#boundaries [data-doc-note="native-attributes"]')
+  assert.match(nativeNote.textContent, /不保证任意原生属性转发/)
+  assert.match(nativeNote.textContent, /Vue.*外层包装元素.*内部原生输入或 Select 触发器/)
+  assert.match(nativeNote.textContent, /没有通用原生属性转发 API/)
+
   let written, finishCopy
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: text => { written = text; return new Promise(resolve => { finishCopy = resolve }) } } })
   const copy = document.querySelector('#checkbox button[aria-label^="复制"]')
