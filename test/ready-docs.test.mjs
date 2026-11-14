@@ -39,6 +39,13 @@ if (process.argv[2] === '--worker') {
       assert.match(scope.querySelector('pre code').textContent, new RegExp(`@destyler/ready-prototype/${framework.toLowerCase()}`))
       assert.equal(button(framework, scope).getAttribute('aria-pressed'), 'true')
       assert.match(scope.querySelector('.preview-footer').textContent, /React/)
+      const table = scope.querySelector('table').textContent
+      const prop = {checkbox:'checked',select:'value',dialog:'open'}[section]
+      const event = {checkbox:'Checked',select:'Value',dialog:'Open'}[section]
+      if (framework === 'Vue') { assert.ok(table.includes(`update:${prop}`)); assert.ok(table.includes(`${prop}Change`)); assert.ok(!table.includes(`on${event}Change`)) }
+      else assert.ok(table.includes(`on${event}Change`))
+      assert.match(scope.querySelector('.usage-panel .api-note').textContent, /非受控/)
+
     }
     assert.match(document.querySelector('#installation pre code').textContent, new RegExp(`framework=${framework.toLowerCase()}`))
   }
@@ -50,6 +57,16 @@ if (process.argv[2] === '--worker') {
   assert.equal(written, document.querySelector('#checkbox pre code').textContent)
   finishCopy(); await settle(); assert.equal(copy.textContent, '已复制 ✓')
   await click(button('Vue', document.getElementById('checkbox'))); assert.equal(copy.textContent, '复制代码 ↗', 'New code resets stale copy feedback')
+  // A pending clipboard response must not annotate a newer framework snippet.
+  copy.click(); await settle()
+  await click(button('Solid', document.getElementById('checkbox')))
+  finishCopy(); await settle(); assert.equal(copy.textContent, '复制代码 ↗', 'Old completion is ignored after framework change')
+  // Repeated copies use only the newest response, including out-of-order rejection.
+  const pending = []
+  navigator.clipboard.writeText = () => new Promise((resolve,reject) => pending.push({resolve,reject}))
+  copy.click(); copy.click(); await settle()
+  pending[1].resolve(); await settle(); assert.equal(copy.textContent, '已复制 ✓')
+  pending[0].reject(new Error('stale failure')); await settle(); assert.equal(copy.textContent, '已复制 ✓')
   navigator.clipboard.writeText = async () => { throw new Error('Clipboard denied in simulated test') }
   await click(copy); assert.match(copy.textContent, /复制失败/)
   assert.match(document.querySelector('#checkbox [role="status"]').textContent, /无法访问剪贴板/)
@@ -103,7 +120,7 @@ if (process.argv[2] === '--worker') {
     } finally { await rm(folder, { recursive: true, force: true }) }
   })
   test('Ready documentation snippets preserve the private package and framework contract', async () => {
-    const { snippet, install, frameworks } = await import('../examples/ready-docs/content.ts')
+    const { snippet, install, frameworks, themeSnippets } = await import('../examples/ready-docs/content.ts')
     for (const framework of frameworks) {
       const commands = install(framework)
       assert.match(commands, /npm pack \.\/packages\/ready/)
@@ -117,7 +134,32 @@ if (process.argv[2] === '--worker') {
         if (framework === 'Svelte') assert.doesNotMatch(code, /bind:(checked|value|open)/)
       }
     }
+    assert.equal(themeSnippets.length, 3)
+    assert.match(themeSnippets[0].code, /^import /)
+    assert.doesNotMatch(themeSnippets[0].code, /<main|--rd-accent/)
+    assert.match(themeSnippets[1].code, /\[data-rd-theme\]\.my-theme/)
+    assert.doesNotMatch(themeSnippets[1].code, /import |<main/)
+    assert.match(themeSnippets[2].code, /id="app"/)
+    assert.doesNotMatch(themeSnippets[2].code, /className|import /)
     const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
+    assert.match(source, /22\.22\.3/)
+    assert.match(source, /app.config.idPrefix/)
+    assert.match(source, /水合前.*丢失或错配/)
+    assert.match(source, /Escape.*同时关闭两层/)
     assert.match(source, /packages\/ready\/theme\.css/)
+  })
+
+  test('Ready docs picker text meets normal-text contrast in each state', async () => {
+    const css = await readFile(join(root, 'examples/ready-docs/styles.css'), 'utf8')
+    assert.match(css, /\.frameworks button,\.theme-switch button\{color:#53634b\}/)
+    const luminance = hex => {
+      const rgb = hex.replace('#','').match(/../g).map(c => parseInt(c,16)/255).map(c => c <= .04045 ? c/12.92 : ((c+.055)/1.055)**2.4)
+      return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722
+    }
+    for (const [foreground, background] of [['#53634b','#eaf0e5'],['#53634b','#edf1e8'],['#2c4e35','#ffffff'],['#2d4d35','#ffffff'],['#224a32','#eaf0e5'],['#224a32','#edf1e8']]) {
+      assert.ok(css.includes(foreground)); const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)
+      assert.ok((levels[0]+.05)/(levels[1]+.05) >= 4.5, `${foreground} on ${background}`)
+    }
+    assert.match(css, /button:focus-visible[^}]+outline:3px/)
   })
 }

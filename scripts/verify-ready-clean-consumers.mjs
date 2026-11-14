@@ -4,7 +4,8 @@ import { execFileSync } from 'node:child_process'
 import { mkdtemp, mkdir, readFile, writeFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-const documented = process.argv.includes('--documented')
+const visualDocs = process.argv.includes('--visual-docs')
+const documented = visualDocs || process.argv.includes('--documented')
 const root = fileURLToPath(new URL('../', import.meta.url))
 const folder = await mkdtemp('/tmp/ready-clean-consumers-')
 console.log(`Consumer evidence: ${folder}`)
@@ -59,7 +60,28 @@ for (const [framework, config] of Object.entries(configurations)) {
     }
     if (documented) assert.match(await readFile(join(cwd, 'dist/index.html'), 'utf8'), /data-rd-theme="default"/)
     await writeFile(join(cwd, 'types.log'), documented ? run('npm', ['run', 'check'], cwd) : run('node', [`node_modules/${config.check[0]}`, ...config.check.slice(1)], cwd))
-    results.push({ framework, install: 'pass', build: 'pass', types: 'pass', adapters })
+    if (visualDocs) {
+      const { snippet, themeSnippets } = await import('../examples/ready-docs/content.ts')
+      const title = {react:'React',vue:'Vue',solid:'Solid',svelte:'Svelte'}[framework]
+      await writeFile(join(cwd, 'custom-theme.css'), themeSnippets[1].code)
+      const html = await readFile(join(cwd, 'index.html'), 'utf8')
+      await writeFile(join(cwd, 'index.html'), html.replace(/<main[^>]*><\/main>/, themeSnippets[2].code))
+      let entry = await readFile(join(cwd, 'main.tsx'), 'utf8')
+      if (framework === 'react') entry = `import {createRoot} from 'react-dom/client'\nimport Example from './Example'\n${themeSnippets[0].code}\ncreateRoot(document.getElementById('app')!).render(<Example />)`
+      else if (framework === 'solid') entry = `import {render} from 'solid-js/web'\nimport Example from './Example'\n${themeSnippets[0].code}\nrender(() => <Example />, document.getElementById('app')!)`
+      else entry = entry.replace("import '@destyler/ready-prototype/theme.css'\nimport './app.css'", themeSnippets[0].code)
+      await writeFile(join(cwd, 'main.tsx'), entry)
+      for (const component of ['Checkbox', 'Select', 'Dialog']) {
+        await writeFile(join(cwd, framework === 'vue' ? 'App.vue' : framework === 'svelte' ? 'App.svelte' : 'Example.tsx'), snippet(title, component))
+        await writeFile(join(cwd, `visual-${component}-build.log`), run('npm', ['run', 'build'], cwd))
+        await writeFile(join(cwd, `visual-${component}-types.log`), run('npm', ['run', 'check'], cwd))
+        const emitted = (await Promise.all((await readdir(assets)).filter(name => name.endsWith('.css')).map(name => readFile(join(assets, name), 'utf8')))).join('\n')
+        assert.match(emitted, /\[data-rd-theme\]\.my-theme/)
+        assert.match(emitted, /--rd-accent:\s*#7c3aed/)
+        assert.match(await readFile(join(cwd, 'dist/index.html'), 'utf8'), /class="my-theme"/)
+      }
+    }
+    results.push({ framework, install: 'pass', build: 'pass', types: 'pass', adapters, ...(visualDocs ? {visualSnippets: 3, theme: 'emitted source verified'} : {}) })
   } catch (error) {
     const detail = `${error.message}\n${error.stdout ?? ''}\n${error.stderr ?? ''}`
     await writeFile(join(cwd, 'failure.log'), detail)

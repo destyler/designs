@@ -1,8 +1,10 @@
 # Ready: from checkout to a private Vite consumer
 
-This guide uses the private source package, not a published npm package. It needs
-Node 22.12+ (verified with Node 24.22.1/npm 11.9.0), registry access, and a checkout
-of this branch. The generator only writes files into an empty directory. It reads
+This guide uses the private source package, not a published npm package. Use the
+recommended Node 24.22.1/npm 11.9.0 environment (verified), with registry access
+and a checkout of this branch. The Node 22 line requires at least 22.22.3 due to Destyler UI
+and core dependencies; that minimum has not been runtime-tested. Do not use Node 23
+(the Svelte compiler plugin excludes it). The generator only writes files into an empty directory. It reads
 the exact source blocks below, so the documented examples are the ones compiled
 by the opt-in verification, not substitute internal test fixtures.
 
@@ -165,6 +167,9 @@ From the **repository root**, run
 these exact examples in four fresh `/tmp` consumers, install, check peer trees,
 compile and type-check. Logs and lockfiles remain in its printed directory. This
 is opt-in because it needs the registry; it is not part of the default unit suite.
+Use `--visual-docs` instead of `--documented` to additionally compile and type-check
+all 12 visual-documentation snippets and their separately copied theme files.
+This checks generated source/assets, not rendered browser appearance.
 
 The package stays a Vite-compiled TS/TSX/Vue/Svelte source package with no root
 component export. Installation/build/type checking does not prove native browser

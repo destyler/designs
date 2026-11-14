@@ -22,20 +22,26 @@ export const api: Record<ComponentName, [string, string, string][]> = {
 export function install(framework: Framework) {
  return `# 获取试点分支；已有本地 checkout 可跳过前两行\ngit clone --branch feat/ready-components-pilot https://github.com/destyler/designs.git\ncd designs\n# 这是本地私有源码包，不是 npm 上已发布的包\nframework=${framework.toLowerCase()}\nwork="$(mktemp -d /tmp/ready-guide-XXXXXX)"\nnpm pack ./packages/ready --pack-destination "$work"\nnode scripts/create-ready-consumer.mjs "$framework" "$work/app" \\\n  "$work/destyler-ready-prototype-0.0.0.tgz"\ncd "$work/app"\nnpm install\nnpm run check\nnpm run build\nnpm run dev`;
 }
-export const themeCode = `// 1. 应用入口：先基础主题，再自定义覆盖
-import '@destyler/ready-prototype/theme.css'
-import './custom-theme.css'
-
-/* 2. custom-theme.css */
-.my-theme {
+export function apiFor(framework: Framework, component: ComponentName) {
+ return api[component].map(row => {
+  if (framework !== 'Vue') return row;
+  const events: Record<string, string> = {
+   'checked / onCheckedChange': 'checked / update:checked / checkedChange',
+   'value / onValueChange': 'value / update:value / valueChange',
+   'open / onOpenChange': 'open / update:open / openChange',
+  };
+  return events[row[0]] ? [events[row[0]], row[1].replace(' / (value) => void', ' / 事件 payload 同类型'), `${row[2]} 使用 v-model 或监听对应事件。`] : row;
+ });
+}
+export const themeSnippets = [
+ {title: 'main.tsx · 入口导入（四框架共用）', code: `import '@destyler/ready-prototype/theme.css'
+import './custom-theme.css'`},
+ {title: 'custom-theme.css · 自定义变量', code: `[data-rd-theme].my-theme {
   --rd-accent: #7c3aed;
   --rd-on-accent: #ffffff;
   --rd-radius: 16px;
   --rd-font: system-ui, sans-serif;
-}
-
-// 3. React JSX；其他框架使用 class="my-theme"
-<div data-rd-theme="default" className="my-theme">
-  <Example />
-</div>
-// 内置第二主题：data-rd-theme="midnight"`;
+}`},
+ {title: 'index.html · 替换原有挂载容器（四框架共用）', code: `<main id="app" data-rd-theme="default" class="my-theme"></main>
+<!-- 内置第二主题：将 default 改为 midnight -->`},
+];
