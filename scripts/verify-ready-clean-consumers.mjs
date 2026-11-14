@@ -61,7 +61,7 @@ for (const [framework, config] of Object.entries(configurations)) {
     if (documented) assert.match(await readFile(join(cwd, 'dist/index.html'), 'utf8'), /data-rd-theme="default"/)
     await writeFile(join(cwd, 'types.log'), documented ? run('npm', ['run', 'check'], cwd) : run('node', [`node_modules/${config.check[0]}`, ...config.check.slice(1)], cwd))
     if (visualDocs) {
-      const { snippet, themeSnippets } = await import('../examples/ready-docs/content.ts')
+      const { snippet, controlledSelectSnippet, themeSnippets } = await import('../examples/ready-docs/content.ts')
       const title = {react:'React',vue:'Vue',solid:'Solid',svelte:'Svelte'}[framework]
       await writeFile(join(cwd, 'custom-theme.css'), themeSnippets[1].code)
       const html = await readFile(join(cwd, 'index.html'), 'utf8')
@@ -71,8 +71,9 @@ for (const [framework, config] of Object.entries(configurations)) {
       else if (framework === 'solid') entry = `import {render} from 'solid-js/web'\nimport Example from './Example'\n${themeSnippets[0].code}\nrender(() => <Example />, document.getElementById('app')!)`
       else entry = entry.replace("import '@destyler/ready-prototype/theme.css'\nimport './app.css'", themeSnippets[0].code)
       await writeFile(join(cwd, 'main.tsx'), entry)
-      for (const component of ['Checkbox', 'Select', 'Dialog']) {
-        await writeFile(join(cwd, framework === 'vue' ? 'App.vue' : framework === 'svelte' ? 'App.svelte' : 'Example.tsx'), snippet(title, component))
+      const examples = [...['Checkbox', 'Select', 'Dialog'].map(component => [component, snippet(title, component)]), ['ControlledSelect', controlledSelectSnippet(title)]]
+      for (const [component, code] of examples) {
+        await writeFile(join(cwd, framework === 'vue' ? 'App.vue' : framework === 'svelte' ? 'App.svelte' : 'Example.tsx'), code)
         await writeFile(join(cwd, `visual-${component}-build.log`), run('npm', ['run', 'build'], cwd))
         await writeFile(join(cwd, `visual-${component}-types.log`), run('npm', ['run', 'check'], cwd))
         const emitted = (await Promise.all((await readdir(assets)).filter(name => name.endsWith('.css')).map(name => readFile(join(assets, name), 'utf8')))).join('\n')
@@ -81,7 +82,7 @@ for (const [framework, config] of Object.entries(configurations)) {
         assert.match(await readFile(join(cwd, 'dist/index.html'), 'utf8'), /class="my-theme"/)
       }
     }
-    results.push({ framework, install: 'pass', build: 'pass', types: 'pass', adapters, ...(visualDocs ? {visualSnippets: 3, theme: 'emitted source verified'} : {}) })
+    results.push({ framework, install: 'pass', build: 'pass', types: 'pass', adapters, ...(visualDocs ? {visualSnippets: 4, theme: 'emitted source verified'} : {}) })
   } catch (error) {
     const detail = `${error.message}\n${error.stdout ?? ''}\n${error.stderr ?? ''}`
     await writeFile(join(cwd, 'failure.log'), detail)

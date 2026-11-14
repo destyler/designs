@@ -48,6 +48,12 @@ if (process.argv[2] === '--worker') {
 
     }
     assert.match(document.querySelector('#installation pre code').textContent, new RegExp(`framework=${framework.toLowerCase()}`))
+    const controlled = document.querySelector('[data-doc-example="controlled-select"] pre code').textContent
+    assert.ok(controlled.includes(`@destyler/ready-prototype/${framework.toLowerCase()}`))
+    assert.match(controlled, /清空选择/)
+    assert.ok(controlled.includes(framework === 'Vue' ? 'v-model:value="value"' : 'onValueChange='))
+    assert.doesNotMatch(controlled, /bind:value/)
+
   }
 
   const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
@@ -131,8 +137,12 @@ if (process.argv[2] === '--worker') {
     } finally { await rm(folder, { recursive: true, force: true }) }
   })
   test('Ready documentation snippets preserve the private package and framework contract', async () => {
-    const { snippet, install, frameworks, themeSnippets } = await import('../examples/ready-docs/content.ts')
+    const { snippet, controlledSelectSnippet, install, frameworks, themeSnippets } = await import('../examples/ready-docs/content.ts')
     for (const framework of frameworks) {
+      const controlled = controlledSelectSnippet(framework)
+      assert.match(controlled, /type="button"/)
+      assert.ok(controlled.includes(framework === 'Vue' || framework === 'Svelte' ? "value = ''" : "setValue('')"))
+      assert.ok(controlled.includes(framework === 'Solid' ? 'value()' : 'value'))
       const commands = install(framework)
       assert.match(commands, /npm pack \.\/packages\/ready/)
       assert.match(commands, /scripts\/create-ready-consumer\.mjs/)

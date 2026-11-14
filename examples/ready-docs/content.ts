@@ -45,3 +45,44 @@ import './custom-theme.css'`},
  {title: 'index.html · 替换原有挂载容器（四框架共用）', code: `<main id="app" data-rd-theme="default" class="my-theme"></main>
 <!-- 内置第二主题：将 default 改为 midnight -->`},
 ];
+
+export function controlledSelectSnippet(framework: Framework) {
+ const options = `[{ label: '个人空间', value: 'personal' }, { label: '设计工作室', value: 'studio' }]`;
+ if (framework === 'Vue') return `<script setup lang="ts">
+import { ref } from 'vue'
+import { Select } from '@destyler/ready-prototype/vue'
+const value = ref('studio')
+const options = ${options}
+</script>
+
+<template>
+  <Select label="工作空间" name="workspace" placeholder="请选择"
+    :options="options" v-model:value="value" />
+  <button type="button" @click="value = ''">清空选择</button>
+  <p>当前值：{{ value || '未选择' }}</p>
+</template>`;
+ if (framework === 'Svelte') return `<script lang="ts">
+  import { Select } from '@destyler/ready-prototype/svelte'
+  let value = $state('studio')
+  const options = ${options}
+</script>
+
+<Select label="工作空间" name="workspace" placeholder="请选择"
+  {options} {value} onValueChange={(next) => { value = next }} />
+<button type="button" onclick={() => { value = '' }}>清空选择</button>
+<p>当前值：{value || '未选择'}</p>`;
+ const solid = framework === 'Solid';
+ return `import { ${solid ? 'createSignal' : 'useState'} } from '${solid ? 'solid-js' : 'react'}'
+import { Select } from '@destyler/ready-prototype/${framework.toLowerCase()}'
+
+export default function Example() {
+  const [value, setValue] = ${solid ? 'createSignal' : 'useState'}('studio')
+  const options = ${options}
+  return <>
+    <Select label="工作空间" name="workspace" placeholder="请选择"
+      options={options} value={${solid ? 'value()' : 'value'}} onValueChange={setValue} />
+    <button type="button" onClick={() => setValue('')}>清空选择</button>
+    <p>当前值：{${solid ? 'value()' : 'value'} || '未选择'}</p>
+  </>
+}`;
+}

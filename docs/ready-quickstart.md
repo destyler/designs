@@ -168,7 +168,9 @@ these exact examples in four fresh `/tmp` consumers, install, check peer trees,
 compile and type-check. Logs and lockfiles remain in its printed directory. This
 is opt-in because it needs the registry; it is not part of the default unit suite.
 Use `--visual-docs` instead of `--documented` to additionally compile and type-check
-all 12 visual-documentation snippets and their separately copied theme files.
+all 16 visual-documentation snippets (12 minimal component examples and four
+controlled Select examples with an explicit clear action), plus their separately
+copied theme files.
 This checks generated source/assets, not rendered browser appearance.
 
 The package stays a Vite-compiled TS/TSX/Vue/Svelte source package with no root
