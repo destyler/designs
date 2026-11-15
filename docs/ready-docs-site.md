@@ -32,3 +32,11 @@ settings, authentication protection, production aliases or Git connections.
 The generated deployment URL may require the owner's Vercel login. A successful
 build or deployment is not evidence that real-browser visual/accessibility QA
 has passed.
+
+The product entrance and documentation reading surface are separate layouts.
+The documentation shell provides local component/page search (Command/Ctrl+K),
+keyboard dismissal, a skip link, a responsive navigation drawer and persisted
+light/dark appearance. Site appearance is independent of the component theme.
+Geist is bundled locally rather than requested from a third-party font service.
+The component package remains private/unpublished; the installation guide and
+limitations page retain that status. A polished site is not a release-readiness claim.

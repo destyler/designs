@@ -57,6 +57,15 @@ if (process.argv[2] === '--worker') {
 
   }
 
+  window.location.hash='select';window.dispatchEvent(new win.Event('hashchange'));await settle();
+  await click(document.querySelector('.skip-link')); assert.equal(document.querySelector('main').dataset.page,'select','Skip link preserves current route'); assert.equal(document.activeElement.id,'main-content');
+  await click(document.querySelector('.search-trigger')); assert.ok(document.querySelector('[role=dialog]')); assert.equal(document.activeElement.getAttribute('aria-label'),'搜索关键词');
+  window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape'}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
+  await click(toggle);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.ok(document.querySelector('.search-dialog'));assert.equal(document.querySelector('.sidebar').classList.contains('is-open'),false);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
+  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
+  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'light');
+  assert.ok(document.querySelector('#select details').open,'API is expanded by default');
+  assert.match(document.title,/Select/);
   const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
   assert.ok(disabledNote && !disabledNote.closest('details'), 'Select submission caveat is visible without expanding API details')
   assert.match(disabledNote.textContent, /仍会显示并保留选中状态/)
@@ -154,21 +163,21 @@ if (process.argv[2] === '--worker') {
     assert.match(source, /22\.22\.3/)
     assert.match(source, /app.config.idPrefix/)
     assert.match(source, /水合前.*丢失或错配/)
-    assert.match(source, /Escape.*同时关闭两层/)
+    assert.match(source, /Escape[\s\S]*同时关闭两层/)
     assert.match(source, /packages\/ready\/theme\.css/)
   })
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
     const css = await readFile(join(root, 'examples/ready-docs/styles.css'), 'utf8')
-    assert.match(css, /\.frameworks button\{color:#52525b/); assert.match(css, /\.theme-switch button\{border-radius:3px;color:#52525b/)
+    assert.match(css, /\.frameworks button\s*\{\s*color:\s*var\(--muted\)/); assert.match(css, /data-appearance=["']?dark/)
     const luminance = hex => {
       const rgb = hex.replace('#','').match(/../g).map(c => parseInt(c,16)/255).map(c => c <= .04045 ? c/12.92 : ((c+.055)/1.055)**2.4)
       return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722
     }
-    for (const [foreground, background] of [['#52525b','#f4f4f5'],['#18181b','#ffffff'],['#2d4d35','#ffffff'],['#224a32','#f4f4f5']]) {
+    for (const [foreground, background] of [['#6b6864','#f6f5f3'],['#242322','#fdfcfb'],['#aaa69f','#212120'],['#f1f0ec','#171716']]) {
       assert.ok(css.includes(foreground)); const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)
       assert.ok((levels[0]+.05)/(levels[1]+.05) >= 4.5, `${foreground} on ${background}`)
     }
-    assert.match(css, /button:focus-visible[^}]+outline:3px/)
+    assert.match(css, /button:focus-visible[^}]+outline:\s*3px/)
   })
 }

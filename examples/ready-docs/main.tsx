@@ -1,36 +1,839 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { LivePreview } from './LivePreview';
-import '../../packages/ready/theme.css';
-import './styles.css';
-import { frameworks, snippet, controlledSelectSnippet, install, themeSnippets, apiFor, type Framework, type ComponentName } from './content';
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { LivePreview } from "./LivePreview";
+import "../../packages/ready/theme.css";
+import "@fontsource-variable/geist";
+import "./styles.css";
+import {
+  frameworks,
+  snippet,
+  controlledSelectSnippet,
+  install,
+  themeSnippets,
+  apiFor,
+  type Framework,
+  type ComponentName,
+} from "./content";
 
-function CopyCode({ code, title = '示例代码' }: { code: string; title?: string }) {
- const [state,setState]=useState<'idle'|'copied'|'failed'>('idle');
- const generation=useRef(0);
- useLayoutEffect(()=>{generation.current++;setState('idle');return()=>{generation.current++}},[code]);
- useEffect(()=>{if(state==='idle')return;const id=setTimeout(()=>setState('idle'),2400);return()=>clearTimeout(id)},[state]);
- async function copy(){const request=++generation.current;try{await navigator.clipboard.writeText(code);if(request===generation.current)setState('copied')}catch{if(request===generation.current)setState('failed')}}
- return <div className="code-block"><div className="code-toolbar"><span><span className="code-dot"/>{title}</span><button type="button" onClick={copy} aria-label={`复制${title}`}>{state==='copied'?'已复制 ✓':state==='failed'?'复制失败，请手动选择':'复制代码 ↗'}</button><span className="sr-only" role="status">{state==='copied'?'代码已复制':state==='failed'?'无法访问剪贴板，请手动选择代码':''}</span></div><pre tabIndex={0} aria-label={title}><code>{code}</code></pre></div>;
+function CopyCode({
+  code,
+  title = "示例代码",
+}: {
+  code: string;
+  title?: string;
+}) {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  const generation = useRef(0);
+  useLayoutEffect(() => {
+    generation.current++;
+    setState("idle");
+    return () => {
+      generation.current++;
+    };
+  }, [code]);
+  useEffect(() => {
+    if (state === "idle") return;
+    const id = setTimeout(() => setState("idle"), 2400);
+    return () => clearTimeout(id);
+  }, [state]);
+  async function copy() {
+    const request = ++generation.current;
+    try {
+      await navigator.clipboard.writeText(code);
+      if (request === generation.current) setState("copied");
+    } catch {
+      if (request === generation.current) setState("failed");
+    }
+  }
+  return (
+    <div className="code-block">
+      <div className="code-toolbar">
+        <span>
+          <span className="code-dot" />
+          {title}
+        </span>
+        <button type="button" onClick={copy} aria-label={`复制${title}`}>
+          {state === "copied"
+            ? "已复制 ✓"
+            : state === "failed"
+              ? "复制失败，请手动选择"
+              : "复制代码 ↗"}
+        </button>
+        <span className="sr-only" role="status">
+          {state === "copied"
+            ? "代码已复制"
+            : state === "failed"
+              ? "无法访问剪贴板，请手动选择代码"
+              : ""}
+        </span>
+      </div>
+      <pre tabIndex={0} aria-label={title}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
 }
-function FrameworkPicker({ value,onChange }: {value:Framework;onChange:(value:Framework)=>void}) {return <div className="frameworks" role="group" aria-label="预览与代码框架">{frameworks.map(f=><button key={f} type="button" aria-pressed={f===value} onClick={()=>onChange(f)}>{f}</button>)}</div>}
-const pageFromHash=()=>{const page=window.location.hash.slice(1);return ['overview','installation','checkbox','select','dialog','themes','boundaries'].includes(page)?page:'overview'};
-export function App(){
- const [framework,setFramework]=useState<Framework>('React'),[theme,setTheme]=useState<'default'|'midnight'>('default'),[nav,setNav]=useState(false);
- const [page,setPage]=useState(pageFromHash);
- const [mode,setMode]=useState<'preview'|'code'>('preview');
- useEffect(()=>{const change=()=>{setPage(pageFromHash());setNav(false);window.scrollTo(0,0)};window.addEventListener('hashchange',change);return()=>window.removeEventListener('hashchange',change)},[]);
- const links=[['overview','概览'],['installation','开始使用'],['checkbox','Checkbox'],['select','Select'],['dialog','Dialog'],['themes','主题'],['boundaries','使用边界']];
- return <div className="docs-shell">
-  <aside className={`sidebar ${nav?'is-open':''}`} aria-label="文档导航"><a className="brand" href="#overview" onClick={()=>setNav(false)}><span className="brand-mark" aria-hidden="true">d.</span><span>destyler<span className="brand-sub">READY / COMPONENTS</span></span></a><div className="sidebar-label">设计，已经就绪。</div><nav>{links.map(([id,title],i)=><a href={`#${id}`} aria-current={page===id?'page':undefined} key={id} onClick={()=>setNav(false)}><span className="nav-index">{String(i+1).padStart(2,'0')}</span>{title}{i>1&&i<5&&<span className="nav-dot"/>}</a>)}</nav><div className="sidebar-bottom"><span className="status-dot"/>私有试点 · v0.0.0<p>3 个组件 / 4 个框架<br/>同一套主题语言。</p></div></aside>
-  <div className="main-column"><header className="topbar"><button className="mobile-toggle" type="button" onClick={()=>setNav(!nav)} aria-expanded={nav} aria-label={nav?'关闭导航':'打开导航'}>{nav?'✕':'☰'}</button><span>设计系统 <span className="crumb">/</span> Ready 文档</span><a href="#installation" className="top-link">开始构建 <span>↗</span></a></header>
-  <main data-page={page}><section className="hero" id="overview"><div className="eyebrow"><span className="status-dot"/> LESS ASSEMBLY. MORE DESIGN.</div><h1>Ready components.<br/><em>真实交互，四种框架。</em></h1><p className="hero-description">基于 Destyler 原语构建的成品组件。选择 React、Vue、Solid 或 Svelte，直接体验对应框架的实现，再把代码带进你的应用。</p><div className="hero-actions"><a className="primary-link" href="#checkbox">试用组件 <span>↓</span></a><a className="text-link" href="#installation">阅读安装指南 ↗</a></div><div className="hero-rule"><span>CHECKBOX / SELECT / DIALOG</span><span>01 — 03</span></div></section>
-  <section className="setup-section" id="installation"><div className="section-kicker">GET STARTED</div><h2>先运行，再组合。</h2><p>这是私有的 Vite 源码包，尚未发布到 npm。推荐 Node 24.22.1 与 npm 11.9.0（已验证），并需要当前 designs 仓库。Node 22 分支至少需要 22.22.3，该最低版本尚未运行验证；不要使用 Node 23。下面的命令会打包本地组件，并生成所选框架的独立应用。</p><FrameworkPicker value={framework} onChange={setFramework}/><CopyCode code={install(framework)} title={`${framework} · 本地安装`}/><div className="info-strip"><span aria-hidden="true">↳</span><p>在应用入口导入 <code>@destyler/ready-prototype/theme.css</code>，并用 <code>data-rd-theme="default"</code> 容器包住组件。生成器已包含这些步骤；React / Solid：把下方代码保存为 Example.tsx，在生成的入口导入 Example 并渲染 Example 组件，保留挂载、CSS 和主题容器。Vue / Svelte：替换 App.vue / App.svelte 中的组件内容，并保留入口主题设置。</p></div>{framework==='Vue'&&<p className="api-note">同页有多个独立 Vue 应用时，每个应用必须在挂载前设置不同的 app.config.idPrefix；同一个应用内的多个 Ready 组件不需要逐个设置。</p>}</section>
-  <div className="component-intro"><div><div className="section-kicker">THE COMPONENTS</div><h2>Components</h2></div><div className="theme-switch" role="group" aria-label="交互预览主题"><button type="button" aria-pressed={theme==='default'} onClick={()=>setTheme('default')}><span className="swatch swatch-light"/>Everyday</button><button type="button" aria-pressed={theme==='midnight'} onClick={()=>setTheme('midnight')}><span className="swatch swatch-dark"/>Midnight</button></div></div>
-  {(['Checkbox','Select','Dialog'] as ComponentName[]).map((component,i)=><section className="component-section" id={component.toLowerCase()} key={component}><div className="component-heading"><div className="component-number">0{i+1}</div><div><h3>{component}</h3><p>{['一个明确的选择。让状态、说明与表单自然配合。','让一组选项，成为一个轻松的决定。','给重要内容一点空间，也给用户清楚的退路。'][i]}</p></div></div><FrameworkPicker value={framework} onChange={setFramework}/><div className="view-tabs" role="group" aria-label={`${component} 显示方式`}><button type="button" aria-pressed={mode==='preview'} onClick={()=>setMode('preview')}>预览</button><button type="button" aria-pressed={mode==='code'} onClick={()=>setMode('code')}>代码</button></div><div className="component-workbench"><div className="preview-panel" hidden={mode!=='preview'} data-rd-theme={theme}><div className="preview-label"><span>LIVE / {framework.toUpperCase()}</span><span>{theme==='default'?'EVERYDAY':'MIDNIGHT'}</span></div><LivePreview active={page===component.toLowerCase()} key={`${framework}-${component}`} framework={framework} component={component} theme={theme}/><div className="preview-footer">真实 {framework} 组件 · 切换框架重新开始，切换主题保留状态</div></div><div className="usage-panel" hidden={mode!=='code'}><p className="api-note">最简非受控用法：状态由组件内部管理。此代码也是上方真实预览的构建来源。</p><CopyCode code={snippet(framework,component)} title={`${component} · ${framework} · 非受控`}/></div></div>{component==='Select'&&<p className="api-note" data-doc-note="disabled-selection">已选中的选项后来被禁用，仍会显示并保留选中状态，但不能从列表重新选择。按原生表单规则，禁用选项不会作为该字段的提交值；不要依赖 required 拒绝这个状态。撤回选项时请显式清空受控 value 或提供 error，并在服务端校验。现有 Happy DOM 测试对禁用选项的序列化与浏览器不同，尚不代表真实浏览器提交验收。</p>}<details className="api-details"><summary>API 与受控用法 <span>+</span></summary><div className="api-table-wrap"><table><caption className="sr-only">{component} 属性</caption><thead><tr><th>属性</th><th>类型</th><th>说明</th></tr></thead><tbody>{apiFor(framework,component).map(row=><tr key={row[0]}>{row.map((cell,j)=><td key={j}>{j===0?<code>{cell}</code>:cell}</td>)}</tr>)}</tbody></table></div><p className="api-note">{framework==='Vue'?'Vue 使用 v-model:checked、v-model:value、v-model:open，对应所选组件。':'React、Solid、Svelte 使用相应的值属性与 onCheckedChange / onValueChange / onOpenChange 回调。'} 省略值属性时由组件内部管理状态。label、trigger、title、closeLabel 等可访问文本不能是空白。</p>{component==='Select'&&<div data-doc-example="controlled-select"><h4>受控 Select：接受更新，也能主动清空</h4><p className="api-note">下面是完整的组件文件，按开始使用中的入口方式渲染，并保留主题容器。父组件保存 value 并接受更新；清空按钮把它设为非 undefined 的空字符串，仍保持受控模式。Vue 使用 v-model:value，Svelte 使用值属性和回调，不使用 bind:value。撤回某个已选选项时，也可以由父组件执行同样的清空操作；此例不自动处理远程数据或提交校验。</p><LivePreview active={page==='select'} key={`${framework}-controlled`} framework={framework} component="ControlledSelect" theme={theme}/><CopyCode code={controlledSelectSnippet(framework)} title={`Select · ${framework} · 受控与清空`}/></div>}</details></section>)}
-  <section className="theme-section" id="themes"><div><div className="section-kicker">ONE CONTRACT, TWO CHARACTERS</div><h2>换一种气质。<br/>不用换一套组件。</h2><p>Everyday 的圆角与无衬线字体，Midnight 的深绿、衬线与利落边缘，都来自同一套语义变量。顶部主题开关只改变预览主题，组件状态会保留。</p><div className="theme-cards"><button type="button" className="theme-card light-card" onClick={()=>setTheme('default')} aria-pressed={theme==='default'}><span>Aa</span><strong>Everyday</strong><small>轻盈 · 圆润 · 熟悉</small></button><button type="button" className="theme-card dark-card" onClick={()=>setTheme('midnight')} aria-pressed={theme==='midnight'}><span>Aa</span><strong>Midnight</strong><small>沉静 · 清晰 · 编辑感</small></button></div></div><div className="theme-code-list">{themeSnippets.map(item=><CopyCode key={item.title} code={item.code} title={item.title}/>)}<p className="api-note">以上分别放入现有文件，不要拼接成一个文件。保留框架原有挂载代码；index.html 示例替换原有 #app 容器，不要新增第二个同名容器。自定义选择器提高了优先级，可覆盖内置主题变量。</p></div></section>
-  <section className="boundaries" id="boundaries"><div className="section-kicker">HONEST BY DESIGN</div><h2>知道边界，才能放心使用。</h2><p className="api-note" data-doc-note="native-attributes">只支持文档列出的组件属性，不保证任意原生属性转发。Vue 未声明的 id、aria-label、readonly 等可能落到外层包装元素，不会因此配置内部原生输入或 Select 触发器；其他框架也不承诺同样的包装层透传。请使用 label、description、disabled、required、error 表达对应语义，当前没有通用原生属性转发 API。</p><div className="boundary-grid"><article><span>01 / 表单与数据</span><h4>状态由你掌握</h4><p>Checkbox 和 Select 保留隐藏表单控件、name、required 与错误关联。SSR 页面完成水合前修改表单，输入仍可能丢失或错配；现有恢复示例只是实验，未修复默认行为。reset 会请求初始值；受控父组件决定接受或保留当前值。options 中每个 option.value 必须唯一且非空；组件 value="" 表示未选择。</p></article><article><span>02 / 浮层与主题</span><h4>先保持同一作用域</h4><p>浮层保留在主题容器内部，以继承变量。请避免把容器放在会裁剪内容、创建变换坐标或隔离层叠的祖先中。通用跨 portal 主题桥接尚未提供。React 模拟测试发现：Dialog 与内嵌 Select 初始同时打开时，一次 Escape 可能同时关闭两层；尚未完成真实浏览器及其他框架验证，不应依赖该嵌套行为。</p></article><article><span>03 / 验证范围</span><h4>不把测试当成承诺</h4><p>当前是私有试点。四框架预览分别使用对应编译器构建，并在独立预览页面运行，切换时卸载旧页面。构建、类型与模拟交互不等于完整的真实浏览器、移动端或辅助技术验收。浮层在预览区域内展示，不会覆盖文档整页。</p></article></div></section>
-  <footer className="footer"><a href="#overview" className="footer-brand">destyler <em>ready.</em></a><span>做少一点组件，把每一个做好。</span><a href="#overview">回到顶部 ↑</a></footer></main></div></div>;
+function FrameworkPicker({
+  value,
+  onChange,
+}: {
+  value: Framework;
+  onChange: (value: Framework) => void;
+}) {
+  return (
+    <div className="frameworks" role="group" aria-label="预览与代码框架">
+      {frameworks.map((f) => (
+        <button
+          key={f}
+          type="button"
+          aria-pressed={f === value}
+          onClick={() => onChange(f)}
+        >
+          {f}
+        </button>
+      ))}
+    </div>
+  );
 }
-export function mountReadyDocs(target: HTMLElement) { const root=createRoot(target);root.render(<App/>);return root; }
-const target=document.getElementById('root');if(target)mountReadyDocs(target);
+const pageFromHash = () => {
+  const page = window.location.hash.slice(1);
+  return [
+    "overview",
+    "installation",
+    "checkbox",
+    "select",
+    "dialog",
+    "themes",
+    "boundaries",
+  ].includes(page)
+    ? page
+    : "overview";
+};
+export function App() {
+  const [framework, setFramework] = useState<Framework>("React"),
+    [theme, setTheme] = useState<"default" | "midnight">("default"),
+    [nav, setNav] = useState(false);
+  const [page, setPage] = useState(pageFromHash);
+  const [appearance, setAppearance] = useState<"light" | "dark">(() => {
+    try {
+      return localStorage.getItem("destyler-docs-appearance") === "dark"
+        ? "dark"
+        : "light";
+    } catch {
+      return "light";
+    }
+  });
+  const [search, setSearch] = useState(false),
+    [query, setQuery] = useState("");
+  const searchInput = useRef<HTMLInputElement>(null),
+    searchTrigger = useRef<HTMLButtonElement>(null);
+  const mobileTrigger = useRef<HTMLButtonElement>(null),
+    sideNav = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (nav) sideNav.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+  }, [nav]);
+  useEffect(() => {
+    document.documentElement.dataset.appearance = appearance;
+    try {
+      localStorage.setItem("destyler-docs-appearance", appearance);
+    } catch {}
+  }, [appearance]);
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (search) {
+          setSearch(false);
+          searchTrigger.current?.focus();
+        } else {
+          setNav(false);
+          setSearch(true);
+        }
+      }
+      if (e.key === "Escape") {
+        if (search) {
+          setSearch(false);
+          searchTrigger.current?.focus();
+        }
+        if (nav) {
+          setNav(false);
+          mobileTrigger.current?.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [search, nav]);
+  useEffect(() => {
+    if (search) searchInput.current?.focus();
+  }, [search]);
+  useEffect(() => {
+    document.title = `${({ overview: "组件，为产品而生", installation: "开始使用", checkbox: "Checkbox", select: "Select", dialog: "Dialog", themes: "主题", boundaries: "使用边界" } as Record<string, string>)[page]} — Destyler`;
+  }, [page]);
+  const [mode, setMode] = useState<"preview" | "code">("preview");
+  useEffect(() => {
+    const change = () => {
+      setPage(pageFromHash());
+      setNav(false);
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", change);
+    return () => window.removeEventListener("hashchange", change);
+  }, []);
+  const links = [
+    ["overview", "概览"],
+    ["installation", "开始使用"],
+    ["checkbox", "Checkbox"],
+    ["select", "Select"],
+    ["dialog", "Dialog"],
+    ["themes", "主题"],
+    ["boundaries", "使用边界"],
+  ];
+  return (
+    <div className={`docs-shell ${page === "overview" ? "is-home" : ""}`}>
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("main-content")?.focus();
+          document.getElementById("main-content")?.scrollIntoView();
+        }}
+      >
+        跳到正文
+      </a>
+      <header className="site-header">
+        <a className="brand" href="#overview">
+          <svg className="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4h8l10 8-10 8H3l10-8z" fill="currentColor" />
+          </svg>
+          <span>
+            destyler<span className="brand-product"> / designs</span>
+          </span>
+        </a>
+        <nav className="header-nav" aria-label="主导航">
+          <a href="#installation">文档</a>
+          <a href="#checkbox">组件</a>
+          <a href="#themes">主题</a>
+        </nav>
+        <div className="header-tools">
+          <button
+            ref={searchTrigger}
+            type="button"
+            className="search-trigger"
+            onClick={() => {
+              setNav(false);
+              setSearch(true);
+            }}
+          >
+            <span>搜索文档…</span>
+            <kbd>⌘ K</kbd>
+          </button>
+          <button
+            type="button"
+            className="appearance-button"
+            aria-label={
+              appearance === "light" ? "切换深色文档" : "切换浅色文档"
+            }
+            onClick={() =>
+              setAppearance((x) => (x === "light" ? "dark" : "light"))
+            }
+          >
+            {appearance === "light" ? "◐" : "◑"}
+          </button>
+          <a className="github-link" href="https://github.com/destyler/designs">
+            GitHub ↗
+          </a>
+          <button
+            ref={mobileTrigger}
+            className="mobile-toggle"
+            type="button"
+            onClick={() => setNav(!nav)}
+            aria-expanded={nav}
+            aria-label={nav ? "关闭导航" : "打开导航"}
+          >
+            {nav ? "×" : "☰"}
+          </button>
+        </div>
+      </header>
+      {nav && (
+        <button
+          className="nav-scrim"
+          type="button"
+          aria-label="关闭文档导航"
+          onClick={() => {
+            setNav(false);
+            mobileTrigger.current?.focus();
+          }}
+        />
+      )}
+      <aside
+        className={`sidebar ${nav ? "is-open" : ""}`}
+        aria-label="文档导航"
+        ref={sideNav}
+        onKeyDown={(e) => {
+          if (nav && e.key === "Tab") {
+            const links =
+              e.currentTarget.querySelectorAll<HTMLAnchorElement>("a");
+            if (e.shiftKey && document.activeElement === links[0]) {
+              e.preventDefault();
+              links[links.length - 1]?.focus();
+            } else if (
+              !e.shiftKey &&
+              document.activeElement === links[links.length - 1]
+            ) {
+              e.preventDefault();
+              links[0]?.focus();
+            }
+          }
+        }}
+      >
+        <div className="sidebar-label">开始构建</div>
+        <nav>
+          {links.map(([id, title], i) => (
+            <a
+              href={`#${id}`}
+              aria-current={page === id ? "page" : undefined}
+              key={id}
+              onClick={() => {
+                setNav(false);
+                document.getElementById("main-content")?.focus();
+              }}
+            >
+              <span className="nav-icon" aria-hidden="true">
+                {["◈", "↗", "☑", "▤", "▣", "◐", "◇"][i]}
+              </span>
+              {title}
+            </a>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <span className="sidebar-label">框架无关，体验一致。</span>
+          <p>React · Vue · Solid · Svelte</p>
+          <a href="https://github.com/destyler/designs">查看源代码 ↗</a>
+        </div>
+      </aside>
+      <div className="main-column">
+        <main id="main-content" tabIndex={-1} data-page={page}>
+          <section className="hero" id="overview">
+            <div className="hero-copy">
+              <a className="announcement" href="#installation">
+                <span className="status-dot" /> Destyler Designs <span>/</span>{" "}
+                开始构建 ↗
+              </a>
+              <h1>
+                你的产品，
+                <br />
+                <em>不必从零开始。</em>
+              </h1>
+              <p className="hero-description">
+                精心设计的组件，可靠的交互基础。
+                <br />为 React、Vue、Solid 和 Svelte，带来同一种好体验。
+              </p>
+              <div className="hero-actions">
+                <a className="primary-link" href="#installation">
+                  开始使用 <span>↗</span>
+                </a>
+                <a className="secondary-link" href="#checkbox">
+                  浏览组件 <span>→</span>
+                </a>
+              </div>
+              <div className="hero-frameworks">
+                <span>为你熟悉的框架构建</span>
+                <strong>React</strong>
+                <strong>Vue</strong>
+                <strong>Solid</strong>
+                <strong>Svelte</strong>
+              </div>
+            </div>
+            <div className="hero-showcase">
+              <div className="showcase-grid" />
+              <div className="showcase-caption">
+                <span>DESIGNED TO FIT.</span>
+                <span>01 / FOUNDATIONS</span>
+              </div>
+              <div className="showcase-card">
+                <div className="showcase-card-head">
+                  <span className="workspace-icon">D</span>
+                  <div>
+                    <strong>你的下一个作品</strong>
+                    <small>从好的基础开始。</small>
+                  </div>
+                  <span className="sample-badge">Designs</span>
+                </div>
+                <div className="showcase-example">
+                  <span className="sample-label">一个细节，也值得认真。</span>
+                  <LivePreview
+                    active={page === "overview"}
+                    framework={framework}
+                    component="Checkbox"
+                    theme={theme}
+                  />
+                </div>
+                <div className="showcase-card-foot">
+                  <span className="sample-avatars">
+                    <i>R</i>
+                    <i>V</i>
+                    <i>S</i>
+                    <i>S</i>
+                  </span>
+                  <span>四种框架，同样认真。</span>
+                </div>
+              </div>
+              <div className="floating-note">
+                <span>↗</span>
+                <div>
+                  <strong>少一点重复。</strong>
+                  <small>多一点属于你的设计。</small>
+                </div>
+              </div>
+            </div>
+            <div className="home-principles">
+              <article>
+                <span>组合</span>
+                <h2>直接使用，保持自由。</h2>
+                <p>交互、结构和默认样式已经组合好。把时间留给产品本身。</p>
+              </article>
+              <article>
+                <span>原生</span>
+                <h2>原生实现，不是模拟。</h2>
+                <p>四种框架各自运行，文档中的预览与可复制代码保持一致。</p>
+              </article>
+              <article>
+                <span>主题</span>
+                <h2>你的品牌，你的表达。</h2>
+                <p>通过一套语义变量，调整色彩、字体与轮廓，而不重写交互。</p>
+              </article>
+            </div>
+            <div className="home-library">
+              <div>
+                <span className="section-kicker">组件</span>
+                <h2>从细节，构建整体。</h2>
+              </div>
+              <a href="#checkbox">探索组件 →</a>
+            </div>
+            <div className="home-component-grid">
+              {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
+                (name, i) => (
+                  <a href={`#${name.toLowerCase()}`} key={name}>
+                    <div
+                      className={`component-glyph glyph-${name.toLowerCase()}`}
+                      aria-hidden="true"
+                    >
+                      {i === 0 ? (
+                        <>
+                          <b>✓</b>
+                          <span>让选择清晰可见</span>
+                        </>
+                      ) : i === 1 ? (
+                        <>
+                          <span>选择你的工作空间</span>
+                          <b>⌄</b>
+                        </>
+                      ) : (
+                        <>
+                          <span>每一个重要时刻</span>
+                          <b>打开对话框 ↗</b>
+                        </>
+                      )}
+                    </div>
+                    <div>
+                      <strong>{name}</strong>
+                      <span>↗</span>
+                    </div>
+                    <p>{["选择与确认", "选项与表单", "对话与反馈"][i]}</p>
+                  </a>
+                ),
+              )}
+            </div>
+          </section>
+          <section className="setup-section" id="installation">
+            <div className="section-kicker">GET STARTED</div>
+            <h2>开始使用</h2>
+            <p>
+              这是私有的 Vite 源码包，尚未发布到 npm。推荐 Node 24.22.1 与 npm
+              11.9.0（已验证），并需要当前 designs 仓库。Node 22 分支至少需要
+              22.22.3，该最低版本尚未运行验证；不要使用 Node
+              23。下面的命令会打包本地组件，并生成所选框架的独立应用。
+            </p>
+            <FrameworkPicker value={framework} onChange={setFramework} />
+            <CopyCode
+              code={install(framework)}
+              title={`${framework} · 本地安装`}
+            />
+            <div className="info-strip">
+              <span aria-hidden="true">↳</span>
+              <p>
+                在应用入口导入 <code>@destyler/ready-prototype/theme.css</code>
+                ，并用 <code>data-rd-theme="default"</code>{" "}
+                容器包住组件。生成器已包含这些步骤；React /
+                Solid：把下方代码保存为 Example.tsx，在生成的入口导入 Example
+                并渲染 Example 组件，保留挂载、CSS 和主题容器。Vue /
+                Svelte：替换 App.vue / App.svelte
+                中的组件内容，并保留入口主题设置。
+              </p>
+            </div>
+            {framework === "Vue" && (
+              <p className="api-note">
+                同页有多个独立 Vue 应用时，每个应用必须在挂载前设置不同的
+                app.config.idPrefix；同一个应用内的多个 Ready
+                组件不需要逐个设置。
+              </p>
+            )}
+          </section>
+          <div className="component-intro">
+            <div className="breadcrumb">
+              文档 <span>/</span> 组件
+            </div>
+            <div
+              className="theme-switch"
+              role="group"
+              aria-label="交互预览主题"
+            >
+              <button
+                type="button"
+                aria-pressed={theme === "default"}
+                onClick={() => setTheme("default")}
+              >
+                <span className="swatch swatch-light" />
+                Everyday
+              </button>
+              <button
+                type="button"
+                aria-pressed={theme === "midnight"}
+                onClick={() => setTheme("midnight")}
+              >
+                <span className="swatch swatch-dark" />
+                Midnight
+              </button>
+            </div>
+          </div>
+          {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
+            (component, i) => (
+              <section
+                className="component-section"
+                id={component.toLowerCase()}
+                key={component}
+              >
+                <div className="component-heading">
+                  <div className="component-number">0{i + 1}</div>
+                  <div>
+                    <h1>{component}</h1>
+                    <p>
+                      {
+                        [
+                          "在选中与未选中之间切换，支持表单、受控状态与错误提示。",
+                          "从一组选项中选择一个值，支持键盘导航和原生表单提交。",
+                          "在当前页面展示需要关注的内容，管理焦点并提供清晰的关闭方式。",
+                        ][i]
+                      }
+                    </p>
+                  </div>
+                </div>
+                <FrameworkPicker value={framework} onChange={setFramework} />
+                <div
+                  className="view-tabs"
+                  role="group"
+                  aria-label={`${component} 显示方式`}
+                >
+                  <button
+                    type="button"
+                    aria-pressed={mode === "preview"}
+                    onClick={() => setMode("preview")}
+                  >
+                    预览
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={mode === "code"}
+                    onClick={() => setMode("code")}
+                  >
+                    代码
+                  </button>
+                </div>
+                <div className="component-workbench">
+                  <div
+                    className="preview-panel"
+                    hidden={mode !== "preview"}
+                    data-rd-theme={theme}
+                  >
+                    <LivePreview
+                      active={page === component.toLowerCase()}
+                      key={`${framework}-${component}`}
+                      framework={framework}
+                      component={component}
+                      theme={theme}
+                    />
+                    <div className="preview-footer">
+                      {framework} · 原生交互预览
+                    </div>
+                  </div>
+                  <div className="usage-panel" hidden={mode !== "code"}>
+                    <p className="api-note">
+                      最简非受控用法：状态由组件内部管理。此代码也是上方真实预览的构建来源。
+                    </p>
+                    <CopyCode
+                      code={snippet(framework, component)}
+                      title={`${component} · ${framework} · 非受控`}
+                    />
+                  </div>
+                </div>
+                {component === "Select" && (
+                  <p className="api-note" data-doc-note="disabled-selection">
+                    已选中的选项后来被禁用，仍会显示并保留选中状态，但不能从列表重新选择。按原生表单规则，禁用选项不会作为该字段的提交值；不要依赖
+                    required 拒绝这个状态。撤回选项时请显式清空受控 value 或提供
+                    error，并在服务端校验。现有 Happy DOM
+                    测试对禁用选项的序列化与浏览器不同，尚不代表真实浏览器提交验收。
+                  </p>
+                )}
+                <details className="api-details" open>
+                  <summary>
+                    API 与受控用法 <span>+</span>
+                  </summary>
+                  <div className="api-table-wrap">
+                    <table>
+                      <caption className="sr-only">{component} 属性</caption>
+                      <thead>
+                        <tr>
+                          <th>属性</th>
+                          <th>类型</th>
+                          <th>说明</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {apiFor(framework, component).map((row) => (
+                          <tr key={row[0]}>
+                            {row.map((cell, j) => (
+                              <td key={j}>
+                                {j === 0 ? <code>{cell}</code> : cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="api-note">
+                    {framework === "Vue"
+                      ? "Vue 使用 v-model:checked、v-model:value、v-model:open，对应所选组件。"
+                      : "React、Solid、Svelte 使用相应的值属性与 onCheckedChange / onValueChange / onOpenChange 回调。"}{" "}
+                    省略值属性时由组件内部管理状态。label、trigger、title、closeLabel
+                    等可访问文本不能是空白。
+                  </p>
+                  {component === "Select" && (
+                    <div data-doc-example="controlled-select">
+                      <h4>受控 Select：接受更新，也能主动清空</h4>
+                      <p className="api-note">
+                        下面是完整的组件文件，按开始使用中的入口方式渲染，并保留主题容器。父组件保存
+                        value 并接受更新；清空按钮把它设为非 undefined
+                        的空字符串，仍保持受控模式。Vue 使用
+                        v-model:value，Svelte 使用值属性和回调，不使用
+                        bind:value。撤回某个已选选项时，也可以由父组件执行同样的清空操作；此例不自动处理远程数据或提交校验。
+                      </p>
+                      <LivePreview
+                        active={page === "select"}
+                        key={`${framework}-controlled`}
+                        framework={framework}
+                        component="ControlledSelect"
+                        theme={theme}
+                      />
+                      <CopyCode
+                        code={controlledSelectSnippet(framework)}
+                        title={`Select · ${framework} · 受控与清空`}
+                      />
+                    </div>
+                  )}
+                </details>
+              </section>
+            ),
+          )}
+          <section className="theme-section" id="themes">
+            <div>
+              <div className="section-kicker">ONE CONTRACT, TWO CHARACTERS</div>
+              <h2>
+                换一种气质。
+                <br />
+                不用换一套组件。
+              </h2>
+              <p>
+                Everyday 的圆角与无衬线字体，Midnight
+                的深绿、衬线与利落边缘，都来自同一套语义变量。顶部主题开关只改变预览主题，组件状态会保留。
+              </p>
+              <div className="theme-cards">
+                <button
+                  type="button"
+                  className="theme-card light-card"
+                  onClick={() => setTheme("default")}
+                  aria-pressed={theme === "default"}
+                >
+                  <span>Aa</span>
+                  <strong>Everyday</strong>
+                  <small>轻盈 · 圆润 · 熟悉</small>
+                </button>
+                <button
+                  type="button"
+                  className="theme-card dark-card"
+                  onClick={() => setTheme("midnight")}
+                  aria-pressed={theme === "midnight"}
+                >
+                  <span>Aa</span>
+                  <strong>Midnight</strong>
+                  <small>沉静 · 清晰 · 编辑感</small>
+                </button>
+              </div>
+            </div>
+            <div className="theme-code-list">
+              {themeSnippets.map((item) => (
+                <CopyCode
+                  key={item.title}
+                  code={item.code}
+                  title={item.title}
+                />
+              ))}
+              <p className="api-note">
+                以上分别放入现有文件，不要拼接成一个文件。保留框架原有挂载代码；index.html
+                示例替换原有 #app
+                容器，不要新增第二个同名容器。自定义选择器提高了优先级，可覆盖内置主题变量。
+              </p>
+            </div>
+          </section>
+          <section className="boundaries" id="boundaries">
+            <div className="section-kicker">HONEST BY DESIGN</div>
+            <h2>知道边界，才能放心使用。</h2>
+            <p className="api-note" data-doc-note="native-attributes">
+              只支持文档列出的组件属性，不保证任意原生属性转发。Vue 未声明的
+              id、aria-label、readonly
+              等可能落到外层包装元素，不会因此配置内部原生输入或 Select
+              触发器；其他框架也不承诺同样的包装层透传。请使用
+              label、description、disabled、required、error
+              表达对应语义，当前没有通用原生属性转发 API。
+            </p>
+            <div className="boundary-grid">
+              <article>
+                <span>01 / 表单与数据</span>
+                <h4>状态由你掌握</h4>
+                <p>
+                  Checkbox 和 Select 保留隐藏表单控件、name、required
+                  与错误关联。SSR
+                  页面完成水合前修改表单，输入仍可能丢失或错配；现有恢复示例只是实验，未修复默认行为。reset
+                  会请求初始值；受控父组件决定接受或保留当前值。options 中每个
+                  option.value 必须唯一且非空；组件 value="" 表示未选择。
+                </p>
+              </article>
+              <article>
+                <span>02 / 浮层与主题</span>
+                <h4>先保持同一作用域</h4>
+                <p>
+                  浮层保留在主题容器内部，以继承变量。请避免把容器放在会裁剪内容、创建变换坐标或隔离层叠的祖先中。通用跨
+                  portal 主题桥接尚未提供。React 模拟测试发现：Dialog 与内嵌
+                  Select 初始同时打开时，一次 Escape
+                  可能同时关闭两层；尚未完成真实浏览器及其他框架验证，不应依赖该嵌套行为。
+                </p>
+              </article>
+              <article>
+                <span>03 / 验证范围</span>
+                <h4>不把测试当成承诺</h4>
+                <p>
+                  当前是私有试点。四框架预览分别使用对应编译器构建，并在独立预览页面运行，切换时卸载旧页面。构建、类型与模拟交互不等于完整的真实浏览器、移动端或辅助技术验收。浮层在预览区域内展示，不会覆盖文档整页。
+                </p>
+              </article>
+            </div>
+          </section>
+          <footer className="footer">
+            <a href="#overview" className="footer-brand">
+              destyler<span> / designs</span>
+            </a>
+            <span>用细节，成就体验。</span>
+            <a href="https://github.com/destyler/designs">GitHub ↗</a>
+          </footer>
+        </main>
+      </div>
+      {search && (
+        <div
+          className="search-overlay"
+          onClick={() => {
+            setSearch(false);
+            searchTrigger.current?.focus();
+          }}
+        >
+          <div
+            className="search-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="搜索文档"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Tab") {
+                const nodes =
+                  e.currentTarget.querySelectorAll<HTMLElement>(
+                    "input,a,button",
+                  );
+                const first = nodes[0],
+                  last = nodes[nodes.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                  e.preventDefault();
+                  last?.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                  e.preventDefault();
+                  first?.focus();
+                }
+              }
+            }}
+          >
+            <div className="search-input-row">
+              <input
+                ref={searchInput}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="搜索组件与文档…"
+                aria-label="搜索关键词"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch(false);
+                  searchTrigger.current?.focus();
+                }}
+              >
+                关闭
+              </button>
+            </div>
+            <div className="search-results">
+              {links
+                .filter(([id, title]) =>
+                  (id + " " + title)
+                    .toLowerCase()
+                    .includes(query.toLowerCase()),
+                )
+                .map(([id, title]) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    onClick={() => {
+                      setSearch(false);
+                      setQuery("");
+                      searchTrigger.current?.focus();
+                    }}
+                  >
+                    <span>{title}</span>
+                    <span>↗</span>
+                  </a>
+                ))}
+              {!links.some(([id, title]) =>
+                (id + " " + title).toLowerCase().includes(query.toLowerCase()),
+              ) && <p>没有找到相关文档，试试组件名称。</p>}
+            </div>
+            <div className="search-hint">Tab 选择 · Enter 打开 · Esc 关闭</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+export function mountReadyDocs(target: HTMLElement) {
+  const root = createRoot(target);
+  root.render(<App />);
+  return root;
+}
+const target = document.getElementById("root");
+if (target) mountReadyDocs(target);
