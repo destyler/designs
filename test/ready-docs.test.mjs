@@ -31,14 +31,15 @@ if (process.argv[2] === '--worker') {
   await click(toggle); assert.equal(toggle.getAttribute('aria-expanded'), 'true'); assert.ok(document.querySelector('.sidebar').classList.contains('is-open'))
   await click(document.querySelector('nav a[href="#select"]')); assert.equal(toggle.getAttribute('aria-expanded'), 'false'); assert.equal(document.querySelector('.sidebar').classList.contains('is-open'), false)
 
-  // Framework switching changes real copyable code, not the live renderer.
+  // Framework switching changes both the compiled native preview URL and its source.
   for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
     await click(button(framework, document.querySelector('#installation')))
     for (const section of ['checkbox', 'select', 'dialog']) {
+      window.location.hash=section;window.dispatchEvent(new win.Event('hashchange'));await settle();
       const scope = document.getElementById(section)
       assert.match(scope.querySelector('pre code').textContent, new RegExp(`@destyler/ready-prototype/${framework.toLowerCase()}`))
       assert.equal(button(framework, scope).getAttribute('aria-pressed'), 'true')
-      assert.match(scope.querySelector('.preview-footer').textContent, /React/)
+      assert.ok(scope.querySelector('.preview-footer').textContent.includes(framework)); assert.equal(scope.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/${section}.html`)
       const table = scope.querySelector('table').textContent
       const prop = {checkbox:'checked',select:'value',dialog:'open'}[section]
       const event = {checkbox:'Checked',select:'Value',dialog:'Open'}[section]
@@ -86,46 +87,33 @@ if (process.argv[2] === '--worker') {
   pending[0].reject(new Error('stale failure')); await settle(); assert.equal(copy.textContent, '已复制 ✓')
   navigator.clipboard.writeText = async () => { throw new Error('Clipboard denied in simulated test') }
   await click(copy); assert.match(copy.textContent, /复制失败/)
-  assert.match(document.querySelector('#checkbox [role="status"]').textContent, /无法访问剪贴板/)
+  assert.match(document.querySelector('#checkbox .code-block [role="status"]').textContent, /无法访问剪贴板/)
 
-  const checkboxSection = document.getElementById('checkbox')
-  const inputs = checkboxSection.querySelectorAll('input[type="checkbox"]')
-  assert.equal(inputs.length, 2); assert.equal(inputs[0].checked, false); assert.equal(inputs[1].disabled, true)
-  await click(checkboxSection.querySelector('.state-toggle'))
-  assert.match(checkboxSection.textContent, /请先确认此选项/)
-  await click(inputs[0]); assert.equal(inputs[0].checked, true)
-  assert.equal(checkboxSection.querySelector('.preview-result code').textContent, 'true')
-  assert.equal(checkboxSection.querySelector('.rd-error'), null)
-  await click(inputs[1]); assert.equal(inputs[1].checked, false)
-
-  const selectSection = document.getElementById('select')
-  const select = part('select', 'trigger')
-  await click(select); assert.equal(select.getAttribute('aria-expanded'), 'true')
-  const option = value => document.querySelector(`[data-scope="select"][data-part="item"][data-value="${value}"]`)
-  assert.equal(option('enterprise').getAttribute('aria-disabled'), 'true')
-  await click(option('enterprise')); assert.equal(selectSection.querySelector('.preview-result code').textContent, '""')
-  await click(option('studio')); assert.equal(selectSection.querySelector('.preview-result code').textContent, '"studio"')
-  assert.equal(select.getAttribute('aria-expanded'), 'false'); assert.equal(selectSection.querySelector('select').value, 'studio')
-  assert.equal(selectSection.querySelector('.rd-error'), null)
-
-  for (const theme of ['midnight', 'default']) {
-    await click(button(theme === 'midnight' ? 'Midnight' : 'Everyday', document.querySelector('.theme-switch')))
-    assert.deepEqual([...document.querySelectorAll('.preview-panel')].map(node => node.dataset.rdTheme), [theme, theme, theme])
-    assert.equal(inputs[0].checked, true); assert.equal(selectSection.querySelector('select').value, 'studio')
-    await click(part('dialog', 'trigger'))
-    const content = part('dialog', 'content'); assert.ok(content); assert.equal(content.getAttribute('role'), 'dialog'); assert.equal(content.getAttribute('aria-modal'), 'true')
-    assert.equal(content.closest('[data-rd-theme]').dataset.rdTheme, theme, 'Dialog retains preview theme scope')
-    assert.match(document.getElementById(content.getAttribute('aria-labelledby')).textContent, /让工作空间更像你/)
-    associations()
-    await click(part('dialog', 'close-trigger')); assert.equal(part('dialog', 'trigger').getAttribute('aria-expanded'), 'false')
-  }
-  await click(part('dialog', 'trigger'))
-  part('dialog', 'content').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
-  await settle(); assert.equal(part('dialog', 'trigger').getAttribute('aria-expanded'), 'false')
+  await click(button('React', document.getElementById('installation')))
+  window.location.hash='checkbox';window.dispatchEvent(new win.Event('hashchange'));await settle();
+  const originalFrame=document.querySelector('#checkbox iframe')
+  await click(button('Midnight', document.querySelector('.theme-switch')))
+  assert.equal(document.querySelector('#checkbox iframe'),originalFrame,'Theme switch preserves the runtime')
+  assert.equal(document.querySelector('#checkbox .preview-panel').dataset.rdTheme,'midnight')
+  await click(button('Vue', document.getElementById('installation')))
+  assert.notEqual(document.querySelector('#checkbox iframe'),originalFrame,'Framework switch unmounts previous runtime')
+  const newFrame=document.querySelector('#checkbox iframe')
+  window.dispatchEvent(new win.MessageEvent('message',{origin:window.location.origin,source:newFrame.contentWindow,data:{type:'ready-docs:ready',framework:'React',component:'checkbox'}}))
+  await settle(); assert.ok(document.querySelector('#checkbox .frame-status'),'Stale framework messages ignored')
+  window.dispatchEvent(new win.MessageEvent('message',{origin:window.location.origin,source:newFrame.contentWindow,data:{type:'ready-docs:ready',framework:'Vue',component:'checkbox'}}))
+  await settle(); assert.equal(document.querySelector('#checkbox .frame-status'),null,'Current native frame readiness accepted')
+  window.location.hash='dialog';window.dispatchEvent(new win.Event('hashchange'));await settle()
+  assert.equal(document.querySelector('main').dataset.page,'dialog')
+  await click(button('代码',document.querySelector('#dialog')))
+  assert.equal(document.querySelector('#dialog .preview-panel').hidden,true)
+  assert.equal(document.querySelector('#dialog .usage-panel').hidden,false)
+  await click(button('预览',document.querySelector('#dialog')))
+  assert.equal(document.querySelector('#dialog .preview-panel').hidden,false)
+  window.location.hash='not-a-page';window.dispatchEvent(new win.Event('hashchange'));await settle();assert.equal(document.querySelector('main').dataset.page,'overview');
   await app.unmount(); await win.happyDOM.close()
   console.log('PASS ready docs navigation, framework code, copy, theme, Checkbox, Select and Dialog')
 } else {
-  test('Ready documentation mounts actual components and supports its advertised controls', { timeout: 120000 }, async () => {
+  test('Ready documentation switches native preview lifecycles, themes, source and navigation', { timeout: 120000 }, async () => {
     const folder = await mkdtemp(join(root, 'node_modules/.ready-docs-test-'))
     try {
       const entry = join(folder, 'entry.mjs')
@@ -170,14 +158,14 @@ if (process.argv[2] === '--worker') {
     assert.match(source, /packages\/ready\/theme\.css/)
   })
 
-  test('Ready docs picker text meets normal-text contrast in each state', async () => {
+  test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
     const css = await readFile(join(root, 'examples/ready-docs/styles.css'), 'utf8')
-    assert.match(css, /\.frameworks button,\.theme-switch button\{color:#53634b\}/)
+    assert.match(css, /\.frameworks button\{color:#52525b/); assert.match(css, /\.theme-switch button\{border-radius:3px;color:#52525b/)
     const luminance = hex => {
       const rgb = hex.replace('#','').match(/../g).map(c => parseInt(c,16)/255).map(c => c <= .04045 ? c/12.92 : ((c+.055)/1.055)**2.4)
       return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722
     }
-    for (const [foreground, background] of [['#53634b','#eaf0e5'],['#53634b','#edf1e8'],['#2c4e35','#ffffff'],['#2d4d35','#ffffff'],['#224a32','#eaf0e5'],['#224a32','#edf1e8']]) {
+    for (const [foreground, background] of [['#52525b','#f4f4f5'],['#18181b','#ffffff'],['#2d4d35','#ffffff'],['#224a32','#f4f4f5']]) {
       assert.ok(css.includes(foreground)); const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)
       assert.ok((levels[0]+.05)/(levels[1]+.05) >= 4.5, `${foreground} on ${background}`)
     }

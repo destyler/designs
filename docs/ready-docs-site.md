@@ -1,10 +1,17 @@
 # Interactive component documentation
 
-The documentation source lives in `examples/ready-docs`. It imports the actual
-Ready React adapter and shared theme CSS; displayed controls are not imitations.
-Framework code examples explain React, Vue, Solid and Svelte consumption. The
-interactive renderer is React, not proof that every browser/framework combination
-has been accepted.
+The documentation shell lives in `examples/ready-docs`. Each native framework
+preview is compiled independently from the same source strings shown in the docs:
+React, Vue, Solid and Svelte each have Checkbox, Select, Dialog and controlled
+Select pages under `previews/<framework>/`. The shell mounts an iframe for the
+selected framework. Switching frameworks destroys the old document; switching
+themes sends a validated same-origin message and preserves component state.
+Dialog overlays remain inside the preview viewport. This is real framework
+execution, not proof that every browser/framework combination has been accepted.
+
+The UI uses a component sidebar, one document section at a time and Preview/Code
+controls, informed by the documentation hierarchy of shadcn/ui and the restrained
+editorial navigation of Asuka. It does not copy either site's assets or components.
 
 ```sh
 npm ci
@@ -17,7 +24,7 @@ Ready CI workflow builds this site alongside component regressions, four-framewo
 types and demo builds. Keep component examples, prop tables, installation text
 and limitations synchronized whenever the three-component pilot changes.
 
-Deployment is a separate, authorized step. Upload only this static output into
+Deployment is a separate, authorized step. Upload the complete static output recursively (including all preview subdirectories) into
 the existing `destyler-designs-prototype` project's Preview environment. Use a
 per-deployment static configuration rather than the repository root's Astro
 configuration (which builds the older gallery). Do not change project-wide build

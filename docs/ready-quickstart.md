@@ -195,3 +195,9 @@ custom CSS; the dev server was then stopped. This is an HTTP startup smoke only.
 Dev startup was not separately tested for the other three adapters. An initial
 attempt to fetch from a separate command session returned connection refused;
 launching the server and fetching within one command session completed the smoke.
+
+## 文档中的真实多框架预览
+
+`npm run build:ready:docs` 同时构建文档外壳和 `previews/{react,vue,solid,svelte}` 原生预览。每个框架使用自己的编译器；基础组件及受控 Select 的预览源码直接来自可复制示例，避免代码与效果脱节。部署时必须上传 `artifacts/ready-docs` 的完整目录树，不能只上传顶层首页与 assets。
+
+框架切换会销毁原预览页面并挂载新框架，因此组件状态重新开始；主题切换通过同源消息更新主题，不重载预览。Dialog 的浮层位于独立预览区域内，不覆盖整个文档。消息仅接受对应 iframe、同源和当前框架/组件的完成信号。加载超时可重试。文档展示真实运行入口，不代表已经完成全浏览器与辅助技术验收。
