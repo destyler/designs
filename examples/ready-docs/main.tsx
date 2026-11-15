@@ -116,11 +116,11 @@ export function App() {
   const [page, setPage] = useState(pageFromHash);
   const [appearance, setAppearance] = useState<"light" | "dark">(() => {
     try {
-      return localStorage.getItem("destyler-docs-appearance") === "dark"
-        ? "dark"
-        : "light";
+      return localStorage.getItem("destyler-docs-appearance") === "light"
+        ? "light"
+        : "dark";
     } catch {
-      return "light";
+      return "dark";
     }
   });
   const [search, setSearch] = useState(false),
@@ -316,135 +316,109 @@ export function App() {
       <div className="main-column">
         <main id="main-content" tabIndex={-1} data-page={page}>
           <section className="hero" id="overview">
-            <div className="hero-copy">
-              <a className="announcement" href="#installation">
-                <span className="status-dot" /> Destyler Designs <span>/</span>{" "}
-                开始构建 ↗
-              </a>
-              <h1>
-                你的产品，
+            <div className="hero-masthead">
+              <span>DESTYLER / DESIGNS</span>
+              <span>组件 · 交互 · 主题</span>
+            </div>
+            <h1 className="editorial-title">
+              <span>把时间，</span>
+              <span>
+                留给<em>你的产品。</em>
+              </span>
+            </h1>
+            <div className="hero-introduction">
+              <p>
+                交互已经组合好，
                 <br />
-                <em>不必从零开始。</em>
-              </h1>
-              <p className="hero-description">
-                精心设计的组件，可靠的交互基础。
-                <br />为 React、Vue、Solid 和 Svelte，带来同一种好体验。
+                设计仍然属于你。
               </p>
-              <div className="hero-actions">
-                <a className="primary-link" href="#installation">
-                  开始使用 <span>↗</span>
-                </a>
-                <a className="secondary-link" href="#checkbox">
-                  浏览组件 <span>→</span>
-                </a>
-              </div>
-              <div className="hero-frameworks">
-                <span>为你熟悉的框架构建</span>
-                <strong>React</strong>
-                <strong>Vue</strong>
-                <strong>Solid</strong>
-                <strong>Svelte</strong>
-              </div>
-            </div>
-            <div className="hero-showcase">
-              <div className="showcase-grid" />
-              <div className="showcase-caption">
-                <span>DESIGNED TO FIT.</span>
-                <span>01 / FOUNDATIONS</span>
-              </div>
-              <div className="showcase-card">
-                <div className="showcase-card-head">
-                  <span className="workspace-icon">D</span>
-                  <div>
-                    <strong>你的下一个作品</strong>
-                    <small>从好的基础开始。</small>
-                  </div>
-                  <span className="sample-badge">Designs</span>
-                </div>
-                <div className="showcase-example">
-                  <span className="sample-label">一个细节，也值得认真。</span>
-                  <LivePreview
-                    active={page === "overview"}
-                    framework={framework}
-                    component="Checkbox"
-                    theme={theme}
-                  />
-                </div>
-                <div className="showcase-card-foot">
-                  <span className="sample-avatars">
-                    <i>R</i>
-                    <i>V</i>
-                    <i>S</i>
-                    <i>S</i>
-                  </span>
-                  <span>四种框架，同样认真。</span>
-                </div>
-              </div>
-              <div className="floating-note">
-                <span>↗</span>
-                <div>
-                  <strong>少一点重复。</strong>
-                  <small>多一点属于你的设计。</small>
-                </div>
-              </div>
-            </div>
-            <div className="home-principles">
-              <article>
-                <span>组合</span>
-                <h2>直接使用，保持自由。</h2>
-                <p>交互、结构和默认样式已经组合好。把时间留给产品本身。</p>
-              </article>
-              <article>
-                <span>原生</span>
-                <h2>原生实现，不是模拟。</h2>
-                <p>四种框架各自运行，文档中的预览与可复制代码保持一致。</p>
-              </article>
-              <article>
-                <span>主题</span>
-                <h2>你的品牌，你的表达。</h2>
-                <p>通过一套语义变量，调整色彩、字体与轮廓，而不重写交互。</p>
-              </article>
-            </div>
-            <div className="home-library">
               <div>
-                <span className="section-kicker">组件</span>
-                <h2>从细节，构建整体。</h2>
+                <p className="hero-description">
+                  从一个组件开始。为 React、Vue、Solid 和 Svelte
+                  提供原生实现，用同一套主题语言连接每一个细节。
+                </p>
+                <div className="hero-actions">
+                  <a className="primary-link" href="#installation">
+                    开始使用 <span>↗</span>
+                  </a>
+                  <a className="secondary-link" href="#select">
+                    阅读组件文档 <span>→</span>
+                  </a>
+                </div>
               </div>
-              <a href="#checkbox">探索组件 →</a>
             </div>
-            <div className="home-component-grid">
+            <section className="home-live" aria-labelledby="home-live-title">
+              <div className="home-live-heading">
+                <div>
+                  <span className="section-kicker">一个组件，四种原生实现</span>
+                  <h2 id="home-live-title">换个框架，亲手试试。</h2>
+                </div>
+                <a href="#select">Select 文档 ↗</a>
+              </div>
+              <div className="home-preview-controls">
+                <FrameworkPicker value={framework} onChange={setFramework} />
+                <div
+                  className="theme-switch"
+                  role="group"
+                  aria-label="首页预览主题"
+                >
+                  <button
+                    type="button"
+                    aria-pressed={theme === "default"}
+                    onClick={() => setTheme("default")}
+                  >
+                    Everyday
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={theme === "midnight"}
+                    onClick={() => setTheme("midnight")}
+                  >
+                    Midnight
+                  </button>
+                </div>
+              </div>
+              <div className="home-live-stage" data-rd-theme={theme}>
+                <LivePreview
+                  active={page === "overview"}
+                  framework={framework}
+                  component="Select"
+                  theme={theme}
+                />
+              </div>
+              <p className="home-live-note">
+                {framework} 原生运行 ·
+                切换框架会重新挂载示例，切换主题保留当前选择。
+              </p>
+            </section>
+            <section className="home-library" aria-labelledby="library-title">
+              <div>
+                <span className="section-kicker">组件文档</span>
+                <h2 id="library-title">小而完整。逐步生长。</h2>
+              </div>
+              <p>
+                当前提供三个组合组件。
+                <br />
+                源码包尚未发布到 npm。
+              </p>
+            </section>
+            <div className="component-index">
               {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
                 (name, i) => (
                   <a href={`#${name.toLowerCase()}`} key={name}>
-                    <div
-                      className={`component-glyph glyph-${name.toLowerCase()}`}
-                      aria-hidden="true"
-                    >
-                      {i === 0 ? (
-                        <>
-                          <b>✓</b>
-                          <span>让选择清晰可见</span>
-                        </>
-                      ) : i === 1 ? (
-                        <>
-                          <span>选择你的工作空间</span>
-                          <b>⌄</b>
-                        </>
-                      ) : (
-                        <>
-                          <span>每一个重要时刻</span>
-                          <b>打开对话框 ↗</b>
-                        </>
-                      )}
-                    </div>
-                    <div>
-                      <strong>{name}</strong>
-                      <span>↗</span>
-                    </div>
-                    <p>{["选择与确认", "选项与表单", "对话与反馈"][i]}</p>
+                    <span className="index-number">0{i + 1}</span>
+                    <strong>{name}</strong>
+                    <span>{["选择与确认", "选项与表单", "对话与反馈"][i]}</span>
+                    <span aria-hidden="true">↗</span>
                   </a>
                 ),
               )}
+            </div>
+            <div className="home-footnote">
+              <p>
+                基于 Destyler 交互基础。通过语义变量定义主题，不必重写组件行为。
+              </p>
+              <a href="#boundaries">了解当前能力与边界 →</a>
             </div>
           </section>
           <section className="setup-section" id="installation">

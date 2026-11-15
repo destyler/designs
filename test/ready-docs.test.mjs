@@ -27,6 +27,16 @@ if (process.argv[2] === '--worker') {
     for (const node of document.querySelectorAll('[aria-labelledby],[aria-describedby]')) for (const attribute of ['aria-labelledby', 'aria-describedby']) for (const id of (node.getAttribute(attribute) || '').split(/\s+/).filter(Boolean)) assert.ok(document.getElementById(id), `${attribute} target ${id} exists`)
   }
   for (const anchor of document.querySelectorAll('a[href^="#"]')) assert.ok(document.getElementById(anchor.getAttribute('href').slice(1)), 'Navigation points to an existing section')
+  assert.equal(document.documentElement.dataset.appearance, 'dark', 'New visits use the editorial dark appearance')
+  const home = document.getElementById('overview')
+  for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
+    await click(button(framework, home))
+    assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`, 'Homepage switches the actual native Select runtime')
+  }
+  const homeFrame = home.querySelector('iframe')
+  await click(button('Midnight', home))
+  assert.equal(home.querySelector('iframe'), homeFrame, 'Theme switching preserves the mounted runtime')
+  await click(button('Everyday', home))
   const toggle = document.querySelector('button[aria-label="打开导航"]')
   await click(toggle); assert.equal(toggle.getAttribute('aria-expanded'), 'true'); assert.ok(document.querySelector('.sidebar').classList.contains('is-open'))
   await click(document.querySelector('nav a[href="#select"]')); assert.equal(toggle.getAttribute('aria-expanded'), 'false'); assert.equal(document.querySelector('.sidebar').classList.contains('is-open'), false)
@@ -62,8 +72,8 @@ if (process.argv[2] === '--worker') {
   await click(document.querySelector('.search-trigger')); assert.ok(document.querySelector('[role=dialog]')); assert.equal(document.activeElement.getAttribute('aria-label'),'搜索关键词');
   window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape'}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
   await click(toggle);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.ok(document.querySelector('.search-dialog'));assert.equal(document.querySelector('.sidebar').classList.contains('is-open'),false);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
-  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
   await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'light');
+  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
   assert.ok(document.querySelector('#select details').open,'API is expanded by default');
   assert.match(document.title,/Select/);
   const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
