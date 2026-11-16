@@ -1,8 +1,10 @@
 # Ready component slice (private experiment)
 
 Three composed controls, four framework adapters, one semantic CSS contract.
-Use the explicit framework package subpath and import theme.css once. Wrap consumers in data-rd-theme="default" or "midnight". Components never
-branch on theme names. Override the same --rd-* variables for a custom style.
+Use the explicit framework package subpath and import theme.css once. Components
+have default styling without a theme wrapper. Optionally use an existing ancestor
+with data-rd-theme="default" or "midnight" for an explicit local theme. Components
+never branch on theme names. Override the same --rd-* variables for a custom style.
 
 Checkbox accepts label, description, checked, disabled, required, error, name and a boolean change callback.
 Select accepts label, description, options ({label,value,disabled?}), value, placeholder, emptyMessage,

@@ -7,7 +7,7 @@ test('Ready themes share the same semantic contract with distinct geometry and t
  const tokens=block=>Object.fromEntries([...block.matchAll(/(--rd-[\w-]+):([^;]+);/g)].map(m=>[m[1],m[2]]))
  const [a,b]=blocks.map(tokens);assert.deepEqual(Object.keys(a).sort(),Object.keys(b).sort());assert.equal(Object.keys(a).length,14)
  for(const token of ['--rd-radius','--rd-font','--rd-space','--rd-control-height','--rd-shadow'])assert.notEqual(a[token],b[token])
- assert.ok(!/(?:^|\n)body\s/.test(css));assert.ok(!css.includes(':root'));assert.ok(css.includes('background:var(--rd-backdrop)'));assert.ok(css.includes('z-index:calc(var(--rd-overlay-z) + 1)'))
+ assert.ok(!/(?:^|\n)body\s/.test(css));assert.ok(!css.includes(':root'));assert.ok(css.includes('background:var(--rd-backdrop,#10182780)'));assert.ok(css.includes('z-index:calc(var(--rd-overlay-z,40) + 1)'))
  for(const fw of ['react','vue','solid','svelte']){const html=await readFile(new URL(`../examples/ready/${fw}/index.html`,import.meta.url),'utf8');for(const theme of ['default','midnight'])assert.ok(html.includes(`data-rd-theme="${theme}"`))}
 })
 test('Packed theme guide documents every token and an explicit scoped override',async()=>{
@@ -20,4 +20,20 @@ test('Packed theme guide documents every token and an explicit scoped override',
  assert.ok(guide.includes('--rd-on-accent: #ffffff'))
  const manifest=JSON.parse(await readFile(new URL('../packages/ready/package.json',import.meta.url),'utf8'))
  assert.ok(manifest.files.includes('THEMING.md'))
+})
+
+test('Unscoped components consume complete defaults without shadowing inherited custom tokens',async()=>{
+ const css=await readFile(new URL('../packages/ready/theme.css',import.meta.url),'utf8')
+ const scope=css.match(/\[data-rd-theme\]\s*\{([^}]+)\}/)[1]
+ const defaults=Object.fromEntries([...scope.matchAll(/(--rd-[\w-]+):([^;]+);/g)].map(m=>[m[1],m[2]]))
+ const componentCss=css.slice(css.indexOf('.rd-component'))
+ for(const [,token] of componentCss.matchAll(/var\((--rd-[\w-]+)/g)) {
+  assert.ok(componentCss.includes(`var(${token},${defaults[token]})`), `${token} has the same default as the explicit scope`)
+ }
+ assert.doesNotMatch(componentCss,/var\(--rd-[\w-]+\)/,'Every Ready token consumption has a fallback')
+ assert.doesNotMatch(componentCss,/--rd-[\w-]+\s*:/,'Component roots must not shadow inherited scope/custom values')
+ assert.doesNotMatch(css,/:root|@property/,'No global defaults or registered custom properties')
+ assert.doesNotMatch(css,/(?:^|\n)\s*(?:html|body|button|input)\s*[{,]/,'No host/global element styling')
+ assert.ok(css.includes('background:var(--rd-surface,#fff)'))
+ assert.ok(css.includes('calc(var(--rd-radius,10px) / 2)'))
 })

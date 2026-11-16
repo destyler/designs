@@ -6,8 +6,16 @@ Import the stylesheet once in your Vite application's entry module:
 import '@destyler/ready-prototype/theme.css'
 ```
 
-Every Ready component needs a themed ancestor. The same markup works with any
-framework (use `className` instead of `class` in React):
+No theme wrapper is required for the built-in default component appearance.
+Importing the CSS is enough; it does not style the host page or publish variables
+on `:root`. Each component declaration uses its default only when the inherited
+`--rd-*` variable is absent. Host background, ordinary buttons and inputs remain
+untouched. A component on a dark host still uses the light default unless you
+choose a different theme; this does not follow the OS automatically.
+
+For an explicit local theme, add an attribute to an existing ancestor (no new
+wrapper is necessary). The same markup works with any framework (use `className`
+instead of `class` in React):
 
 ```html
 <section data-rd-theme="default">
@@ -23,6 +31,19 @@ serif type, sharper corners, larger spacing and a hard shadow. Change the
 ancestor's `data-rd-theme` attribute to switch style without replacing components
 or resetting their state. This does not automatically persist a preference or
 follow the OS color-scheme setting; that choice belongs to the application.
+
+## Defaults and inheritance
+
+The fallback values are used at property-consumption sites, not declared again on
+`.rd-component`. This preserves inherited tokens, including a custom ancestor
+without `data-rd-theme`; omitted tokens fall back individually. The tokens are
+not materialized as computed custom properties on unscoped components. If your
+own CSS uses `var(--rd-*)`, supply its fallback or choose an explicit theme scope.
+`--rd-bg` styles an explicit theme container, not the unscoped host canvas.
+
+A valid inherited value wins. A defined but invalid/empty value is not replaced
+by `var()` fallback; validate custom CSS values. Defaults do not solve ancestor
+clipping, stacking contexts, arbitrary portals or nested-overlay interactions.
 
 ## Custom style without a plugin
 

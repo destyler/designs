@@ -52,7 +52,9 @@ checkout. `npm run check` type-checks; `npm run build` is a separate compile ste
 ## 2. Shared document and custom style
 
 The package CSS must be imported before `app.css`. `data-rd-theme="default"`
-provides all token defaults; use `midnight` for the second built-in theme. The
+explicitly provides all token defaults; it is optional for default component
+styling. Importing CSS alone provides per-property defaults without styling the
+host canvas. Use `midnight` for the second built-in theme. The
 sample overrides three tokens on the same scope without changing component APIs.
 Remove `class="brand"` to see the unmodified theme. See the package's
 [theme guide](../packages/ready/THEMING.md) for inheritance and overlay limits.

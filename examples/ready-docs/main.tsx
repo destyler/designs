@@ -453,8 +453,9 @@ export function App() {
               <span aria-hidden="true">↳</span>
               <p>
                 在应用入口导入 <code>@destyler/ready-prototype/theme.css</code>
-                ，并用 <code>data-rd-theme="default"</code>{" "}
-                容器包住组件。生成器已包含这些步骤；React /
+                即可获得默认组件样式，无需额外主题容器。可在现有祖先上设置
+                <code>data-rd-theme="default"</code> 或 midnight
+                切换局部主题。生成器保留显式主题示例；React /
                 Solid：把下方代码保存为 Example.tsx，在生成的入口导入 Example
                 并渲染 Example 组件，保留挂载、CSS 和主题容器。Vue /
                 Svelte：替换 App.vue / App.svelte
