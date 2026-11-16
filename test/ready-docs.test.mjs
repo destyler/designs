@@ -159,6 +159,8 @@ if (process.argv[2] === '--worker') {
         const code = snippet(framework, component)
         assert.ok(code.includes(`@destyler/ready-prototype/${framework.toLowerCase()}`))
         assert.ok(code.includes(`<${component}`)); assert.ok(code.includes('\n'))
+        assert.ok(code.split('\n').every(line => line.length <= 80), 'Basic examples use readable source lines, not minified markup')
+        assert.match(code, new RegExp(`<${component}\\n`), 'Component attributes start on separate lines')
         if (framework === 'Svelte') assert.doesNotMatch(code, /bind:(checked|value|open)/)
       }
     }

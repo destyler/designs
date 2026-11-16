@@ -35,3 +35,14 @@ Check desktop and narrow mobile layouts, both document appearances, all four fra
 - Visual worker rechecked 390px React Everyday and Svelte Midnight Dialog: entire dialog and close button visible with bottom clearance, no prior internal-scroll clipping.
 - Four-framework desktop Checkbox toggles and Dialog open/close were checked. Escape returned focus for React/Vue/Svelte; Solid close-button focus return was checked. Mobile Checkbox layout/Space toggling and mobile navigation were checked.
 - This scoped review does not establish full keyboard, assistive-technology, cross-browser, nested-overlay, or cross-platform typography acceptance. No production deployment was performed.
+
+## Documentation refinement (2026-11-16)
+
+The owner found the earlier version improved but still visually unsatisfactory. This follow-up is an iteration, not a claim of owner design acceptance.
+
+- Compact homepage brings the real native Select and its matching source into the desktop first screen. Code uses the existing byte-preserving tokenizer; copied and compiled examples share the same source.
+- Documentation uses sans-serif reading typography, a unified preview/code/framework/theme toolbar and higher-contrast API content. Component theme remains independent from document appearance; the initial preview is the real Midnight theme.
+- Actual screenshot review found clipped single-line source, offset mobile headings and undersized controls. Shared examples now use multiline attributes/options; mobile headings align with the reading edge; narrow example toolbars use readable three-row controls.
+- Visual recheck of the final layout confirmed the desktop source no longer has the previous horizontal clipping, the 390px heading alignment is consistent, and narrow controls are readable without crowding. The code panel retains vertical scrolling. This scoped check is not user aesthetic approval or comprehensive browser/assistive-technology acceptance.
+- Final local checks: docs build/TypeScript, 9 focused docs/source tests, 157 full regression tests (0 failed, 0 skipped), four-framework type checks, packed positive/negative consumer contracts and all four demo builds passed.
+- Added assertions that basic shared examples retain readable line lengths and multiline component attributes. No dependency changes, package publication or production deployment.
