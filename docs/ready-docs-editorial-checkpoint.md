@@ -26,3 +26,12 @@ Base: `a6db6a12ce253a702602d6912c22890c83e8a924`.
 Real browser visual/interaction acceptance is pending browser permission. No screenshots or visual geometry were verified for this version. Do not treat simulated DOM tests or HTTP success as visual approval.
 
 Check desktop and narrow mobile layouts, both document appearances, all four framework runtimes, open Select/Dialog clipping, keyboard focus, repeated framework/theme switching and search/navigation. Display typography currently uses a system CJK serif stack (Songti SC on macOS); cross-platform font consistency needs review. No publication or deployment was performed for this checkpoint.
+
+## Local review follow-up (2026-11-16)
+
+- Rebuilt the docs and reran the complete suite at `e33183a`: 157 passed, 0 failed, 0 skipped.
+- Real-browser review on the Mac found that the Dialog preview cropped its bottom edge at a 390px viewport. Increased only the mobile Dialog iframe to 420px; other previews and desktop sizes are unchanged.
+- After this correction, docs build/TypeScript and 7 focused docs regressions passed, with no skips. The full suite above predates the three-line CSS correction.
+- Visual worker rechecked 390px React Everyday and Svelte Midnight Dialog: entire dialog and close button visible with bottom clearance, no prior internal-scroll clipping.
+- Four-framework desktop Checkbox toggles and Dialog open/close were checked. Escape returned focus for React/Vue/Svelte; Solid close-button focus return was checked. Mobile Checkbox layout/Space toggling and mobile navigation were checked.
+- This scoped review does not establish full keyboard, assistive-technology, cross-browser, nested-overlay, or cross-platform typography acceptance. No production deployment was performed.

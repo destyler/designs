@@ -1191,6 +1191,9 @@ main[data-page="dialog"] > .component-intro {
   .home-live-stage iframe {
     height: 360px;
   }
+  #dialog .live-frame iframe {
+    height: 420px;
+  }
   .home-library {
     margin-top: 64px;
   }
