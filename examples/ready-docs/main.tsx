@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { LivePreview } from "./LivePreview";
+import { tokenizeSource } from "../shadcn/components/source-view";
 import "../../packages/ready/theme.css";
 import "@fontsource-variable/geist";
 import "./styles.css";
@@ -68,7 +69,16 @@ function CopyCode({
         </span>
       </div>
       <pre tabIndex={0} aria-label={title}>
-        <code>{code}</code>
+        <code>
+          {tokenizeSource(code).map((token, i) => (
+            <span
+              key={i}
+              className={token.kind ? `syntax-${token.kind}` : undefined}
+            >
+              {token.text}
+            </span>
+          ))}
+        </code>
       </pre>
     </div>
   );
@@ -111,7 +121,7 @@ const pageFromHash = () => {
 };
 export function App() {
   const [framework, setFramework] = useState<Framework>("React"),
-    [theme, setTheme] = useState<"default" | "midnight">("default"),
+    [theme, setTheme] = useState<"default" | "midnight">("midnight"),
     [nav, setNav] = useState(false);
   const [page, setPage] = useState(pageFromHash);
   const [appearance, setAppearance] = useState<"light" | "dark">(() => {
@@ -321,21 +331,15 @@ export function App() {
               <span>组件 · 交互 · 主题</span>
             </div>
             <h1 className="editorial-title">
-              <span>把时间，</span>
-              <span>
-                留给<em>你的产品。</em>
-              </span>
+              组件已就绪。
+              <br />
+              <em>让设计，成为你的。</em>
             </h1>
             <div className="hero-introduction">
-              <p>
-                交互已经组合好，
-                <br />
-                设计仍然属于你。
-              </p>
               <div>
                 <p className="hero-description">
-                  从一个组件开始。为 React、Vue、Solid 和 Svelte
-                  提供原生实现，用同一套主题语言连接每一个细节。
+                  无需从零组合。为 React、Vue、Solid 和 Svelte 提供原生组件，
+                  以共享主题连接设计与交互。
                 </p>
                 <div className="hero-actions">
                   <a className="primary-link" href="#installation">
@@ -351,7 +355,7 @@ export function App() {
               <div className="home-live-heading">
                 <div>
                   <span className="section-kicker">一个组件，四种原生实现</span>
-                  <h2 id="home-live-title">换个框架，亲手试试。</h2>
+                  <h2 id="home-live-title">同一种体验，不同的实现。</h2>
                 </div>
                 <a href="#select">Select 文档 ↗</a>
               </div>
@@ -378,13 +382,21 @@ export function App() {
                   </button>
                 </div>
               </div>
-              <div className="home-live-stage" data-rd-theme={theme}>
-                <LivePreview
-                  active={page === "overview"}
-                  framework={framework}
-                  component="Select"
-                  theme={theme}
-                />
+              <div className="home-example-grid">
+                <div className="home-live-stage" data-rd-theme={theme}>
+                  <LivePreview
+                    active={page === "overview"}
+                    framework={framework}
+                    component="Select"
+                    theme={theme}
+                  />
+                </div>
+                <div className="home-source">
+                  <CopyCode
+                    code={snippet(framework, "Select")}
+                    title={`${framework} · Select`}
+                  />
+                </div>
               </div>
               <p className="home-live-note">
                 {framework} 原生运行 ·
@@ -459,28 +471,6 @@ export function App() {
             <div className="breadcrumb">
               文档 <span>/</span> 组件
             </div>
-            <div
-              className="theme-switch"
-              role="group"
-              aria-label="交互预览主题"
-            >
-              <button
-                type="button"
-                aria-pressed={theme === "default"}
-                onClick={() => setTheme("default")}
-              >
-                <span className="swatch swatch-light" />
-                Everyday
-              </button>
-              <button
-                type="button"
-                aria-pressed={theme === "midnight"}
-                onClick={() => setTheme("midnight")}
-              >
-                <span className="swatch swatch-dark" />
-                Midnight
-              </button>
-            </div>
           </div>
           {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
             (component, i) => (
@@ -504,26 +494,55 @@ export function App() {
                     </p>
                   </div>
                 </div>
-                <FrameworkPicker value={framework} onChange={setFramework} />
-                <div
-                  className="view-tabs"
-                  role="group"
-                  aria-label={`${component} 显示方式`}
-                >
-                  <button
-                    type="button"
-                    aria-pressed={mode === "preview"}
-                    onClick={() => setMode("preview")}
+                <div className="example-toolbar">
+                  <div
+                    className="view-tabs"
+                    role="group"
+                    aria-label={`${component} 显示方式`}
                   >
-                    预览
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={mode === "code"}
-                    onClick={() => setMode("code")}
-                  >
-                    代码
-                  </button>
+                    <button
+                      type="button"
+                      aria-pressed={mode === "preview"}
+                      onClick={() => setMode("preview")}
+                    >
+                      预览
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={mode === "code"}
+                      onClick={() => setMode("code")}
+                    >
+                      代码
+                    </button>
+                  </div>
+                  <div className="example-settings">
+                    <FrameworkPicker
+                      value={framework}
+                      onChange={setFramework}
+                    />{" "}
+                    <div
+                      className="theme-switch"
+                      role="group"
+                      aria-label="交互预览主题"
+                    >
+                      <button
+                        type="button"
+                        aria-pressed={theme === "default"}
+                        onClick={() => setTheme("default")}
+                      >
+                        <span className="swatch swatch-light" />
+                        Everyday
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={theme === "midnight"}
+                        onClick={() => setTheme("midnight")}
+                      >
+                        <span className="swatch swatch-dark" />
+                        Midnight
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div className="component-workbench">
                   <div
@@ -538,7 +557,7 @@ export function App() {
                       component={component}
                       theme={theme}
                     />
-                    <div className="preview-footer">
+                    <div className="preview-footer sr-only">
                       {framework} · 原生交互预览
                     </div>
                   </div>
@@ -554,6 +573,7 @@ export function App() {
                 </div>
                 {component === "Select" && (
                   <p className="api-note" data-doc-note="disabled-selection">
+                    <strong className="note-title">禁用选项与提交值</strong>
                     已选中的选项后来被禁用，仍会显示并保留选中状态，但不能从列表重新选择。按原生表单规则，禁用选项不会作为该字段的提交值；不要依赖
                     required 拒绝这个状态。撤回选项时请显式清空受控 value 或提供
                     error，并在服务端校验。现有 Happy DOM
