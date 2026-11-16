@@ -333,7 +333,9 @@ export function App() {
             <h1 className="editorial-title">
               组件已就绪。
               <br />
-              <em>让设计，成为你的。</em>
+              <em>
+                让设计，成为<span className="hero-accent">你的</span>。
+              </em>
             </h1>
             <div className="hero-introduction">
               <div>

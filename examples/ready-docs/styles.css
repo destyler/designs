@@ -1762,3 +1762,45 @@ td:first-child code {
   background: var(--surface);
   border-radius: 3px;
 }
+
+.hero-accent {
+  color: var(--accent);
+}
+@media (max-width: 800px) {
+  .home-live-heading {
+    align-items: flex-start;
+  }
+  .home-preview-controls {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 480px) {
+  .example-settings {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .example-toolbar .frameworks {
+    width: 100%;
+  }
+  .example-toolbar .frameworks button {
+    flex: 1;
+    font-size: 13px;
+    min-height: 36px;
+  }
+  .example-toolbar .view-tabs button {
+    font-size: 13px;
+    min-height: 36px;
+  }
+  .example-toolbar .theme-switch {
+    align-self: flex-start;
+  }
+  .example-toolbar .theme-switch button {
+    font-size: 12px;
+    min-height: 32px;
+    padding-inline: 10px;
+  }
+  .code-toolbar button {
+    min-height: 32px;
+  }
+}
