@@ -8,7 +8,16 @@ and core dependencies; that minimum has not been runtime-tested. Do not use Node
 the exact source blocks below, so the documented examples are the ones compiled
 by the opt-in verification, not substitute internal test fixtures.
 
-## 1. Pack and create an application
+## 1. Pack and create a disposable trial application
+
+The `/tmp` recipe below is for a short-lived trial, not a persistent application
+or CI dependency. npm saves the archive path in the manifest/lockfile; after the
+archive disappears, a fresh-cache `npm ci` fails with ENOENT. For a real app, keep
+the archive at `vendor/destyler/<source-commit>/` inside the app, install through
+that relative path, and commit the archive, package.json and package-lock.json
+together. A new checkout must obtain those same archive bytes before `npm ci`.
+See the package README for the persistent archive contract. The instructions here
+validate npm only; they do not establish pnpm compatibility.
 
 Run this in the **designs repository root**. Choose exactly one framework:
 

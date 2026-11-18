@@ -246,12 +246,15 @@ if (process.argv[2] === '--worker') {
         if (peers.includes(dependency)) assert.ok(ready.peerDependencies[name], `${name} is a real runtime peer`)
       }
       assert.match(code, /npm pack \.\/packages\/ready/)
-      assert.match(code, /npm install "\$archive_dir\/destyler-ready-prototype-0\.0\.0\.tgz"/)
+      assert.match(code, /npm install "\.\/vendor\/destyler\/\$revision\/destyler-ready-prototype-0\.0\.0\.tgz"/)
+      assert.doesNotMatch(code, /mktemp|archive_dir=".*\/tmp/)
       assert.doesNotMatch(code, /npm install @destyler\/ready-prototype/)
       assert.match(setup.config, /plugins:/)
     }
     const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
     assert.match(source, /data-doc-existing-project/)
+    assert.match(source, /data-doc-note="tarball-reinstall"/)
+    assert.match(source, /相同相对路径、相同字节/)
     assert.match(source, /import '@destyler\/ready-prototype\/theme\.css'/)
     assert.match(source, /尚未发布/)
   })

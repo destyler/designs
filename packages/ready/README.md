@@ -36,9 +36,20 @@ Import `@destyler/ready-prototype/theme.css` once in the application entry.
 Use that framework's normal Vite plugin. TypeScript, Vue and Svelte sources remain
 in the archive so the consumer compiler handles its own framework semantics.
 
-For a local tarball, run `npm pack ./packages/ready`, then install the resulting
-`.tgz` in a Vite application. Install only the matching runtime and UI peer:
+For a long-lived application, keep the packed `.tgz` **inside the application's
+repository**, for example `vendor/destyler/<source-commit>/destyler-ready-prototype-0.0.0.tgz`,
+and install it via that application-relative path. Commit the archive together
+with the application's `package.json` and `package-lock.json`. A fresh checkout/CI
+must obtain the same archive bytes at the same relative path before `npm ci`.
+If artifacts are distributed through private storage instead, download that exact
+locked artifact before installation; keep the lockfile integrity check. Do not
+regenerate a different archive against an unchanged lockfile or overwrite an
+already locked archive. Use a new source-commit directory for upgrades and update
+the dependency and lockfile together. The `/tmp` quickstart is only a disposable
+trial: a fresh-cache `npm ci` fails with ENOENT after its archive disappears.
+This reinstall flow is tested with npm, not pnpm.
 
+Install only the matching runtime and UI peer:
 - React: `react`, `react-dom`, `@destyler-ui/react@0.0.5`, with `@vitejs/plugin-react`.
 - Vue: `vue`, `@destyler-ui/vue@0.0.5`, with `@vitejs/plugin-vue`.
 - Solid: `solid-js`, `@destyler-ui/solid@0.0.5`, with `vite-plugin-solid`.

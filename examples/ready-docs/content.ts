@@ -125,7 +125,7 @@ export const consumerSetup = {
 } as const;
 export function existingInstall(framework: Framework) {
   const setup = consumerSetup[framework];
-  return `# 先把两处绝对路径换成你的实际路径；在同一终端执行\ncd /absolute/path/to/designs\narchive_dir="$(mktemp -d /tmp/ready-package-XXXXXX)"\nnpm pack ./packages/ready --pack-destination "$archive_dir"\n\n# 以下命令在你已有的 Vite 项目运行，不是 designs 仓库\ncd /absolute/path/to/your-vite-app\nnpm install "$archive_dir/destyler-ready-prototype-0.0.0.tgz" ${setup.peers}\n# 仅在项目尚未配置该框架插件时安装，并合并下一段配置\nnpm install -D ${setup.plugin}`;
+  return `# 先把两处绝对路径换成你的实际路径；在同一终端执行\ncd /absolute/path/to/designs\napp_dir="/absolute/path/to/your-vite-app"\n# 从已提交的源码打包；不同 revision 使用不同目录，勿覆盖已锁定的 archive\nrevision="$(git rev-parse HEAD)"\narchive_dir="$app_dir/vendor/destyler/$revision"\nmkdir -p "$archive_dir"\nnpm pack ./packages/ready --pack-destination "$archive_dir"\n\n# 以下命令在已有的 Vite 项目运行，保存 app 相对路径而非 /tmp 依赖\ncd "$app_dir"\nnpm install "./vendor/destyler/$revision/destyler-ready-prototype-0.0.0.tgz" ${setup.peers}\n# 仅在项目尚未配置该框架插件时安装，并合并下一段配置\nnpm install -D ${setup.plugin}`;
 }
 export function frameworkFromUrl(url: string): Framework {
   const value = new URL(url).searchParams.get("framework")?.toLowerCase();

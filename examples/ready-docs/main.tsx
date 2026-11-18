@@ -536,6 +536,30 @@ export function App() {
                 自动解析。压缩包文件名含版本号，若版本变化请使用 npm pack
                 实际输出的文件名。
               </p>
+              <h4>让新环境与 CI 安装同一份包</h4>
+              <p className="api-note" data-doc-note="tarball-reinstall">
+                将 vendor/destyler 下本次生成的 .tgz、package.json 和
+                package-lock.json 一起提交到应用仓库。若仓库忽略
+                .tgz，先核对并调整该目录的忽略规则。 新 checkout 在 npm ci
+                前必须已经取得相同相对路径、相同字节的压缩包；不能只提交锁文件，
+                也不要在 CI 重新打包另一个内容却仍沿用旧锁文件。
+                使用私有制品存储时，需在 npm ci
+                前下载该锁定产物到同一路径，并保留 lockfile 的 integrity 校验。
+              </p>
+              <CopyCode
+                code={
+                  "# 在应用仓库的新 checkout 中；vendor archive 必须已随代码取得\nnpm ci\n# 接着运行项目已有的检查与构建脚本\nnpm run build"
+                }
+                title="新环境 / CI · npm"
+              />
+              <p className="api-note">
+                上面的 /tmp 快速体验配方只供临时试用，不适合作为长期依赖地址。
+                npm install 会把本地 archive
+                路径写入依赖与锁文件；临时文件消失后，空缓存的 npm ci 会因
+                ENOENT 失败。升级时创建新的 revision 目录，重新 npm install
+                并提交更新后的 archive 与锁文件， 不要原地覆盖旧包。本指南仅验证
+                npm 流程，不承诺 pnpm 的源码编译或锁文件行为。
+              </p>
               <h4>确认框架编译器</h4>
               <p className="api-note">
                 这是保留 TypeScript / TSX / Vue / Svelte 源码的 Vite
