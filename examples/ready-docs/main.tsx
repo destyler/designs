@@ -180,6 +180,8 @@ export function App() {
   useEffect(() => {
     document.title = `${({ overview: "组件，为产品而生", installation: "开始使用", checkbox: "Checkbox", select: "Select", dialog: "Dialog", themes: "主题", boundaries: "使用边界" } as Record<string, string>)[page]} — Destyler`;
   }, [page]);
+  const [homeComponent, setHomeComponent] = useState<ComponentName>("Select");
+  const [homeMode, setHomeMode] = useState<"preview" | "code">("preview");
   const [mode, setMode] = useState<"preview" | "code">("preview");
   useEffect(() => {
     const change = () => {
@@ -327,88 +329,176 @@ export function App() {
         <main id="main-content" tabIndex={-1} data-page={page}>
           <section className="hero" id="overview">
             <div className="hero-masthead">
-              <span>DESTYLER / DESIGNS</span>
-              <span>组件 · 交互 · 主题</span>
+              <span>
+                <i /> DESTYLER DESIGNS
+              </span>
+              <span>INTERACTION / EXPRESSION</span>
             </div>
-            <h1 className="editorial-title">
-              组件已就绪。
-              <br />
-              <em>
-                让设计，成为<span className="hero-accent">你的</span>。
-              </em>
-            </h1>
-            <div className="hero-introduction">
-              <div>
+            <div className="hero-composition">
+              <div className="hero-copy">
+                <p className="hero-eyebrow">原生交互，完整组件。</p>
+                <h1 className="editorial-title">
+                  少一点组装。
+                  <br />
+                  <em>多一点设计。</em>
+                </h1>
                 <p className="hero-description">
-                  无需从零组合。为 React、Vue、Solid 和 Svelte 提供原生组件，
-                  以共享主题连接设计与交互。
+                  为 React、Vue、Solid 与 Svelte 准备的组合组件。
+                  <br />
+                  把交互交给组件，把风格留给你。
                 </p>
                 <div className="hero-actions">
                   <a className="primary-link" href="#installation">
                     开始使用 <span>↗</span>
                   </a>
                   <a className="secondary-link" href="#select">
-                    阅读组件文档 <span>→</span>
+                    浏览组件 <span>→</span>
                   </a>
                 </div>
+              </div>
+              <div className="hero-spec" aria-label="组件系统概览">
+                <div className="system-emblem" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <p>
+                  ONE SYSTEM.
+                  <br />
+                  <strong>YOUR EXPRESSION.</strong>
+                </p>
+                <dl>
+                  <div>
+                    <dt>原生框架</dt>
+                    <dd>04</dd>
+                  </div>
+                  <div>
+                    <dt>就绪组件</dt>
+                    <dd>03</dd>
+                  </div>
+                  <div>
+                    <dt>主题方式</dt>
+                    <dd>CSS 变量</dd>
+                  </div>
+                </dl>
               </div>
             </div>
             <section className="home-live" aria-labelledby="home-live-title">
               <div className="home-live-heading">
                 <div>
-                  <span className="section-kicker">一个组件，四种原生实现</span>
-                  <h2 id="home-live-title">同一种体验，不同的实现。</h2>
+                  <span className="section-kicker">01 / THE PLAYGROUND</span>
+                  <h2 id="home-live-title">看得见，也用得上。</h2>
                 </div>
-                <a href="#select">Select 文档 ↗</a>
+                <p>切换框架，运行真正的原生组件。</p>
               </div>
-              <div className="home-preview-controls">
-                <FrameworkPicker value={framework} onChange={setFramework} />
+              <div className="home-workspace">
                 <div
-                  className="theme-switch"
+                  className="home-component-picker"
                   role="group"
-                  aria-label="首页预览主题"
+                  aria-label="首页示例组件"
                 >
-                  <button
-                    type="button"
-                    aria-pressed={theme === "default"}
-                    onClick={() => setTheme("default")}
-                  >
-                    Everyday
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={theme === "midnight"}
-                    onClick={() => setTheme("midnight")}
-                  >
-                    Midnight
-                  </button>
+                  <span className="workspace-label">COMPONENTS</span>
+                  {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
+                    (name, i) => (
+                      <button
+                        key={name}
+                        type="button"
+                        aria-pressed={homeComponent === name}
+                        onClick={() => setHomeComponent(name)}
+                      >
+                        <span>0{i + 1}</span>
+                        {name}
+                        <span className="picker-arrow">↗</span>
+                      </button>
+                    ),
+                  )}
+                  <a href={`#${homeComponent.toLowerCase()}`}>
+                    用法与 API <span>→</span>
+                  </a>
                 </div>
-              </div>
-              <div className="home-example-grid">
-                <div className="home-live-stage" data-rd-theme={theme}>
-                  <LivePreview
-                    active={page === "overview"}
-                    framework={framework}
-                    component="Select"
-                    theme={theme}
-                  />
-                </div>
-                <div className="home-source">
-                  <CopyCode
-                    code={snippet(framework, "Select")}
-                    title={`${framework} · Select`}
-                  />
+                <div className="home-workbench">
+                  <div className="home-preview-controls">
+                    <FrameworkPicker
+                      value={framework}
+                      onChange={setFramework}
+                    />
+                    <div
+                      className="view-tabs"
+                      role="group"
+                      aria-label="首页显示方式"
+                    >
+                      <button
+                        type="button"
+                        aria-pressed={homeMode === "preview"}
+                        onClick={() => setHomeMode("preview")}
+                      >
+                        预览
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={homeMode === "code"}
+                        onClick={() => setHomeMode("code")}
+                      >
+                        代码
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    className="home-live-stage"
+                    hidden={homeMode !== "preview"}
+                    data-rd-theme={theme}
+                  >
+                    <LivePreview
+                      active={page === "overview"}
+                      framework={framework}
+                      component={homeComponent}
+                      theme={theme}
+                    />
+                  </div>
+                  <div className="home-source" hidden={homeMode !== "code"}>
+                    <CopyCode
+                      code={snippet(framework, homeComponent)}
+                      title={`${framework} · ${homeComponent}`}
+                    />
+                  </div>
+                  <div className="home-workbench-footer">
+                    <span className="runtime-label">
+                      <i /> {framework} / 原生运行
+                    </span>
+                    <div
+                      className="theme-switch"
+                      role="group"
+                      aria-label="首页预览主题"
+                    >
+                      <button
+                        type="button"
+                        aria-pressed={theme === "default"}
+                        onClick={() => setTheme("default")}
+                      >
+                        <span className="swatch swatch-light" />
+                        Everyday
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={theme === "midnight"}
+                        onClick={() => setTheme("midnight")}
+                      >
+                        <span className="swatch swatch-dark" />
+                        Midnight
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <p className="home-live-note">
-                {framework} 原生运行 ·
-                切换框架会重新挂载示例，切换主题保留当前选择。
+                预览与代码来自同一示例。切换框架会重新挂载，切换主题保留当前选择。
               </p>
             </section>
             <section className="home-library" aria-labelledby="library-title">
               <div>
-                <span className="section-kicker">组件文档</span>
-                <h2 id="library-title">小而完整。逐步生长。</h2>
+                <span className="section-kicker">02 / THE COLLECTION</span>
+                <h2 id="library-title">从细节，开始构建。</h2>
               </div>
               <p>
                 当前提供三个组合组件。

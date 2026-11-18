@@ -33,6 +33,20 @@ if (process.argv[2] === '--worker') {
     await click(button(framework, home))
     assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`, 'Homepage switches the actual native Select runtime')
   }
+  for (const component of ['Checkbox', 'Dialog', 'Select']) {
+    await click([...home.querySelectorAll('.home-component-picker button')].find(node => node.textContent.includes(component)))
+    assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/react/${component.toLowerCase()}.html`)
+    assert.match(home.querySelector('pre code').textContent, new RegExp(`<${component}`))
+    assert.equal(home.querySelector('.home-component-picker a').getAttribute('href'), `#${component.toLowerCase()}`)
+  }
+  const retainedFrame = home.querySelector('iframe')
+  await click(button('代码', home))
+  assert.equal(home.querySelector('.home-source').hidden, false)
+  assert.equal(home.querySelector('.home-live-stage').hidden, true)
+  await click(button('预览', home))
+  assert.equal(home.querySelector('.home-live-stage').hidden, false)
+  assert.equal(home.querySelector('.home-source').hidden, true)
+  assert.equal(home.querySelector('iframe'), retainedFrame, 'Preview/code toggle keeps interaction state')
   const homeFrame = home.querySelector('iframe')
   await click(button('Midnight', home))
   assert.equal(home.querySelector('iframe'), homeFrame, 'Theme switching preserves the mounted runtime')
@@ -181,15 +195,17 @@ if (process.argv[2] === '--worker') {
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
     const css = await readFile(join(root, 'examples/ready-docs/styles.css'), 'utf8')
-    assert.match(css, /\.frameworks button\s*\{\s*color:\s*var\(--muted\)/); assert.match(css, /data-appearance=["']?dark/)
+    assert.match(css, /\.frameworks button\s*\{\s*color:\s*var\(--muted\)/); assert.match(css, /:root:not\(\[data-appearance="light"\]\)/)
     const luminance = hex => {
       const rgb = hex.replace('#','').match(/../g).map(c => parseInt(c,16)/255).map(c => c <= .04045 ? c/12.92 : ((c+.055)/1.055)**2.4)
       return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722
     }
-    for (const [foreground, background] of [['#6b6864','#f6f5f3'],['#242322','#fdfcfb'],['#aaa69f','#212120'],['#f1f0ec','#171716']]) {
-      assert.ok(css.includes(foreground)); const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)
+    const palettes = [...css.matchAll(/:root(?:\:not\(\[data-appearance="light"\]\))?\s*\{([^}]+)\}/g)].map(match => Object.fromEntries([...match[1].matchAll(/--(paper|surface|ink|muted):\s*(#[0-9a-f]{6})/g)].map(entry => [entry[1], entry[2]]))).filter(palette => palette.paper)
+    assert.equal(palettes.length, 2, 'Both actual theme palettes are measured')
+    for (const palette of palettes) for (const foreground of [palette.ink, palette.muted]) for (const background of [palette.paper, palette.surface]) {
+      const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)
       assert.ok((levels[0]+.05)/(levels[1]+.05) >= 4.5, `${foreground} on ${background}`)
     }
-    assert.match(css, /button:focus-visible[^}]+outline:\s*3px/)
+    assert.match(css, /button:focus-visible[^}]+outline:\s*2px/)
   })
 }
