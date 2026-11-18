@@ -1,0 +1,45 @@
+name: Ready CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Tests, four-framework types and builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the proposed code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build style artifacts required by legacy regression tests
+        run: npm run build:designs
+      - name: Run regressions, including packed four-framework consumers
+        run: npm run test:ci
+      - name: Check Ready types in all four frameworks
+        run: npm run check:ready
+      - name: Verify packed consumer type contracts and negative cases
+        run: npm run check:ready:contracts
+      - name: Build interactive Ready documentation
+        run: npm run build:ready:docs
+      - name: Build all four Ready demos
+        run: npm run build:ready

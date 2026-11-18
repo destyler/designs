@@ -1,0 +1,60 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {mkdtemp,writeFile,rm} from 'node:fs/promises'
+import {execFileSync} from 'node:child_process'
+import {fileURLToPath,pathToFileURL} from 'node:url'
+import {join} from 'node:path'
+const root=fileURLToPath(new URL('../',import.meta.url))
+if(process.argv[2]==='--worker'){
+ const {Window}=await import('happy-dom');const win=new Window({url:'http://localhost/'})
+ for(const key of Object.getOwnPropertyNames(win))if(['window','document','navigator'].includes(key)||/^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)){try{Object.defineProperty(globalThis,key,{configurable:true,writable:true,value:win[key]})}catch{}}
+ for(const key of ['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])globalThis[key]=win[key].bind(win)
+ globalThis.window=win;globalThis.document=win.document
+ const target=document.createElement('form');document.body.append(target);const events=[]
+ const attemptSubmit=(form,expected)=>{let submitted=false;const listener=event=>{event.preventDefault();submitted=true};form.addEventListener('submit',listener);form.requestSubmit();form.removeEventListener('submit',listener);assert.equal(submitted,expected,'Simulated requestSubmit follows native validity')};
+ const {run}=await import(pathToFileURL(process.argv[3]));const api=run(target,v=>events.push(v));const eventually=async fn=>{const end=Date.now()+2000;for(;;){try{fn();return}catch(e){if(Date.now()>end)throw e;await new Promise(r=>setTimeout(r,10))}}}
+ await eventually(()=>assert.equal(target.querySelector('select')?.value,'b'))
+ const input=target.querySelector('input'),select=target.querySelector('select'),control=target.querySelector('[data-scope=checkbox][data-part=control]'),trigger=target.querySelector('[data-scope=select][data-part=trigger]')
+ const refs=()=>{for(const node of [input,select,trigger])for(const id of (node.getAttribute('aria-labelledby')||'').split(/\s+/).filter(Boolean))assert.ok(document.getElementById(id),'Native and custom controls retain label linkage')};refs()
+ assert.deepEqual([...new win.FormData(target)],[['check','on'],['choice','b']])
+ assert.equal(input.required,true);assert.equal(select.required,true);assert.equal(trigger.getAttribute('aria-required'),'true');await eventually(()=>{assert.equal(input.validationMessage,'Initial error');assert.equal(select.validationMessage,'Initial error')});assert.equal(target.checkValidity(),false);attemptSubmit(target,false)
+ api.configure({error:''});await eventually(()=>assert.equal(target.checkValidity(),true));attemptSubmit(target,true)
+ api.configure({checked:false,value:''});await eventually(()=>{assert.equal(input.checked,false);assert.equal(select.value,'')})
+ assert.equal(input.validity.valueMissing,true);assert.equal(select.validity.valueMissing,true);assert.equal(target.checkValidity(),false);attemptSubmit(target,false)
+ api.configure({checked:true,value:'b',error:'Please fix this'});await eventually(()=>{assert.equal(input.validationMessage,'Please fix this');assert.equal(select.validationMessage,'Please fix this')})
+ for(const node of [input,select,trigger]){assert.equal(node.getAttribute('aria-invalid'),'true');const ids=(node.getAttribute('aria-describedby')||'').split(' ');assert.equal(ids.length,2);assert.deepEqual(ids.map(id=>document.getElementById(id).textContent),['Field help','Please fix this'])}
+ assert.equal(input.validity.customError,true);assert.equal(select.validity.customError,true);assert.equal(target.checkValidity(),false)
+ api.disabled(true);await eventually(()=>{assert.equal(input.disabled,true);assert.equal(select.disabled,true);assert.equal(trigger.disabled,true)})
+ assert.equal(input.willValidate,false);assert.equal(select.willValidate,false);assert.equal(input.checkValidity(),true);assert.equal(select.checkValidity(),true);attemptSubmit(target,true)
+ control.click();trigger.click();await new Promise(r=>setTimeout(r,50));assert.equal(input.checked,true);assert.equal(trigger.getAttribute('aria-expanded'),'false');assert.deepEqual(events,[],'Disabled clicks do not mutate state or emit callbacks')
+ // Native control comparison: HappyDOM currently includes disabled selects in
+ // FormData. Assert disabled properties, not false browser submission claims.
+ const native=document.createElement('form');native.innerHTML='<input type="checkbox" name="check" checked disabled><select name="choice" disabled><option value="b" selected>B</option></select>';document.body.append(native)
+ assert.deepEqual([...new win.FormData(target)],[...new win.FormData(native)]);attemptSubmit(native,true)
+ api.disabled(false);await eventually(()=>{assert.equal(input.disabled,false);assert.equal(select.disabled,false)})
+ assert.deepEqual([...new win.FormData(target)],[['check','on'],['choice','b']]);refs()
+ assert.equal(target.checkValidity(),false,'Custom errors remain when re-enabled')
+ api.configure({error:'',checked:false,value:''});await eventually(()=>{assert.equal(input.validity.customError,false);assert.equal(select.validity.customError,false);assert.equal(select.value,'')})
+ assert.equal(input.validity.valueMissing,true);assert.equal(select.validity.valueMissing,true);assert.equal(target.querySelectorAll('.rd-error').length,0)
+ for(const node of [input,select,trigger]){assert.notEqual(node.getAttribute('aria-invalid'),'true');assert.equal(document.getElementById(node.getAttribute('aria-describedby')).textContent,'Field help')}
+ api.configure({required:false});await eventually(()=>{assert.equal(input.required,false);assert.equal(select.required,false)});assert.equal(target.checkValidity(),true)
+ api.field({required:true,invalid:true});api.configure({required:undefined});await eventually(()=>{assert.equal(input.required,true);assert.equal(select.required,true);assert.equal(trigger.getAttribute('aria-required'),'true');for(const node of [input,select,trigger])assert.equal(node.getAttribute('aria-invalid'),'true')})
+ api.configure({error:'Context error'});await eventually(()=>assert.equal(select.validity.customError,true));api.configure({error:''});await eventually(()=>assert.equal(select.validity.customError,false))
+ assert.equal(input.required,true);assert.equal(select.required,true);for(const node of [input,select,trigger]){assert.equal(node.getAttribute('aria-invalid'),'true');assert.equal(document.getElementById(node.getAttribute('aria-describedby')).textContent,'Field help')}
+ // Exhaustive parent/child disabled precedence, including absent child and
+ // transitions on the same mounted instances (not only fresh renders).
+ for(const parent of [undefined,true,false,true])for(const child of [undefined,false,true,undefined]){
+  api.field({disabled:parent});api.disabled(child)
+  const expected=child??parent??false
+  await eventually(()=>{assert.equal(input.disabled,expected,`Checkbox parent=${parent} child=${child}`);assert.equal(select.disabled,expected,`Select parent=${parent} child=${child}`);assert.equal(trigger.disabled,expected,`Trigger parent=${parent} child=${child}`)})
+  assert.equal(input.willValidate,!expected);assert.equal(select.willValidate,!expected)
+ }
+ await api.cleanup();await win.happyDOM.close();console.log('PASS native disabled and labels')
+}else for(const framework of ['solid','svelte'])test(`Ready ${framework} required/error/disabled native form contract`,{timeout:120000},async()=>{
+ const folder=await mkdtemp(join(root,'node_modules/.ready-native-'));try{
+ const {build}=await import('vite');let plugin,code
+ if(framework==='solid'){plugin=(await import('vite-plugin-solid')).default();code=`import {render} from 'solid-js/web';import {createComponent,createSignal} from 'solid-js';import {Field} from '@destyler-ui/solid';import {Checkbox,Select} from '${root}packages/ready/solid';export function run(target,change){const [disabled,set]=createSignal(false);const [fieldState,setField]=createSignal({required:false,invalid:false});const [state,update]=createSignal({checked:true,value:'b',required:true,error:'Initial error'});const wrap=child=>createComponent(Field.Root,{get required(){return fieldState().required},get invalid(){return fieldState().invalid},get disabled(){return fieldState().disabled},get children(){return [child(),createComponent(Field.HelperText,{children:'Field help'})]}});const cleanup=render(()=>[wrap(()=>createComponent(Checkbox,{label:'Check',name:'check',get checked(){return state().checked},get required(){return state().required},get error(){return state().error},get disabled(){return disabled()},onCheckedChange:v=>change(['check',v])})),wrap(()=>createComponent(Select,{label:'Choice',name:'choice',get value(){return state().value},get required(){return state().required},get error(){return state().error},options:[{label:'A',value:'a'},{label:'B',value:'b'}],get disabled(){return disabled()},onValueChange:v=>change(['choice',v])}))],target);return{field:setField,disabled:set,configure:patch=>update(v=>({...v,...patch})),cleanup}}`
+ }else{plugin=(await import('@sveltejs/vite-plugin-svelte')).svelte({configFile:false});await writeFile(join(folder,'Fixture.svelte'),`<script>import {Field} from '@destyler-ui/svelte/field';import {Checkbox,Select} from '${root}packages/ready/svelte';let {change}=$props();let fieldRequired=$state(false),fieldInvalid=$state(false),fieldDisabled=$state(undefined);export function field(p){fieldRequired=p.required;fieldInvalid=p.invalid;fieldDisabled=p.disabled}let disabled=$state(false),checked=$state(true),value=$state('b'),required=$state(true),error=$state('Initial error');export function set(v){disabled=v}export function configure(p){if('checked'in p)checked=p.checked;if('value'in p)value=p.value;if('required'in p)required=p.required;if('error'in p)error=p.error}</script><Field.Root disabled={fieldDisabled} required={fieldRequired} invalid={fieldInvalid}><Checkbox label="Check" name="check" {checked} {required} {error} {disabled} onCheckedChange={v=>change(['check',v])}/><Field.HelperText>Field help</Field.HelperText></Field.Root><Field.Root disabled={fieldDisabled} required={fieldRequired} invalid={fieldInvalid}><Select label="Choice" name="choice" {value} {required} {error} {disabled} options={[{label:'A',value:'a'},{label:'B',value:'b'}]} onValueChange={v=>change(['choice',v])}/><Field.HelperText>Field help</Field.HelperText></Field.Root>`);code=`import {mount,unmount} from 'svelte';import Fixture from './Fixture.svelte';export function run(target,change){const app=mount(Fixture,{target,props:{change}});return{field:app.field,disabled:app.set,configure:app.configure,cleanup:()=>unmount(app)}}`}
+ const entry=join(folder,'entry.mjs');await writeFile(entry,code);await build({root,configFile:false,logLevel:'error',plugins:[plugin],build:{outDir:join(folder,'out'),minify:false,lib:{entry,formats:['es'],fileName:()=> 'client.mjs'}}});const result=execFileSync(process.execPath,[fileURLToPath(import.meta.url),'--worker',join(folder,'out/client.mjs')],{cwd:root,encoding:'utf8',timeout:30000});assert.match(result,/PASS native disabled/)
+ }finally{await rm(folder,{recursive:true,force:true})}
+})
