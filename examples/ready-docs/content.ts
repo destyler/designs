@@ -88,6 +88,56 @@ export const api: Record<ComponentName, [string, string, string][]> = {
 export function install(framework: Framework) {
   return `# 获取试点分支；已有本地 checkout 可跳过前两行\ngit clone --branch feat/ready-components-pilot https://github.com/destyler/designs.git\ncd designs\n# 这是本地私有源码包，不是 npm 上已发布的包\nframework=${framework.toLowerCase()}\nwork="$(mktemp -d /tmp/ready-guide-XXXXXX)"\nnpm pack ./packages/ready --pack-destination "$work"\nnode scripts/create-ready-consumer.mjs "$framework" "$work/app" \\\n  "$work/destyler-ready-prototype-0.0.0.tgz"\ncd "$work/app"\nnpm install\nnpm run check\nnpm run build\nnpm run dev`;
 }
+// These versions are the repository's verified consumer baseline, not registry latest.
+export const consumerSetup = {
+  React: {
+    peers: "react@19.2.0 react-dom@19.2.0 @destyler-ui/react@0.0.5",
+    plugin: "@vitejs/plugin-react@5.0.4",
+    config:
+      "import react from '@vitejs/plugin-react'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [react()] }",
+    entry: "src/main.tsx",
+    component: "src/Example.tsx",
+  },
+  Vue: {
+    peers: "vue@3.5.22 @destyler-ui/vue@0.0.5",
+    plugin: "@vitejs/plugin-vue@6.0.1",
+    config:
+      "import vue from '@vitejs/plugin-vue'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [vue()] }",
+    entry: "src/main.ts",
+    component: "src/Example.vue",
+  },
+  Solid: {
+    peers: "solid-js@1.9.17 @destyler-ui/solid@0.0.5",
+    plugin: "vite-plugin-solid@2.11.14",
+    config:
+      "import solid from 'vite-plugin-solid'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [solid()] }",
+    entry: "src/index.tsx",
+    component: "src/Example.tsx",
+  },
+  Svelte: {
+    peers: "svelte@5.57.2 @destyler-ui/svelte@0.0.5",
+    plugin: "@sveltejs/vite-plugin-svelte@6.2.4",
+    config:
+      "import { svelte } from '@sveltejs/vite-plugin-svelte'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [svelte()] }",
+    entry: "src/main.ts",
+    component: "src/Example.svelte",
+  },
+} as const;
+export function existingInstall(framework: Framework) {
+  const setup = consumerSetup[framework];
+  return `# 先把两处绝对路径换成你的实际路径；在同一终端执行\ncd /absolute/path/to/designs\narchive_dir="$(mktemp -d /tmp/ready-package-XXXXXX)"\nnpm pack ./packages/ready --pack-destination "$archive_dir"\n\n# 以下命令在你已有的 Vite 项目运行，不是 designs 仓库\ncd /absolute/path/to/your-vite-app\nnpm install "$archive_dir/destyler-ready-prototype-0.0.0.tgz" ${setup.peers}\n# 仅在项目尚未配置该框架插件时安装，并合并下一段配置\nnpm install -D ${setup.plugin}`;
+}
+export function frameworkFromUrl(url: string): Framework {
+  const value = new URL(url).searchParams.get("framework")?.toLowerCase();
+  return (
+    frameworks.find((framework) => framework.toLowerCase() === value) ?? "React"
+  );
+}
+export function urlWithFramework(url: string, framework: Framework): string {
+  const result = new URL(url);
+  result.searchParams.set("framework", framework.toLowerCase());
+  return result.href;
+}
 export function apiFor(framework: Framework, component: ComponentName) {
   return api[component].map((row) => {
     if (framework !== "Vue") return row;

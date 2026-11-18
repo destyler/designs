@@ -10,6 +10,10 @@ import {
   snippet,
   controlledSelectSnippet,
   install,
+  existingInstall,
+  consumerSetup,
+  frameworkFromUrl,
+  urlWithFramework,
   themeSnippets,
   apiFor,
   type Framework,
@@ -120,9 +124,20 @@ const pageFromHash = () => {
     : "overview";
 };
 export function App() {
-  const [framework, setFramework] = useState<Framework>("React"),
+  const [framework, setFrameworkState] = useState<Framework>(() =>
+      frameworkFromUrl(window.location.href),
+    ),
     [theme, setTheme] = useState<"default" | "midnight">("default"),
     [nav, setNav] = useState(false);
+  function setFramework(next: Framework) {
+    if (next === framework) return;
+    window.history.pushState(
+      null,
+      "",
+      urlWithFramework(window.location.href, next),
+    );
+    setFrameworkState(next);
+  }
   const [page, setPage] = useState(pageFromHash);
   const [appearance, setAppearance] = useState<"light" | "dark">(() => {
     try {
@@ -186,11 +201,16 @@ export function App() {
   useEffect(() => {
     const change = () => {
       setPage(pageFromHash());
+      setFrameworkState(frameworkFromUrl(window.location.href));
       setNav(false);
       window.scrollTo(0, 0);
     };
     window.addEventListener("hashchange", change);
-    return () => window.removeEventListener("hashchange", change);
+    window.addEventListener("popstate", change);
+    return () => {
+      window.removeEventListener("hashchange", change);
+      window.removeEventListener("popstate", change);
+    };
   }, []);
   const links = [
     ["overview", "概览"],
@@ -485,6 +505,7 @@ export function App() {
               23。下面的命令会打包本地组件，并生成所选框架的独立应用。
             </p>
             <FrameworkPicker value={framework} onChange={setFramework} />
+            <h3>新建独立示例项目</h3>
             <CopyCode
               code={install(framework)}
               title={`${framework} · 本地安装`}
@@ -502,6 +523,69 @@ export function App() {
                 中的组件内容，并保留入口主题设置。
               </p>
             </div>
+            <section data-doc-existing-project>
+              <h3>接入已有 Vite 项目</h3>
+              <p className="api-note">
+                不要从 npm 安装 Ready 包名：它尚未发布。先取得上面的 designs
+                分支，再打包本地
+                .tgz。下面列出的是已验证的版本组合；安装会修改你的项目依赖与锁文件，请先核对现有版本，不要盲目降级。只安装你选择的框架，不需要其余三个运行时。
+              </p>
+              <CopyCode
+                code={existingInstall(framework)}
+                title={`${framework} · 已有项目安装`}
+              />
+              <p className="api-note">
+                Ready 的 peerDependencies 在包级别标为
+                optional，只是为了避免一次安装全部框架。当前子路径仍必须具备上面列出的运行时与对应
+                @destyler-ui 包；UI 的 @destyler/* 依赖由 npm
+                自动解析。压缩包文件名含版本号，若版本变化请使用 npm pack
+                实际输出的文件名。
+              </p>
+              <h4>确认框架编译器</h4>
+              <p className="api-note">
+                这是保留 TypeScript / TSX / Vue / Svelte 源码的 Vite
+                包，不是可直接在 Node
+                中执行的预编译库。已有项目保留自己的配置和插件，只补缺少的框架插件。当前验证基线为
+                Vite 7.1.12、TypeScript 5.9.3。
+              </p>
+              <CopyCode
+                code={consumerSetup[framework].config}
+                title={`${framework} · Vite 插件`}
+              />
+              <p className="api-note">
+                TypeScript 使用 moduleResolution: "Bundler"。
+                {framework === "Solid"
+                  ? 'Solid 还需 jsx: "preserve" 与 jsxImportSource: "solid-js"。'
+                  : framework === "React"
+                    ? 'React 使用 jsx: "react-jsx"，并保留匹配 React 19 的 @types/react 与 @types/react-dom。'
+                    : framework === "Vue"
+                      ? "Vue 使用 vue-tsc 做类型检查，不要把 .vue 当普通 TypeScript 编译。"
+                      : "Svelte 使用 svelte-check，保留项目已有的 svelte.config 配置。"}
+              </p>
+              <h4>导入样式与组件</h4>
+              <CopyCode
+                code={
+                  "import '@destyler/ready-prototype/theme.css'\n// 有自定义样式时才导入，替换为项目真实路径\n// import './app.css'"
+                }
+                title={`${consumerSetup[framework].entry} · 按项目实际入口调整`}
+              />
+              <p className="api-note">
+                CSS
+                只需在入口导入一次；不需要强制添加主题容器。把下方完整示例保存为{" "}
+                {consumerSetup[framework].component}，在现有 App 中导入并渲染
+                Example，保留原有挂载逻辑。不要从包根路径导入组件。
+              </p>
+              <CopyCode
+                code={snippet(framework, "Checkbox")}
+                title={`${consumerSetup[framework].component} · 最小组件`}
+              />
+              <p className="api-note">
+                最后运行项目现有的类型检查、构建和开发脚本（如 npm run
+                check、npm run build、npm run dev；check
+                仅在已定义时使用）。看到有样式的复选框后，再到组件文档复制其他示例。这些步骤不会发布
+                npm 包或部署网站。
+              </p>
+            </section>
             {framework === "Vue" && (
               <p className="api-note">
                 同页有多个独立 Vue 应用时，每个应用必须在挂载前设置不同的

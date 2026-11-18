@@ -9,7 +9,7 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 
 if (process.argv[2] === '--worker') {
   const { Window } = await import('happy-dom')
-  const win = new Window({ url: 'http://localhost/ready/' })
+  const win = new Window({ url: 'http://localhost/ready/?framework=vue&from=share' })
   for (const key of Object.getOwnPropertyNames(win)) if (['window', 'document', 'navigator'].includes(key) || /^(HTML.*Element|SVG.*Element|Document|Text|Comment|DocumentType|ShadowRoot|CSS.*|Node.*|Element|Event|CustomEvent|MouseEvent|PointerEvent|KeyboardEvent|InputEvent|MutationObserver|ResizeObserver|IntersectionObserver)$/.test(key)) {
     try { Object.defineProperty(globalThis, key, { configurable: true, writable: true, value: win[key] }) } catch {}
   }
@@ -29,8 +29,11 @@ if (process.argv[2] === '--worker') {
   for (const anchor of document.querySelectorAll('a[href^="#"]')) assert.ok(document.getElementById(anchor.getAttribute('href').slice(1)), 'Navigation points to an existing section')
   assert.equal(document.documentElement.dataset.appearance, 'light', 'New visits use the neutral light documentation appearance')
   const home = document.getElementById('overview')
+  assert.equal(home.querySelector('iframe').getAttribute('src'), './previews/vue/select.html', 'Shared framework URL initializes native runtime')
   for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
     await click(button(framework, home))
+    assert.equal(new URL(window.location.href).searchParams.get('framework'), framework.toLowerCase())
+    assert.equal(new URL(window.location.href).searchParams.get('from'), 'share', 'Framework change preserves unrelated URL parameters')
     assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`, 'Homepage switches the actual native Select runtime')
   }
   for (const component of ['Checkbox', 'Dialog', 'Select']) {
@@ -143,7 +146,14 @@ if (process.argv[2] === '--worker') {
   await click(button('预览',document.querySelector('#dialog')))
   assert.equal(document.querySelector('#dialog .preview-panel').hidden,false)
   window.location.hash='not-a-page';window.dispatchEvent(new win.Event('hashchange'));await settle();assert.equal(document.querySelector('main').dataset.page,'overview');
-  await app.unmount(); await win.happyDOM.close()
+  window.history.replaceState(null, '', '/ready/?framework=solid&from=share#dialog')
+  window.dispatchEvent(new win.PopStateEvent('popstate')); await settle()
+  assert.equal(document.querySelector('main').dataset.page, 'dialog')
+  assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'History navigation restores actual runtime and page')
+  await app.unmount()
+  const refreshed = mountReadyDocs(target); await settle()
+  assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'Fresh mount restores the shared page and framework')
+  await refreshed.unmount(); await win.happyDOM.close()
   console.log('PASS ready docs navigation, framework code, copy, theme, Checkbox, Select and Dialog')
 } else {
   test('Ready documentation switches native preview lifecycles, themes, source and navigation', { timeout: 120000 }, async () => {
@@ -191,6 +201,36 @@ if (process.argv[2] === '--worker') {
     assert.match(source, /水合前.*丢失或错配/)
     assert.match(source, /Escape[\s\S]*同时关闭两层/)
     assert.match(source, /packages\/ready\/theme\.css/)
+  })
+
+  test('Ready docs URL framework contract preserves route, parameters and fallback', async () => {
+    const { frameworkFromUrl, urlWithFramework } = await import('../examples/ready-docs/content.ts')
+    for (const [query, expected] of [['vue','Vue'],['SOLID','Solid'],['svelte','Svelte'],['react','React'],['unknown','React'],['','React']]) assert.equal(frameworkFromUrl(`https://example.com/docs?framework=${query}#select`), expected)
+    const shared = new URL(urlWithFramework('https://example.com/docs?from=email#dialog', 'Vue'))
+    assert.equal(shared.searchParams.get('framework'), 'vue'); assert.equal(shared.searchParams.get('from'), 'email'); assert.equal(shared.hash, '#dialog'); assert.equal(shared.pathname, '/docs')
+  })
+  test('Existing Vite instructions match actual pinned framework peers and compiler versions', async () => {
+    const { consumerSetup, existingInstall, frameworks } = await import('../examples/ready-docs/content.ts')
+    const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
+    const ready = JSON.parse(await readFile(join(root, 'packages/ready/package.json'), 'utf8'))
+    for (const framework of frameworks) {
+      const setup = consumerSetup[framework], code = existingInstall(framework)
+      const peers = setup.peers.split(' ')
+      assert.ok(peers.includes(`@destyler-ui/${framework.toLowerCase()}@0.0.5`))
+      for (const dependency of [...peers, setup.plugin]) {
+        const split = dependency.lastIndexOf('@'), name = dependency.slice(0,split), version = dependency.slice(split+1)
+        assert.equal(manifest.dependencies?.[name] ?? manifest.devDependencies?.[name], version)
+        if (peers.includes(dependency)) assert.ok(ready.peerDependencies[name], `${name} is a real runtime peer`)
+      }
+      assert.match(code, /npm pack \.\/packages\/ready/)
+      assert.match(code, /npm install "\$archive_dir\/destyler-ready-prototype-0\.0\.0\.tgz"/)
+      assert.doesNotMatch(code, /npm install @destyler\/ready-prototype/)
+      assert.match(setup.config, /plugins:/)
+    }
+    const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
+    assert.match(source, /data-doc-existing-project/)
+    assert.match(source, /import '@destyler\/ready-prototype\/theme\.css'/)
+    assert.match(source, /尚未发布/)
   })
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
