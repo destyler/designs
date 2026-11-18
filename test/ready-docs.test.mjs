@@ -151,6 +151,24 @@ if (process.argv[2] === '--worker') {
   await click(button('预览',document.querySelector('#dialog')))
   assert.equal(document.querySelector('#dialog .preview-panel').hidden,false)
   window.location.hash='not-a-page';window.dispatchEvent(new win.Event('hashchange'));await settle();assert.equal(document.querySelector('main').dataset.page,'overview');
+  window.location.hash='themes';window.dispatchEvent(new win.Event('hashchange'));await settle()
+  const themePage = document.getElementById('themes')
+  const themeFrame = themePage.querySelector('iframe')
+  assert.ok(themeFrame, 'Theme page mounts a real component preview')
+  const docAppearance = document.documentElement.dataset.appearance
+  await click(themePage.querySelector('.dark-card'))
+  assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'midnight')
+  assert.equal(themePage.querySelector('iframe'), themeFrame, 'Changing component theme retains the native frame')
+  assert.equal(document.documentElement.dataset.appearance, docAppearance, 'Component theme does not change document appearance')
+  await click(document.querySelector('.appearance-button'))
+  assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'midnight', 'Document appearance does not change component theme')
+  await click(themePage.querySelector('.light-card'))
+  assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'default')
+  assert.equal(themePage.querySelector('iframe'), themeFrame)
+  for (const framework of ['React', 'Vue', 'Solid', 'Svelte']) {
+    await click(button(framework, themePage))
+    assert.equal(themePage.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`)
+  }
   window.history.replaceState(null, '', '/ready/?framework=solid&from=share#dialog')
   window.dispatchEvent(new win.PopStateEvent('popstate')); await settle()
   assert.equal(document.querySelector('main').dataset.page, 'dialog')

@@ -773,7 +773,7 @@ export function App() {
               </h2>
               <p>
                 Everyday 的圆角与无衬线字体，Midnight
-                的深绿、衬线与利落边缘，都来自同一套语义变量。顶部主题开关只改变预览主题，组件状态会保留。
+                的深绿、衬线与利落边缘，都来自同一套语义变量。下方两张卡片切换组件主题，不改变文档明暗；页头的圆形按钮只切换文档明暗，不改变组件主题。
               </p>
               <div className="theme-cards">
                 <button
@@ -798,6 +798,28 @@ export function App() {
                 </button>
               </div>
             </div>
+            <section
+              className="theme-live-example"
+              aria-labelledby="theme-preview-title"
+            >
+              <h3 id="theme-preview-title">在真实组件上比较</h3>
+              <p className="api-note">
+                先在下拉框中选择一个工作空间，再切换 Everyday /
+                Midnight，观察字体、圆角和颜色变化：当前选择会保留。切换框架会重新挂载示例并重置选择。
+              </p>
+              <FrameworkPicker value={framework} onChange={setFramework} />
+              <div className="preview-panel" data-rd-theme={theme}>
+                <LivePreview
+                  active={page === "themes"}
+                  framework={framework}
+                  component="Select"
+                  theme={theme}
+                />
+              </div>
+              <p className="api-note">
+                <a href="#select">查看 Select 用法与 API →</a>
+              </p>
+            </section>
             <div className="theme-code-list">
               {themeSnippets.map((item) => (
                 <CopyCode
