@@ -87,6 +87,11 @@ if (process.argv[2] === '--worker') {
   window.location.hash='select';window.dispatchEvent(new win.Event('hashchange'));await settle();
   await click(document.querySelector('.skip-link')); assert.equal(document.querySelector('main').dataset.page,'select','Skip link preserves current route'); assert.equal(document.activeElement.id,'main-content');
   await click(document.querySelector('.search-trigger')); assert.ok(document.querySelector('[role=dialog]')); assert.equal(document.activeElement.getAttribute('aria-label'),'搜索关键词');
+  const searchInput = document.querySelector('input[aria-label="搜索关键词"]')
+  const inputValue = Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, 'value').set
+  inputValue.call(searchInput, '受控'); searchInput.dispatchEvent(new win.Event('input', { bubbles: true })); await settle()
+  assert.ok(document.querySelector('.search-results a[href="#select"]'), 'Controlled keyword finds the actual Select page')
+  assert.equal(document.querySelector('.search-results a').textContent.includes('Select'), true)
   window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape'}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
   await click(toggle);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.ok(document.querySelector('.search-dialog'));assert.equal(document.querySelector('.sidebar').classList.contains('is-open'),false);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
   await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
@@ -231,6 +236,27 @@ if (process.argv[2] === '--worker') {
     assert.match(source, /data-doc-existing-project/)
     assert.match(source, /import '@destyler\/ready-prototype\/theme\.css'/)
     assert.match(source, /尚未发布/)
+  })
+
+  test('Documentation keyword search normalizes input and only returns real page routes', async () => {
+    const { searchDocumentation, documentationPages } = await import('../examples/ready-docs/content.ts')
+    const ids = query => searchDocumentation(query).map(page => page.id)
+    assert.deepEqual(ids('受控'), ['select'])
+    assert.deepEqual(ids(' 清空 '), ['select'])
+    assert.deepEqual(ids('  SELECT   controlled '), ['select'])
+    assert.deepEqual(ids('ＳＥＬＥＣＴ'), ['select'])
+    assert.deepEqual(ids('安装'), ['installation'])
+    assert.deepEqual(ids('VITE peer'), ['installation'])
+    assert.deepEqual(ids('对话框'), ['dialog'])
+    assert.deepEqual(ids('复选框'), ['checkbox'])
+    assert.ok(ids('CSS').includes('themes'))
+    assert.deepEqual(ids('definitely-unindexed-term'), [])
+    assert.deepEqual(ids('RTL'), [], 'Do not index topics that are absent from the destination page')
+    assert.equal(ids('   ').length, documentationPages.length)
+    const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
+    for (const page of documentationPages) assert.ok(['overview','installation','checkbox','select','dialog','themes','boundaries'].includes(page.id))
+    assert.match(source, /searchResults\.map/)
+    assert.match(source, /searchResults\.length === 0/)
   })
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {

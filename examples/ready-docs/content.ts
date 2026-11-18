@@ -219,3 +219,56 @@ export default function Example() {
   </>
 }`;
 }
+
+// Small, explicit page-keyword index. This is not a full-text search engine.
+export const documentationPages = [
+  {
+    id: "overview",
+    title: "概览",
+    keywords: "介绍 组件 总览 框架 React Vue Solid Svelte",
+  },
+  {
+    id: "installation",
+    title: "开始使用",
+    keywords:
+      "安装 接入 已有项目 Vite npm tarball tgz 本地包 私有包 peer 依赖 编译 插件 CSS 导入 入口 TypeScript 快速开始",
+  },
+  {
+    id: "checkbox",
+    title: "Checkbox",
+    keywords:
+      "复选框 勾选 选中 表单 required disabled checked onCheckedChange description error API",
+  },
+  {
+    id: "select",
+    title: "Select",
+    keywords:
+      "选择器 下拉 选项 受控 非受控 controlled 清空 value onValueChange v-model 禁用 options placeholder 表单 键盘 API",
+  },
+  {
+    id: "dialog",
+    title: "Dialog",
+    keywords:
+      "对话框 弹窗 模态 焦点 focus 关闭 open onOpenChange trigger title children 插槽 API",
+  },
+  {
+    id: "themes",
+    title: "主题",
+    keywords:
+      "样式 theme theming CSS 变量 token Everyday Midnight 深色 浅色 自定义 覆盖",
+  },
+  {
+    id: "boundaries",
+    title: "使用边界",
+    keywords:
+      "限制 SSR 水合 hydration 嵌套 overlay portal Escape 表单 reset 重置 验证 无障碍",
+  },
+] as const;
+export function searchDocumentation(query: string) {
+  const normalize = (value: string) => value.normalize("NFKC").toLowerCase();
+  const terms = normalize(query).trim().split(/\s+/).filter(Boolean);
+  return documentationPages.filter((page) => {
+    const text = normalize(`${page.id} ${page.title} ${page.keywords}`);
+    return terms.every((term) => text.includes(term));
+  });
+}

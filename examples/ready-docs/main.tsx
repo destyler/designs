@@ -12,6 +12,8 @@ import {
   install,
   existingInstall,
   consumerSetup,
+  documentationPages,
+  searchDocumentation,
   frameworkFromUrl,
   urlWithFramework,
   themeSnippets,
@@ -212,15 +214,8 @@ export function App() {
       window.removeEventListener("popstate", change);
     };
   }, []);
-  const links = [
-    ["overview", "概览"],
-    ["installation", "开始使用"],
-    ["checkbox", "Checkbox"],
-    ["select", "Select"],
-    ["dialog", "Dialog"],
-    ["themes", "主题"],
-    ["boundaries", "使用边界"],
-  ];
+  const links = documentationPages.map(({ id, title }) => [id, title]);
+  const searchResults = searchDocumentation(query);
   return (
     <div className={`docs-shell ${page === "overview" ? "is-home" : ""}`}>
       <a
@@ -906,7 +901,7 @@ export function App() {
                 ref={searchInput}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="搜索组件与文档…"
+                placeholder="搜索组件名或关键词…"
                 aria-label="搜索关键词"
               />
               <button
@@ -920,29 +915,23 @@ export function App() {
               </button>
             </div>
             <div className="search-results">
-              {links
-                .filter(([id, title]) =>
-                  (id + " " + title)
-                    .toLowerCase()
-                    .includes(query.toLowerCase()),
-                )
-                .map(([id, title]) => (
-                  <a
-                    key={id}
-                    href={`#${id}`}
-                    onClick={() => {
-                      setSearch(false);
-                      setQuery("");
-                      searchTrigger.current?.focus();
-                    }}
-                  >
-                    <span>{title}</span>
-                    <span>↗</span>
-                  </a>
-                ))}
-              {!links.some(([id, title]) =>
-                (id + " " + title).toLowerCase().includes(query.toLowerCase()),
-              ) && <p>没有找到相关文档，试试组件名称。</p>}
+              {searchResults.map(({ id, title }) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  onClick={() => {
+                    setSearch(false);
+                    setQuery("");
+                    searchTrigger.current?.focus();
+                  }}
+                >
+                  <span>{title}</span>
+                  <span>↗</span>
+                </a>
+              ))}
+              {searchResults.length === 0 && (
+                <p>未找到匹配页面，试试“受控”“安装”或组件名。</p>
+              )}
             </div>
             <div className="search-hint">Tab 选择 · Enter 打开 · Esc 关闭</div>
           </div>
