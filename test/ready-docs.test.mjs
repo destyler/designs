@@ -27,7 +27,7 @@ if (process.argv[2] === '--worker') {
     for (const node of document.querySelectorAll('[aria-labelledby],[aria-describedby]')) for (const attribute of ['aria-labelledby', 'aria-describedby']) for (const id of (node.getAttribute(attribute) || '').split(/\s+/).filter(Boolean)) assert.ok(document.getElementById(id), `${attribute} target ${id} exists`)
   }
   for (const anchor of document.querySelectorAll('a[href^="#"]')) assert.ok(document.getElementById(anchor.getAttribute('href').slice(1)), 'Navigation points to an existing section')
-  assert.equal(document.documentElement.dataset.appearance, 'dark', 'New visits use the editorial dark appearance')
+  assert.equal(document.documentElement.dataset.appearance, 'light', 'New visits use the neutral light documentation appearance')
   const home = document.getElementById('overview')
   for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
     await click(button(framework, home))
@@ -86,8 +86,8 @@ if (process.argv[2] === '--worker') {
   await click(document.querySelector('.search-trigger')); assert.ok(document.querySelector('[role=dialog]')); assert.equal(document.activeElement.getAttribute('aria-label'),'搜索关键词');
   window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape'}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
   await click(toggle);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.ok(document.querySelector('.search-dialog'));assert.equal(document.querySelector('.sidebar').classList.contains('is-open'),false);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
-  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'light');
   await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
+  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'light');
   assert.ok(document.querySelector('#select details').open,'API is expanded by default');
   assert.match(document.title,/Select/);
   const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
@@ -195,12 +195,12 @@ if (process.argv[2] === '--worker') {
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
     const css = await readFile(join(root, 'examples/ready-docs/styles.css'), 'utf8')
-    assert.match(css, /\.frameworks button\s*\{\s*color:\s*var\(--muted\)/); assert.match(css, /:root:not\(\[data-appearance="light"\]\)/)
+    assert.match(css, /\.frameworks button\s*\{\s*color:\s*var\(--muted\)/); assert.match(css, /:root\[data-appearance="dark"\]/)
     const luminance = hex => {
       const rgb = hex.replace('#','').match(/../g).map(c => parseInt(c,16)/255).map(c => c <= .04045 ? c/12.92 : ((c+.055)/1.055)**2.4)
       return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722
     }
-    const palettes = [...css.matchAll(/:root(?:\:not\(\[data-appearance="light"\]\))?\s*\{([^}]+)\}/g)].map(match => Object.fromEntries([...match[1].matchAll(/--(paper|surface|ink|muted):\s*(#[0-9a-f]{6})/g)].map(entry => [entry[1], entry[2]]))).filter(palette => palette.paper)
+    const palettes = [...css.matchAll(/:root(?:\[data-appearance="dark"\])?\s*\{([^}]+)\}/g)].map(match => Object.fromEntries([...match[1].matchAll(/--(paper|surface|ink|muted):\s*(#[0-9a-f]{6})/g)].map(entry => [entry[1], entry[2]]))).filter(palette => palette.paper)
     assert.equal(palettes.length, 2, 'Both actual theme palettes are measured')
     for (const palette of palettes) for (const foreground of [palette.ink, palette.muted]) for (const background of [palette.paper, palette.surface]) {
       const levels = [luminance(foreground), luminance(background)].sort((a,b)=>b-a)

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { LivePreview } from "./LivePreview";
 import { tokenizeSource } from "../shadcn/components/source-view";
@@ -121,16 +121,16 @@ const pageFromHash = () => {
 };
 export function App() {
   const [framework, setFramework] = useState<Framework>("React"),
-    [theme, setTheme] = useState<"default" | "midnight">("midnight"),
+    [theme, setTheme] = useState<"default" | "midnight">("default"),
     [nav, setNav] = useState(false);
   const [page, setPage] = useState(pageFromHash);
   const [appearance, setAppearance] = useState<"light" | "dark">(() => {
     try {
-      return localStorage.getItem("destyler-docs-appearance") === "light"
-        ? "light"
-        : "dark";
+      return localStorage.getItem("destyler-docs-appearance") === "dark"
+        ? "dark"
+        : "light";
     } catch {
-      return "dark";
+      return "light";
     }
   });
   const [search, setSearch] = useState(false),
@@ -300,23 +300,29 @@ export function App() {
           }
         }}
       >
-        <div className="sidebar-label">开始构建</div>
         <nav>
           {links.map(([id, title], i) => (
-            <a
-              href={`#${id}`}
-              aria-current={page === id ? "page" : undefined}
-              key={id}
-              onClick={() => {
-                setNav(false);
-                document.getElementById("main-content")?.focus();
-              }}
-            >
-              <span className="nav-icon" aria-hidden="true">
-                {["◈", "↗", "☑", "▤", "▣", "◐", "◇"][i]}
-              </span>
-              {title}
-            </a>
+            <Fragment key={id}>
+              {[0, 2, 5].includes(i) && (
+                <div className="sidebar-label">
+                  {i === 0 ? "开始" : i === 2 ? "组件" : "设计"}
+                </div>
+              )}
+              <a
+                href={`#${id}`}
+                aria-current={page === id ? "page" : undefined}
+                key={id}
+                onClick={() => {
+                  setNav(false);
+                  document.getElementById("main-content")?.focus();
+                }}
+              >
+                <span className="nav-icon" aria-hidden="true">
+                  {["◈", "↗", "☑", "▤", "▣", "◐", "◇"][i]}
+                </span>
+                {title}
+              </a>
+            </Fragment>
           ))}
         </nav>
         <div className="sidebar-bottom">
@@ -328,69 +334,26 @@ export function App() {
       <div className="main-column">
         <main id="main-content" tabIndex={-1} data-page={page}>
           <section className="hero" id="overview">
-            <div className="hero-masthead">
-              <span>
-                <i /> DESTYLER DESIGNS
-              </span>
-              <span>INTERACTION / EXPRESSION</span>
-            </div>
-            <div className="hero-composition">
-              <div className="hero-copy">
-                <p className="hero-eyebrow">原生交互，完整组件。</p>
-                <h1 className="editorial-title">
-                  少一点组装。
-                  <br />
-                  <em>多一点设计。</em>
-                </h1>
-                <p className="hero-description">
-                  为 React、Vue、Solid 与 Svelte 准备的组合组件。
-                  <br />
-                  把交互交给组件，把风格留给你。
-                </p>
-                <div className="hero-actions">
-                  <a className="primary-link" href="#installation">
-                    开始使用 <span>↗</span>
-                  </a>
-                  <a className="secondary-link" href="#select">
-                    浏览组件 <span>→</span>
-                  </a>
-                </div>
-              </div>
-              <div className="hero-spec" aria-label="组件系统概览">
-                <div className="system-emblem" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <p>
-                  ONE SYSTEM.
-                  <br />
-                  <strong>YOUR EXPRESSION.</strong>
-                </p>
-                <dl>
-                  <div>
-                    <dt>原生框架</dt>
-                    <dd>04</dd>
-                  </div>
-                  <div>
-                    <dt>就绪组件</dt>
-                    <dd>03</dd>
-                  </div>
-                  <div>
-                    <dt>主题方式</dt>
-                    <dd>CSS 变量</dd>
-                  </div>
-                </dl>
+            <div className="hero-copy">
+              <p className="hero-eyebrow">介绍</p>
+              <h1 className="editorial-title">组件，回归产品本身。</h1>
+              <p className="hero-description">
+                完整的交互，开放的设计。为 React、Vue、Solid 和 Svelte
+                提供开箱即用的组件，让你专注于产品本身。
+              </p>
+              <div className="hero-actions">
+                <a className="primary-link" href="#installation">
+                  开始使用 <span>→</span>
+                </a>
+                <a className="secondary-link" href="#themes">
+                  了解主题
+                </a>
               </div>
             </div>
             <section className="home-live" aria-labelledby="home-live-title">
               <div className="home-live-heading">
-                <div>
-                  <span className="section-kicker">01 / THE PLAYGROUND</span>
-                  <h2 id="home-live-title">看得见，也用得上。</h2>
-                </div>
-                <p>切换框架，运行真正的原生组件。</p>
+                <h2 id="home-live-title">交互示例</h2>
+                <p>同一套 API，四种原生实现。试试下面的组件。</p>
               </div>
               <div className="home-workspace">
                 <div
@@ -398,7 +361,6 @@ export function App() {
                   role="group"
                   aria-label="首页示例组件"
                 >
-                  <span className="workspace-label">COMPONENTS</span>
                   {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
                     (name, i) => (
                       <button
@@ -407,9 +369,7 @@ export function App() {
                         aria-pressed={homeComponent === name}
                         onClick={() => setHomeComponent(name)}
                       >
-                        <span>0{i + 1}</span>
                         {name}
-                        <span className="picker-arrow">↗</span>
                       </button>
                     ),
                   )}
@@ -463,9 +423,6 @@ export function App() {
                     />
                   </div>
                   <div className="home-workbench-footer">
-                    <span className="runtime-label">
-                      <i /> {framework} / 原生运行
-                    </span>
                     <div
                       className="theme-switch"
                       role="group"
@@ -496,21 +453,13 @@ export function App() {
               </p>
             </section>
             <section className="home-library" aria-labelledby="library-title">
-              <div>
-                <span className="section-kicker">02 / THE COLLECTION</span>
-                <h2 id="library-title">从细节，开始构建。</h2>
-              </div>
-              <p>
-                当前提供三个组合组件。
-                <br />
-                源码包尚未发布到 npm。
-              </p>
+              <h2 id="library-title">组件文档</h2>
+              <p>从一个组件开始。查看用法、交互示例与完整 API。</p>
             </section>
             <div className="component-index">
               {(["Checkbox", "Select", "Dialog"] as ComponentName[]).map(
                 (name, i) => (
                   <a href={`#${name.toLowerCase()}`} key={name}>
-                    <span className="index-number">0{i + 1}</span>
                     <strong>{name}</strong>
                     <span>{["选择与确认", "选项与表单", "对话与反馈"][i]}</span>
                     <span aria-hidden="true">↗</span>
@@ -520,7 +469,8 @@ export function App() {
             </div>
             <div className="home-footnote">
               <p>
-                基于 Destyler 交互基础。通过语义变量定义主题，不必重写组件行为。
+                基于 Destyler
+                交互基础构建。当前提供三个组合组件，源码包尚未发布到 npm。
               </p>
               <a href="#boundaries">了解当前能力与边界 →</a>
             </div>
