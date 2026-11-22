@@ -21,99 +21,135 @@ if (process.argv[2] === '--worker') {
   const settle = () => new Promise(resolve => setTimeout(resolve, 100))
   await settle()
   const button = (text, scope = document) => [...scope.querySelectorAll('button')].find(node => node.textContent.trim() === text)
-  const part = (family, name) => document.querySelector(`[data-scope="${family}"][data-part="${name}"]`)
   const click = async node => { assert.ok(node, 'Expected actionable element'); node.click(); await settle() }
   const associations = () => {
     for (const node of document.querySelectorAll('[aria-labelledby],[aria-describedby]')) for (const attribute of ['aria-labelledby', 'aria-describedby']) for (const id of (node.getAttribute(attribute) || '').split(/\s+/).filter(Boolean)) assert.ok(document.getElementById(id), `${attribute} target ${id} exists`)
   }
-  for (const anchor of document.querySelectorAll('a[href^="#"]')) assert.ok(document.getElementById(anchor.getAttribute('href').slice(1)), 'Navigation points to an existing section')
+  const navigate = async hash => {
+    window.location.hash = hash
+    window.dispatchEvent(new win.Event('hashchange'))
+    await settle()
+  }
+  const main = () => document.querySelector('main')
+  const modal = name => document.querySelector(`dialog.${name}-dialog`)
+  const pickTheme = async (scope, theme) => {
+    const select = scope.querySelector('.theme-control select')
+    assert.ok(select, 'Theme control is present')
+    select.value = theme
+    select.dispatchEvent(new win.Event('change', {bubbles:true}))
+    await settle()
+  }
   assert.equal(document.documentElement.dataset.appearance, 'light', 'New visits use the neutral light documentation appearance')
-  const home = document.getElementById('overview')
-  assert.equal(home.querySelector('iframe').getAttribute('src'), './previews/vue/select.html', 'Shared framework URL initializes native runtime')
+  assert.equal(main().dataset.page, 'overview')
+  assert.equal(main().querySelectorAll('h1').length, 1)
+  assert.equal(main().querySelector('iframe'), null, 'The editorial home has no live runtime; component pages own previews')
+  assert.deepEqual([...main().querySelectorAll('.specimens a')].map(node => node.getAttribute('href')), ['#checkbox', '#select', '#dialog'])
+  await click(main().querySelector('a[href="#overview/components"]'))
+  assert.equal(main().dataset.page, 'overview')
+  assert.ok(main().querySelector('#components'))
+  assert.equal(window.location.hash, '#overview/components')
+  const toggle = document.querySelector('button[aria-label="打开导航"]')
+  await click(toggle)
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true')
+  assert.equal(modal('mobile').open, true)
+  await click(modal('mobile').querySelector('a[href="#select"]'))
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false')
+  assert.equal(modal('mobile').open, false)
+  assert.equal(main().dataset.page, 'select')
+  assert.equal(main().querySelector('#select iframe').getAttribute('src'), './previews/vue/select.html', 'Shared framework URL initializes native runtime')
+  assert.equal(main().querySelector('h1').textContent, 'Select')
+  assert.equal(document.getElementById('checkbox'), null, 'Inactive route content is not mounted')
+  associations()
+
+  // Framework switching changes each compiled native preview URL and its source.
   for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
-    await click(button(framework, home))
+    await navigate('installation')
+    const guide = main()
+    await click(button(framework, guide))
     assert.equal(new URL(window.location.href).searchParams.get('framework'), framework.toLowerCase())
     assert.equal(new URL(window.location.href).searchParams.get('from'), 'share', 'Framework change preserves unrelated URL parameters')
-    assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`, 'Homepage switches the actual native Select runtime')
-  }
-  for (const component of ['Checkbox', 'Dialog', 'Select']) {
-    await click([...home.querySelectorAll('.home-component-picker button')].find(node => node.textContent.includes(component)))
-    assert.equal(home.querySelector('iframe').getAttribute('src'), `./previews/react/${component.toLowerCase()}.html`)
-    assert.match(home.querySelector('pre code').textContent, new RegExp(`<${component}`))
-    assert.equal(home.querySelector('.home-component-picker a').getAttribute('href'), `#${component.toLowerCase()}`)
-  }
-  const retainedFrame = home.querySelector('iframe')
-  await click(button('代码', home))
-  assert.equal(home.querySelector('.home-source').hidden, false)
-  assert.equal(home.querySelector('.home-live-stage').hidden, true)
-  await click(button('预览', home))
-  assert.equal(home.querySelector('.home-live-stage').hidden, false)
-  assert.equal(home.querySelector('.home-source').hidden, true)
-  assert.equal(home.querySelector('iframe'), retainedFrame, 'Preview/code toggle keeps interaction state')
-  const homeFrame = home.querySelector('iframe')
-  await click(button('Midnight', home))
-  assert.equal(home.querySelector('iframe'), homeFrame, 'Theme switching preserves the mounted runtime')
-  await click(button('Everyday', home))
-  const toggle = document.querySelector('button[aria-label="打开导航"]')
-  await click(toggle); assert.equal(toggle.getAttribute('aria-expanded'), 'true'); assert.ok(document.querySelector('.sidebar').classList.contains('is-open'))
-  await click(document.querySelector('nav a[href="#select"]')); assert.equal(toggle.getAttribute('aria-expanded'), 'false'); assert.equal(document.querySelector('.sidebar').classList.contains('is-open'), false)
-
-  // Framework switching changes both the compiled native preview URL and its source.
-  for (const framework of ['Vue', 'Solid', 'Svelte', 'React']) {
-    await click(button(framework, document.querySelector('#installation')))
+    assert.match(guide.querySelector('#new-project pre code').textContent, new RegExp(`framework=${framework.toLowerCase()}`))
     for (const section of ['checkbox', 'select', 'dialog']) {
-      window.location.hash=section;window.dispatchEvent(new win.Event('hashchange'));await settle();
+      await navigate(section)
       const scope = document.getElementById(section)
-      assert.match(scope.querySelector('pre code').textContent, new RegExp(`@destyler/ready-prototype/${framework.toLowerCase()}`))
+      assert.match(scope.querySelector('.usage-panel pre code').textContent, new RegExp(`@destyler/ready-prototype/${framework.toLowerCase()}`))
       assert.equal(button(framework, scope).getAttribute('aria-pressed'), 'true')
-      assert.ok(scope.querySelector('.preview-footer').textContent.includes(framework)); assert.equal(scope.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/${section}.html`)
+      assert.match(scope.querySelector('.example-meta').textContent, new RegExp(framework))
+      assert.equal(scope.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/${section}.html`)
       const table = scope.querySelector('table').textContent
       const prop = {checkbox:'checked',select:'value',dialog:'open'}[section]
       const event = {checkbox:'Checked',select:'Value',dialog:'Open'}[section]
       if (framework === 'Vue') { assert.ok(table.includes(`update:${prop}`)); assert.ok(table.includes(`${prop}Change`)); assert.ok(!table.includes(`on${event}Change`)) }
       else assert.ok(table.includes(`on${event}Change`))
-      assert.match(scope.querySelector('.usage-panel .api-note').textContent, /非受控/)
-
+      assert.match(scope.querySelector('#api').textContent, /省略值属性时由组件管理状态/)
+      if (section === 'select') {
+        const controlled = scope.querySelector('[data-doc-example="controlled-select"] pre code').textContent
+        assert.ok(controlled.includes(`@destyler/ready-prototype/${framework.toLowerCase()}`))
+        assert.match(controlled, /清空选择/)
+        assert.ok(controlled.includes(framework === 'Vue' ? 'v-model:value="value"' : 'onValueChange='))
+        assert.doesNotMatch(controlled, /bind:value/)
+      }
     }
-    assert.match(document.querySelector('#installation pre code').textContent, new RegExp(`framework=${framework.toLowerCase()}`))
-    const controlled = document.querySelector('[data-doc-example="controlled-select"] pre code').textContent
-    assert.ok(controlled.includes(`@destyler/ready-prototype/${framework.toLowerCase()}`))
-    assert.match(controlled, /清空选择/)
-    assert.ok(controlled.includes(framework === 'Vue' ? 'v-model:value="value"' : 'onValueChange='))
-    assert.doesNotMatch(controlled, /bind:value/)
-
   }
 
   window.location.hash='select';window.dispatchEvent(new win.Event('hashchange'));await settle();
   await click(document.querySelector('.skip-link')); assert.equal(document.querySelector('main').dataset.page,'select','Skip link preserves current route'); assert.equal(document.activeElement.id,'main-content');
-  await click(document.querySelector('.search-trigger')); assert.ok(document.querySelector('[role=dialog]')); assert.equal(document.activeElement.getAttribute('aria-label'),'搜索关键词');
+  await click(document.querySelector('.search-trigger')); assert.equal(modal('search').open, true)
   const searchInput = document.querySelector('input[aria-label="搜索关键词"]')
+  assert.ok(searchInput, 'Native search dialog contains a named search input')
+  assert.equal(document.activeElement, searchInput, 'Opening search focuses its input')
   const inputValue = Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, 'value').set
   inputValue.call(searchInput, '受控'); searchInput.dispatchEvent(new win.Event('input', { bubbles: true })); await settle()
   assert.ok(document.querySelector('.search-results a[href="#select"]'), 'Controlled keyword finds the actual Select page')
   assert.equal(document.querySelector('.search-results a').textContent.includes('Select'), true)
-  window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape'}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
-  await click(toggle);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.ok(document.querySelector('.search-dialog'));assert.equal(document.querySelector('.sidebar').classList.contains('is-open'),false);window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}));await settle();assert.equal(document.querySelector('.search-dialog'),null);assert.equal(document.activeElement,document.querySelector('.search-trigger'));
-  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'dark');
-  await click(document.querySelector('.appearance-button'));assert.equal(document.documentElement.dataset.appearance,'light');
-  assert.ok(document.querySelector('#select details').open,'API is expanded by default');
-  assert.match(document.title,/Select/);
+  modal('search').dispatchEvent(new win.Event('cancel', {cancelable: true}))
+  await settle(); assert.equal(modal('search').open, false); assert.equal(document.activeElement, document.querySelector('.search-trigger'))
+  await click(toggle)
+  window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}))
+  await settle(); assert.equal(modal('search').open, true); assert.equal(modal('mobile').open, false)
+  window.dispatchEvent(new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true}))
+  await settle(); assert.equal(modal('search').open, false); assert.equal(document.activeElement, document.querySelector('.search-trigger'))
+  const appearance = () => document.querySelector('.site-header button[aria-label^="切换"]')
+  await click(appearance()); assert.equal(document.documentElement.dataset.appearance,'dark')
+  await click(appearance()); assert.equal(document.documentElement.dataset.appearance,'light')
+  assert.ok(document.querySelector('#select #api table'), 'API is visible with no disclosure to open')
+  assert.match(document.title,/Select/)
   const disabledNote = document.querySelector('#select [data-doc-note="disabled-selection"]')
   assert.ok(disabledNote && !disabledNote.closest('details'), 'Select submission caveat is visible without expanding API details')
-  assert.match(disabledNote.textContent, /仍会显示并保留选中状态/)
-  assert.match(disabledNote.textContent, /禁用选项不会作为该字段的提交值/)
-  assert.match(disabledNote.textContent, /不要依赖 required/)
-  assert.match(disabledNote.textContent, /Happy DOM.*浏览器不同/)
-  const nativeNote = document.querySelector('#boundaries [data-doc-note="native-attributes"]')
-  assert.match(nativeNote.textContent, /不保证任意原生属性转发/)
-  assert.match(nativeNote.textContent, /Vue.*外层包装元素.*内部原生输入或 Select 触发器/)
-  assert.match(nativeNote.textContent, /没有通用原生属性转发 API/)
+  assert.match(disabledNote.textContent, /界面仍保留/)
+  assert.match(disabledNote.textContent, /原生表单不会提交该值/)
+  assert.match(disabledNote.textContent, /不要依赖\s*required/)
+  assert.match(disabledNote.textContent, /Happy DOM[\s\S]*浏览器/)
+  await click(document.querySelector('.toc a[href="#select/controlled"]'))
+  assert.equal(main().dataset.page, 'select')
+  assert.equal(window.location.hash, '#select/controlled')
+  assert.equal(document.querySelector('.toc a[href="#select/controlled"]').getAttribute('aria-current'), 'location')
+  assert.ok(main().querySelector('#controlled'))
 
+  await navigate('boundaries')
+  const nativeNote = main().querySelector('[data-doc-note="native-attributes"]')
+  assert.match(nativeNote.textContent, /只支持文档列出的组件属性/)
+  assert.match(nativeNote.textContent, /Vue.*外层元素.*内部原生输入或 Select 触发器/)
+  assert.match(main().querySelector('#forms').textContent, /水合前.*丢失或错配/)
+  assert.match(main().querySelector('#overlays').textContent, /Escape[\s\S]*同时关闭两层/)
+  assert.match(main().querySelector('#verification').textContent, /不等于完整的真实浏览器/)
+
+  await navigate('checkbox')
+  const checkbox = document.getElementById('checkbox')
+  const retainedFrame = checkbox.querySelector('iframe')
+  await click(button('代码', checkbox))
+  assert.equal(checkbox.querySelector('.preview-panel').hidden, true)
+  assert.equal(checkbox.querySelector('.usage-panel').hidden, false)
+  await click(button('预览', checkbox))
+  assert.equal(checkbox.querySelector('.preview-panel').hidden, false)
+  assert.equal(checkbox.querySelector('.usage-panel').hidden, true)
+  assert.equal(checkbox.querySelector('iframe'), retainedFrame, 'Preview/code toggle keeps interaction state')
+  await click(button('代码', checkbox))
   let written, finishCopy
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: text => { written = text; return new Promise(resolve => { finishCopy = resolve }) } } })
-  const copy = document.querySelector('#checkbox button[aria-label^="复制"]')
+  const copy = document.querySelector('#checkbox .usage-panel button[aria-label^="复制"]')
   copy.click(); await settle(); assert.equal(copy.textContent, '复制代码 ↗', 'Success waits for clipboard resolution')
-  assert.equal(written, document.querySelector('#checkbox pre code').textContent)
+  assert.equal(written, document.querySelector('#checkbox .usage-panel pre code').textContent)
   finishCopy(); await settle(); assert.equal(copy.textContent, '已复制 ✓')
   await click(button('Vue', document.getElementById('checkbox'))); assert.equal(copy.textContent, '复制代码 ↗', 'New code resets stale copy feedback')
   // A pending clipboard response must not annotate a newer framework snippet.
@@ -128,15 +164,15 @@ if (process.argv[2] === '--worker') {
   pending[0].reject(new Error('stale failure')); await settle(); assert.equal(copy.textContent, '已复制 ✓')
   navigator.clipboard.writeText = async () => { throw new Error('Clipboard denied in simulated test') }
   await click(copy); assert.match(copy.textContent, /复制失败/)
-  assert.match(document.querySelector('#checkbox .code-block [role="status"]').textContent, /无法访问剪贴板/)
+  assert.match(document.querySelector('#checkbox .usage-panel [role="status"]').textContent, /无法访问剪贴板/)
 
-  await click(button('React', document.getElementById('installation')))
-  window.location.hash='checkbox';window.dispatchEvent(new win.Event('hashchange'));await settle();
+  await click(button('React', checkbox))
+  await click(button('预览', checkbox))
   const originalFrame=document.querySelector('#checkbox iframe')
-  await click(button('Midnight', document.querySelector('.theme-switch')))
+  await pickTheme(checkbox, 'midnight')
   assert.equal(document.querySelector('#checkbox iframe'),originalFrame,'Theme switch preserves the runtime')
   assert.equal(document.querySelector('#checkbox .preview-panel').dataset.rdTheme,'midnight')
-  await click(button('Vue', document.getElementById('installation')))
+  await click(button('Vue', checkbox))
   assert.notEqual(document.querySelector('#checkbox iframe'),originalFrame,'Framework switch unmounts previous runtime')
   const newFrame=document.querySelector('#checkbox iframe')
   window.dispatchEvent(new win.MessageEvent('message',{origin:window.location.origin,source:newFrame.contentWindow,data:{type:'ready-docs:ready',framework:'React',component:'checkbox'}}))
@@ -152,30 +188,33 @@ if (process.argv[2] === '--worker') {
   assert.equal(document.querySelector('#dialog .preview-panel').hidden,false)
   window.location.hash='not-a-page';window.dispatchEvent(new win.Event('hashchange'));await settle();assert.equal(document.querySelector('main').dataset.page,'overview');
   window.location.hash='themes';window.dispatchEvent(new win.Event('hashchange'));await settle()
-  const themePage = document.getElementById('themes')
+  const themePage = main()
   const themeFrame = themePage.querySelector('iframe')
   assert.ok(themeFrame, 'Theme page mounts a real component preview')
   const docAppearance = document.documentElement.dataset.appearance
-  await click(themePage.querySelector('.dark-card'))
+  await pickTheme(themePage, 'default')
+  await pickTheme(themePage, 'midnight')
   assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'midnight')
   assert.equal(themePage.querySelector('iframe'), themeFrame, 'Changing component theme retains the native frame')
   assert.equal(document.documentElement.dataset.appearance, docAppearance, 'Component theme does not change document appearance')
-  await click(document.querySelector('.appearance-button'))
+  await click(appearance())
   assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'midnight', 'Document appearance does not change component theme')
-  await click(themePage.querySelector('.light-card'))
+  await pickTheme(themePage, 'default')
   assert.equal(themePage.querySelector('.preview-panel').dataset.rdTheme, 'default')
   assert.equal(themePage.querySelector('iframe'), themeFrame)
   for (const framework of ['React', 'Vue', 'Solid', 'Svelte']) {
     await click(button(framework, themePage))
     assert.equal(themePage.querySelector('iframe').getAttribute('src'), `./previews/${framework.toLowerCase()}/select.html`)
   }
-  window.history.replaceState(null, '', '/ready/?framework=solid&from=share#dialog')
+  window.history.replaceState(null, '', '/ready/?framework=solid&from=share#dialog/api')
   window.dispatchEvent(new win.PopStateEvent('popstate')); await settle()
   assert.equal(document.querySelector('main').dataset.page, 'dialog')
   assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'History navigation restores actual runtime and page')
+  assert.equal(document.querySelector('.toc a[href="#dialog/api"]').getAttribute('aria-current'), 'location')
   await app.unmount()
   const refreshed = mountReadyDocs(target); await settle()
   assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'Fresh mount restores the shared page and framework')
+  assert.equal(document.querySelector('.toc a[href="#dialog/api"]').getAttribute('aria-current'), 'location', 'Fresh mount restores subsection')
   await refreshed.unmount(); await win.happyDOM.close()
   console.log('PASS ready docs navigation, framework code, copy, theme, Checkbox, Select and Dialog')
 } else {
@@ -219,10 +258,11 @@ if (process.argv[2] === '--worker') {
     assert.match(themeSnippets[2].code, /id="app"/)
     assert.doesNotMatch(themeSnippets[2].code, /className|import /)
     const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
-    assert.match(source, /22\.22\.3/)
-    assert.match(source, /app.config.idPrefix/)
-    assert.match(source, /水合前.*丢失或错配/)
-    assert.match(source, /Escape[\s\S]*同时关闭两层/)
+    const guides = await readFile(join(root, 'examples/ready-docs/Guides.tsx'), 'utf8')
+    assert.match(guides, /22\.22\.3/)
+    assert.match(guides, /app.config.idPrefix/)
+    assert.match(guides, /水合前.*丢失或错配/)
+    assert.match(guides, /Escape[\s\S]*同时关闭两层/)
     assert.match(source, /packages\/ready\/theme\.css/)
   })
 
@@ -233,7 +273,7 @@ if (process.argv[2] === '--worker') {
     assert.equal(shared.searchParams.get('framework'), 'vue'); assert.equal(shared.searchParams.get('from'), 'email'); assert.equal(shared.hash, '#dialog'); assert.equal(shared.pathname, '/docs')
   })
   test('Existing Vite instructions match actual pinned framework peers and compiler versions', async () => {
-    const { consumerSetup, existingInstall, frameworks } = await import('../examples/ready-docs/content.ts')
+    const { consumerSetup, existingInstall, optionalCompilerInstall, frameworks } = await import('../examples/ready-docs/content.ts')
     const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
     const ready = JSON.parse(await readFile(join(root, 'packages/ready/package.json'), 'utf8'))
     for (const framework of frameworks) {
@@ -249,10 +289,14 @@ if (process.argv[2] === '--worker') {
       assert.match(code, /npm install "\.\/vendor\/destyler\/\$revision\/destyler-ready-prototype-0\.0\.0\.tgz"/)
       assert.doesNotMatch(code, /mktemp|archive_dir=".*\/tmp/)
       assert.doesNotMatch(code, /npm install @destyler\/ready-prototype/)
+      assert.doesNotMatch(code, /npm install\s+-D\b/)
+      assert.ok(code.endsWith(setup.peers))
+      assert.equal(optionalCompilerInstall(framework), `npm install -D ${setup.plugin}`)
       assert.match(setup.config, /plugins:/)
     }
-    const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
+    const source = await readFile(join(root, 'examples/ready-docs/Guides.tsx'), 'utf8')
     assert.match(source, /data-doc-existing-project/)
+    assert.match(source, /确认框架编译器[\s\S]*optionalCompilerInstall\(framework\)[\s\S]*仅缺少 Vite 插件时安装/)
     assert.match(source, /data-doc-note="tarball-reinstall"/)
     assert.match(source, /相同相对路径、相同字节/)
     assert.match(source, /import '@destyler\/ready-prototype\/theme\.css'/)
@@ -276,8 +320,8 @@ if (process.argv[2] === '--worker') {
     assert.equal(ids('   ').length, documentationPages.length)
     const source = await readFile(join(root, 'examples/ready-docs/main.tsx'), 'utf8')
     for (const page of documentationPages) assert.ok(['overview','installation','checkbox','select','dialog','themes','boundaries'].includes(page.id))
-    assert.match(source, /searchResults\.map/)
-    assert.match(source, /searchResults\.length === 0/)
+    assert.match(source, /results\.map/)
+    assert.match(source, /results\.length\s*===\s*0/)
   })
 
   test('Ready docs current picker palette meets normal-text contrast (source calculation)', async () => {
