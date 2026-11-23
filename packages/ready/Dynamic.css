@@ -1,0 +1,63 @@
+.rd-dynamic { display: grid; min-inline-size: 0; gap: 6px; }
+.rd-dynamic [data-scope="dynamic"][data-part="label"] { font-size: .875rem; font-weight: 600; }
+.rd-dynamic [data-scope="dynamic"][data-part="control"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  min-inline-size: 0;
+  min-block-size: var(--rd-control-height, 42px);
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+}
+.rd-dynamic [data-scope="dynamic"][data-part="input"] {
+  flex: 1 1 8rem;
+  inline-size: 8rem;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  padding: 4px 6px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.rd-dynamic [data-scope="dynamic"][data-part="item"] { max-inline-size: 100%; }
+.rd-dynamic [data-scope="dynamic"][data-part="item-preview"] {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-inline-size: 100%;
+  padding-inline: 6px 0;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: calc(var(--rd-radius, 10px) / 2);
+  font-size: .875rem;
+}
+.rd-dynamic [data-scope="dynamic"][data-part="item-text"] { min-inline-size: 0; overflow-wrap: anywhere; }
+.rd-dynamic [data-scope="dynamic"][data-part="item-preview"][data-highlighted] {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: 0;
+}
+.rd-dynamic :is(.rd-dynamic-add,[data-scope="dynamic"][data-part="clear-trigger"],[data-scope="dynamic"][data-part="item-delete-trigger"]) {
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--rd-radius, 10px) / 2);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .875rem;
+  cursor: pointer;
+}
+.rd-dynamic :is(.rd-dynamic-add,[data-scope="dynamic"][data-part="clear-trigger"],[data-scope="dynamic"][data-part="item-delete-trigger"]):not(:disabled):hover {
+  border-color: var(--rd-border, #7b8799);
+}
+.rd-dynamic :disabled { cursor: not-allowed; }
+.rd-dynamic .rd-dynamic-add:disabled { opacity: .55; }
+.rd-dynamic :is(.rd-dynamic-count,.rd-dynamic-hint,.rd-dynamic-error) { margin: 0; color: var(--rd-muted, #536176); font-size: .8125rem; }
+.rd-dynamic .rd-dynamic-error:not(:empty) { color: var(--rd-text, #172033); font-weight: 600; }
+.rd-dynamic .rd-dynamic-error:empty { position: absolute; }
+@media (forced-colors: active) {
+  .rd-dynamic [data-scope="dynamic"][data-part="item-preview"][data-highlighted] { outline-color: Highlight; }
+}

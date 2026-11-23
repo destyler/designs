@@ -34,7 +34,8 @@ changing a status.
 | Implemented in the first expansion; real browser acceptance is still open | `switch`, `pagination`, `tabs`, `progress`, `collapsible`, `toggle`, `separator`, `fieldset`, `avatar`, `aspect-ratio`, `breadcrumbs`, `radio` | 12 |
 | Implemented in the form expansion; real browser acceptance is still open | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 |
 | Implemented in the layout and navigation expansion; real browser acceptance is still open | `collapse`, `scroll-area`, `splitter`, `steps`, `carousel` | 5 |
-| Subsequent consumer candidates | All slugs in batches 3–5 below | 19 |
+| Implemented in the selection and collection expansion; real browser acceptance is still open | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 |
+| Subsequent consumer candidates | All slugs in batches 4–5 below | 14 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -76,11 +77,28 @@ An implementation checkpoint includes four package exports and component regress
   UI 0.0.5**. No other framework, renderer, dependency version, or package
   export outside that intersection is promised.
 
+## Selection and collection evidence boundaries
+
+- Calendar uses one inline Gregorian day grid and date-only values. On the
+  locked calendar primitive, marking a cell disabled blocked pointer selection
+  but not Enter at the grid. Ready guards the activation before the grid
+  handles it. The four compiled interaction fixtures move roving focus onto the
+  disabled date, prove Enter/Space do not select it, and then prove movement and
+  enabled selection still work. This does not certify the browser, week/month
+  transitions beyond the tested route, or screen-reader behavior.
+- NavigationMenu preserves native anchor activation and uses one in-flow
+  disclosure level. Keyboard and focus assertions in the regression use a
+  simulated DOM. The opt-in browser check is
+  `node scripts/test-ready-navigation-menu-browser.mjs`; no successful physical
+  browser run is required to claim only a source implementation checkpoint.
+- Combobox is local, single-select search; Dynamic owns an uncontrolled set of
+  tags; Tree is single-select and expects a static data shape. The shared
+  framework exports do not imply native form support for every family.
+
 ## Subsequent batches (proposal)
 
 | Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
 | --- | --- | ---: | --- |
-| 3. Selection, navigation and collections | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 | Current/link semantics, stable keys and focus when items change, keyboard/selection policy and disabled entries; calendar locale, constraints and outside-month policy. |
 | 4. Overlay workflows | `floating-panel`, `hover-card`, `menu`, `popover`, `toast`, `tooltip`, `tour` | 7 | Deliberate disclosure/focus semantics, dismissal and restoration per family, reduced motion, correct announcements where intended, and theme boundaries in real browsers. |
 | 5. Specialized controls | `clipboard`, `color-picker`, `edit`, `qr-code`, `signature`, `timer`, `toggle-group` | 7 | Clipboard permission/error states; numeric or keyboard alternatives to pointer-only interaction, canvas/export constraints, output announcement, cleanup of timers, and independent/grouped pressed behavior. |
 

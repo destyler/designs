@@ -24,8 +24,8 @@ test('Packed theme guide documents every token and an explicit scoped override',
 
 test('Unscoped components consume complete defaults without shadowing inherited custom tokens',async()=>{
  const css=await readFile(new URL('../packages/ready/theme.css',import.meta.url),'utf8')
- const scope=css.match(/\[data-rd-theme\]\s*\{([^}]+)\}/)[1]
- const defaults=Object.fromEntries([...scope.matchAll(/(--rd-[\w-]+):([^;]+);/g)].map(m=>[m[1],m[2]]))
+ const scope=css.match(/\[data-rd-theme\]\s*\{([^}]+)\}/)
+ const defaults=Object.fromEntries([...scope[1].matchAll(/(--rd-[\w-]+):([^;]+);/g)].map(m=>[m[1],m[2]]))
  const componentCss=css.slice(css.indexOf('.rd-component'))
  for(const [,token] of componentCss.matchAll(/var\((--rd-[\w-]+)/g)) {
   assert.ok(componentCss.includes(`var(${token},${defaults[token]})`), `${token} has the same default as the explicit scope`)
@@ -36,4 +36,25 @@ test('Unscoped components consume complete defaults without shadowing inherited 
  assert.doesNotMatch(css,/(?:^|\n)\s*(?:html|body|button|input)\s*[{,]/,'No host/global element styling')
  assert.ok(css.includes('background:var(--rd-surface,#fff)'))
  assert.ok(css.includes('calc(var(--rd-radius,10px) / 2)'))
+})
+
+test('Imported family sheets honor the same 14 default tokens and pack with the CSS entry',async()=>{
+ const dir=new URL('../packages/ready/',import.meta.url)
+ const css=await readFile(new URL('theme.css',dir),'utf8')
+ const scope=css.match(/\[data-rd-theme\]\s*\{([^}]+)\}/)
+ const defaults=Object.fromEntries([...scope[1].matchAll(/(--rd-[\w-]+):([^;]+);/g)].map(match=>[match[1],match[2]]))
+ const normalize=value=>value.replace(/,\s*/g,',').trim()
+ const manifest=JSON.parse(await readFile(new URL('package.json',dir),'utf8'))
+ const imports=[...css.matchAll(/^@import "\.\/([^"]+\.css)";/gm)].map(match=>match[1])
+ assert.ok(imports.length>=8, 'all composed family sheets are brought in by theme.css')
+ for(const sheet of imports){
+  assert.ok(manifest.files.includes(sheet),`${sheet} is packed`)
+  const text=await readFile(new URL(sheet,dir),'utf8')
+  assert.doesNotMatch(text,/--rd-[\w-]+\s*:/,`${sheet} must not override the inherited scope`)
+  assert.doesNotMatch(text,/var\(--rd-[\w-]+\)/,`${sheet} provides defaults even without the theme wrapper`)
+  for(const [,token,fallback] of text.matchAll(/var\((--rd-[\w-]+),([^()]+)\)/g)){
+   assert.ok(token in defaults,`${sheet}: undocumented token ${token}`)
+   assert.equal(normalize(fallback),normalize(defaults[token]),`${sheet}: default for ${token} matches explicit theme`)
+  }
+ }
 })

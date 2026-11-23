@@ -1,0 +1,56 @@
+.rd-tree [data-scope="tree"][data-part="label"] {
+  display: block;
+  margin-block-end: .375rem;
+  font-weight: 600;
+}
+.rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"]) {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  min-block-size: 2rem;
+  border-radius: calc(var(--rd-radius, 10px) * .6);
+}
+.rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"])[data-selected] {
+  background: var(--rd-accent, #3155d9);
+  color: var(--rd-on-accent, #fff);
+  font-weight: 600;
+}
+.rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"]):focus-visible {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: -2px;
+}
+.rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"])[data-disabled] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.rd-tree [data-scope="tree"][data-part="branch-content"] {
+  margin-block: 0;
+  padding-inline-start: .875rem;
+}
+.rd-tree [data-scope="tree"]:is([data-part="tree"], [data-part="branch"], [data-part="branch-content"]) { list-style: none; }
+.rd-tree [data-scope="tree"]:is([data-part="item-text"], [data-part="branch-text"]) { overflow-wrap: anywhere; }
+.rd-tree [data-scope="tree"][data-part="branch-trigger"] {
+  display: grid;
+  place-items: center;
+  min-inline-size: 1.25rem;
+  min-block-size: 1.75rem;
+  cursor: pointer;
+}
+.rd-tree [data-scope="tree"][data-part="branch-indicator"][data-state="open"] {
+  transform: rotate(90deg);
+}
+.rd-tree [data-scope="tree"][data-part="item"] {
+  padding-inline-start: 1.625rem;
+}
+.rd-tree [data-scope="tree"][data-part="item-indicator"] {
+  margin-inline-start: auto;
+  margin-inline-end: .375rem;
+}
+.rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"])[data-selected]:focus-visible {
+  outline-color: var(--rd-on-accent, #fff);
+}
+@media (forced-colors: active) {
+  .rd-tree [data-scope="tree"]:is([data-part="item"], [data-part="branch-control"])[data-selected] {
+    border-inline-start: 2px solid Highlight;
+  }
+}

@@ -1,6 +1,11 @@
 @import "./Pagination.css";
 @import "./Slider.css";
 @import "./Splitter.css";
+@import "./Calendar.css";
+@import "./Combobox.css";
+@import "./Dynamic.css";
+@import "./NavigationMenu.css";
+@import "./Tree.css";
 
 /* Consumer-level fallbacks provide the default without writing host/global tokens.
    Explicit theme scopes still reset the complete contract; inherited overrides win. */
