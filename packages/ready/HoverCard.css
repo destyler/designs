@@ -1,0 +1,25 @@
+.rd-hover-card > [data-scope="hover-card"][data-part="trigger"] {
+  color: var(--rd-accent, #3155d9);
+  text-decoration: underline;
+  text-underline-offset: .16em;
+}
+.rd-hover-card > [data-scope="hover-card"][data-part="positioner"] {
+  display: block;
+  z-index: var(--rd-overlay-z, 40);
+}
+.rd-hover-card [data-scope="hover-card"][data-part="content"]:not([hidden]) {
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  inline-size: min(18rem, calc(100vw - 24px));
+  max-inline-size: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  box-shadow: var(--rd-shadow, 0 12px 32px #17203326);
+  font-size: .875rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}

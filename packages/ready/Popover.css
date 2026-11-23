@@ -1,0 +1,22 @@
+.rd-popover [data-scope="popover"][data-part="positioner"] {
+  z-index: var(--rd-overlay-z, 40);
+}
+.rd-popover [data-scope="popover"][data-part="content"] {
+  box-sizing: border-box;
+  inline-size: min(20rem, max(0px, var(--available-width, calc(100vw - 2rem))));
+  max-block-size: min(26rem, var(--available-height, calc(100vh - 2rem)));
+  overflow: auto;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  padding: var(--rd-space, 12px);
+  box-shadow: var(--rd-shadow, 0 12px 32px #17203326);
+  overflow-wrap: anywhere;
+}
+.rd-popover [data-scope="popover"][data-part="title"] { font-weight: 650; }
+.rd-popover [data-scope="popover"][data-part="description"] {
+  color: var(--rd-muted, #536176);
+  margin-block-start: .25rem;
+}
+.rd-popover-body { margin-block: .625rem; }

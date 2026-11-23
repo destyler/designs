@@ -35,7 +35,8 @@ changing a status.
 | Implemented in the form expansion; real browser acceptance is still open | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 |
 | Implemented in the layout and navigation expansion; real browser acceptance is still open | `collapse`, `scroll-area`, `splitter`, `steps`, `carousel` | 5 |
 | Implemented in the selection and collection expansion; real browser acceptance is still open | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 |
-| Subsequent consumer candidates | All slugs in batches 4–5 below | 14 |
+| Implemented in the first overlay expansion; real browser acceptance is still open | `popover`, `tooltip`, `hover-card`, `menu` | 4 |
+| Subsequent consumer candidates | All slugs in the rest of batch 4 and batch 5 below | 10 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -95,11 +96,26 @@ An implementation checkpoint includes four package exports and component regress
   tags; Tree is single-select and expects a static data shape. The shared
   framework exports do not imply native form support for every family.
 
+## First overlay expansion boundaries
+
+- Popover is a nonmodal interactive panel; Menu is a flat list of named actions.
+  Pointer and keyboard dismissal were exercised with the locked compiled
+  frameworks. Focus restoration on explicit dismissal is different from
+  preserving an outside destination when focus leaves the overlay.
+- Tooltip and HoverCard stay non-interactive. Their pointer and focus states
+  are tracked independently to keep supplemental text available while moving
+  to the popup or while the trigger remains focused. Tooltip text describes a
+  button; HoverCard supplements a native link and does not replace its action.
+- The four overlays use inline positioning and inherit the local theme.
+  There is no cross-overlay or nested Escape guarantee. Simulated DOM coverage
+  is not viewport geometry, physical Tab or pointer input, or a screen-reader
+  acceptance result.
+
 ## Subsequent batches (proposal)
 
 | Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
 | --- | --- | ---: | --- |
-| 4. Overlay workflows | `floating-panel`, `hover-card`, `menu`, `popover`, `toast`, `tooltip`, `tour` | 7 | Deliberate disclosure/focus semantics, dismissal and restoration per family, reduced motion, correct announcements where intended, and theme boundaries in real browsers. |
+| 4. Remaining overlay workflows | `floating-panel`, `toast`, `tour` | 3 | Deliberate disclosure/focus semantics, dismissal and restoration per family, reduced motion, correct announcements where intended, and theme boundaries in real browsers. |
 | 5. Specialized controls | `clipboard`, `color-picker`, `edit`, `qr-code`, `signature`, `timer`, `toggle-group` | 7 | Clipboard permission/error states; numeric or keyboard alternatives to pointer-only interaction, canvas/export constraints, output announcement, cleanup of timers, and independent/grouped pressed behavior. |
 
 These are dependency-oriented buckets, not deadlines. Small independent

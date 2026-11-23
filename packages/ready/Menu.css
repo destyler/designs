@@ -1,0 +1,11 @@
+/* Inline positioner inherits Ready theme tokens. It is not a document portal. */
+.rd-menu { position:relative; display:inline-block; max-inline-size:100%; }
+.rd-menu [data-part="trigger"] { display:inline-flex; align-items:center; gap:8px; min-block-size:var(--rd-control-height,42px); max-inline-size:100%; padding:6px 10px; border:1px solid var(--rd-border,#7b8799); border-radius:var(--rd-radius,10px); color:var(--rd-text,#172033); background:var(--rd-surface,#fff); font:inherit; overflow-wrap:anywhere; cursor:pointer; }
+.rd-menu [data-part="trigger"]:disabled { opacity:.55; cursor:not-allowed; }
+.rd-menu [data-part="positioner"] { z-index:var(--rd-overlay-z,40); }
+.rd-menu [data-part="content"] { box-sizing:border-box; min-inline-size:min(11rem, 85vw); max-inline-size:min(24rem, 90vw); max-block-size:min(22rem, 70vh); overflow:auto; padding:4px; border:1px solid var(--rd-border,#7b8799); border-radius:var(--rd-radius,10px); color:var(--rd-text,#172033); background:var(--rd-surface,#fff); box-shadow:var(--rd-shadow,0 12px 32px #17203326); }
+.rd-menu [data-part="content"][hidden] { display:none; }
+.rd-menu [data-part="item"] { box-sizing:border-box; padding:8px 10px; border-radius:var(--rd-radius,10px); overflow-wrap:anywhere; cursor:pointer; }
+.rd-menu [data-part="item"][data-highlighted] { background:var(--rd-accent,#3155d9); color:var(--rd-on-accent,#fff); }
+.rd-menu [data-part="item"][data-disabled] { opacity:.55; cursor:not-allowed; }
+.rd-menu :is(button,[role="menu"]):focus-visible { outline:2px solid var(--rd-accent,#3155d9); outline-offset:2px; }

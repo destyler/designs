@@ -4,6 +4,7 @@
 // locked mode is not framework-peer isolation or a fresh installation.
 // Obtain prior consumers using scripts/verify-ready-clean-consumers.mjs.
 import assert from 'node:assert/strict'
+import {overlayTypeCases} from './ready-overlay-type-cases.mjs'
 import {stripVTControlCharacters} from 'node:util'
 import {dependencyMode,linkTypeDependencies,assertPackedReady} from './ready-type-dependencies.mjs'
 import {mkdtemp,mkdir,readFile,writeFile} from 'node:fs/promises'
@@ -62,23 +63,23 @@ const noTitle:D={trigger:'Open'};
 const wrongOpen:D={title:'Title',trigger:'Open',open:'true'};
 // @ts-expect-error extra DOM props are not broadly forwarded
 const extra:C={label:'C','aria-label':'Alternative'};
-`)
+`+overlayTypeCases(framework,'@destyler/ready-prototype/'+framework))
  const markup=framework==='solid'?`import {Checkbox,Select,Dialog} from '@destyler/ready-prototype/solid';export const fixture=<><Checkbox label="Consent" required error="Error" onCheckedChange={value=>{const v:boolean=value}}/><Select label="Plan" options={[{label:'A',value:'a'}]} onValueChange={value=>{const v:string=value}}/><Dialog title="Title" trigger="Open" onOpenChange={value=>{const v:boolean=value}}>Body</Dialog></>;`:`<script lang="ts">import {Checkbox,Select,Dialog} from '@destyler/ready-prototype/svelte';</script><Checkbox label="Consent" required error="Error" onCheckedChange={value=>{const v:boolean=value}}/><Select label="Plan" options={[{label:'A',value:'a'}]} onValueChange={value=>{const v:string=value}}/><Dialog title="Title" trigger="Open" onOpenChange={value=>{const v:boolean=value}}>Body</Dialog>`
  await writeFile(join(folder,framework==='solid'?'Fixture.tsx':'Fixture.svelte'),markup)
  const args=framework==='solid'?[join(installed,'typescript/bin/tsc'),'--noEmit','-p',join(folder,'tsconfig.json')]:[join(installed,'svelte-check/bin/svelte-check'),'--workspace',folder,'--tsconfig',join(folder,'tsconfig.json')]
- try{const log=run(process.execPath,args,folder);await writeFile(join(folder,'types.log'),log);console.log(framework,'PASS packed positive markup + 13 expected negative type cases')}
+ try{const log=run(process.execPath,args,folder);await writeFile(join(folder,'types.log'),log);console.log(framework,'PASS packed positive markup + 21 expected negative type cases')}
  catch(e){await writeFile(join(folder,'types.log'),String(e.stdout)+String(e.stderr));console.log(framework,'FAIL',String(e.stdout));process.exitCode=1}
  const contract=await readFile(join(folder,'contracts.ts'),'utf8');const expectedLines=contract.split('\n').flatMap((line,index)=>line.includes('@ts-expect-error')?[index+2]:[])
- assert.equal(expectedLines.length,13)
+ assert.equal(expectedLines.length,21)
  await writeFile(join(folder,'contracts.ts'),contract.replaceAll('@ts-expect-error','negative case'))
  let negative;try{run(process.execPath,args,folder);throw Error('Invalid cases unexpectedly compiled')}catch(e){if(!e.status)throw e;negative=stripVTControlCharacters(String(e.stdout)+String(e.stderr)).replaceAll('\r\n','\n')}
  // Hosted CI may color filenames/Error prefixes. Preserve strict diagnostics after removing presentation escapes.
  await writeFile(join(folder,'negative.log'),negative)
  const pattern=framework==='solid'?/contracts\.ts\((\d+),\d+\): error /g:/contracts\.ts:(\d+):\d+\nError:/g
  const lines=[...negative.matchAll(pattern)].map(match=>Number(match[1]));assert.deepEqual(lines,expectedLines,'Exactly one diagnostic at each intended negative fixture line')
- if(framework==='svelte')assert.match(negative,/found 13 errors and 0 warnings/)
- else assert.equal((negative.match(/error TS/g)||[]).length,13)
+ if(framework==='svelte')assert.match(negative,/found 21 errors and 0 warnings/)
+ else assert.equal((negative.match(/error TS/g)||[]).length,21)
  await writeFile(join(folder,'contracts.ts'),contract)
- console.log(framework,'PASS exact 13 diagnostic locations and packed export resolution')
+ console.log(framework,'PASS exact 21 diagnostic locations and packed export resolution')
  const pkg=JSON.parse(await readFile(join(ready,'package.json'),'utf8'));assert.ok(pkg.exports['./'+framework]);assert.ok(pkg.files.includes('accessible-text.ts'))
 }

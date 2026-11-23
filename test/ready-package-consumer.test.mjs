@@ -46,7 +46,7 @@ test('Ready packed source package exposes intentional entries and optional frame
     for (const framework of ['react', 'vue', 'solid', 'svelte']) {
       const plugins = framework === 'react' ? [(await import('@vitejs/plugin-react')).default()] : framework === 'vue' ? [(await import('@vitejs/plugin-vue')).default()] : framework === 'solid' ? [(await import('vite-plugin-solid')).default()] : [(await import('@sveltejs/vite-plugin-svelte')).svelte()]
       const entry = join(folder, `${framework}.ts`)
-      await writeFile(entry, `import {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree};`)
+      await writeFile(entry, `import {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree, Popover, Tooltip, HoverCard, Menu} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree, Popover, Tooltip, HoverCard, Menu};`)
       const output = join(folder, `out-${framework}`)
       const modules = []
       plugins.push({ name: 'ready-consumer-graph', generateBundle() { modules.push(...this.getModuleIds()) } })
@@ -57,6 +57,9 @@ test('Ready packed source package exposes intentional entries and optional frame
       assert.doesNotMatch(css, /:root|@property/, 'Packed CSS does not install global tokens')
       assert.match(css, /max-height:\s*min\(20rem,\s*var\(--available-height,\s*20rem\)\)/, 'Packed CSS retains the long-list height cap')
       assert.match(css, /overflow-y:\s*auto/, 'Packed CSS retains vertical overflow')
+      for (const family of ['popover', 'tooltip', 'hover-card', 'menu']) {
+        assert.ok(css.includes(`.rd-${family} `), `Packed CSS includes the ${family} stylesheet`)
+      }
       assert.match(js, /Checkbox/)
       assert.ok(modules.some(id => id.includes(target)), 'Uses unpacked package, not repository source aliases')
       for (const other of ['react', 'vue', 'solid', 'svelte'].filter(name => name !== framework)) assert.ok(!modules.some(id => id.includes(`/@destyler-ui/${other}/`)), `Does not bundle unused ${other} UI adapter`)

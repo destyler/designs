@@ -3,6 +3,7 @@
 // Neither mode is a fresh installation; locked mode is not framework-peer isolation.
 // Generate prior consumers with scripts/verify-ready-clean-consumers.mjs.
 import assert from 'node:assert/strict'
+import {overlayTypeCases} from './ready-overlay-type-cases.mjs'
 import {dependencyMode,linkTypeDependencies,assertPackedReady} from './ready-type-dependencies.mjs'
 import {mkdtemp,mkdir,cp,rm,writeFile,readFile} from 'node:fs/promises'
 import {join} from 'node:path'
@@ -61,20 +62,21 @@ const wrongOpen:D={trigger:'Open',title:'Title',open:'true'};
 // @ts-expect-error open callback boolean
 const wrongOpenCallback:D={trigger:'Open',title:'Title',onOpenChange(value:string){}};
 `
+ contract+=overlayTypeCases(framework,importPath)
  await writeFile(join(cwd,'contract.ts'),contract)
  if(framework==='react')await writeFile(join(cwd,'positive.tsx'),`import {Checkbox,Select,Dialog} from '${importPath}';export const sample=<><Checkbox label="Consent"/><Checkbox label="Consent" checked required error="Required" onCheckedChange={value=>{const boolean:boolean=value}}/><Select label="Plan" options={[{value:'a',label:'A'}]} onValueChange={value=>{const string:string=value}}/><Dialog trigger="Open" title="Title" open={false} onOpenChange={value=>{const boolean:boolean=value}}><p>Body</p></Dialog></>`)
  else await writeFile(join(cwd,'positive.vue'),`<script setup lang="ts">import {ref} from 'vue';import {Checkbox,Select,Dialog} from '${importPath}';const checked=ref(false),value=ref(''),open=ref(false);function boolean(v:boolean){};function string(v:string){}</script><template><Checkbox label="Consent"/><Checkbox label="Consent" v-model:checked="checked" required error="Required" @checked-change="boolean"/><Select label="Plan" :options="[{value:'a',label:'A'}]" v-model:value="value" @value-change="string"/><Dialog trigger="Open" title="Title" v-model:open="open" @open-change="boolean"><p>Body</p></Dialog></template>`)
  const command=framework==='react'?'node_modules/typescript/bin/tsc':'node_modules/vue-tsc/bin/vue-tsc.js'
  try{await writeFile(join(cwd,'check.log'),run(process.execPath,[command,'--noEmit'],cwd));console.log(framework,'PASS')}catch(error){await writeFile(join(cwd,'check.log'),error.stdout??String(error));throw error}
  const expectedLines=contract.split('\n').flatMap((line,index)=>line.includes('@ts-expect-error')?[index+2]:[])
- assert.equal(expectedLines.length,12)
+ assert.equal(expectedLines.length,20)
  await writeFile(join(cwd,'contract.ts'),contract.replaceAll('@ts-expect-error','negative case'))
  let negative='';try{run(process.execPath,[command,'--noEmit'],cwd);assert.fail('Invalid contracts unexpectedly compiled')}catch(error){if(error.code==='ERR_ASSERTION')throw error;negative=error.stdout??''}
  await writeFile(join(cwd,'contract-negative.log'),negative)
  assert.deepEqual([...negative.matchAll(/contract\.ts\((\d+),\d+\): error TS/g)].map(match=>Number(match[1])),expectedLines,negative)
- assert.equal((negative.match(/error TS/g)||[]).length,12,negative)
+ assert.equal((negative.match(/error TS/g)||[]).length,20,negative)
  await writeFile(join(cwd,'contract.ts'),contract)
- console.log(framework,'PASS exact 12 negative diagnostic locations and packed exports')
+ console.log(framework,'PASS exact 20 negative diagnostic locations and packed exports')
  if(framework==='vue'){
   await writeFile(join(cwd,'negative.vue'),`<script setup lang="ts">import {Checkbox,Select,Dialog} from '${importPath}';function bad(v:number){}</script>
 <template>

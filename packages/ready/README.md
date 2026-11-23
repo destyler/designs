@@ -53,6 +53,10 @@ parts or installing another theme package.
 | Dynamic | Labelled tag input with optional `defaultValue`, `maxTags`, `maxLength`, `disabled`, and form `name` (one JSON-encoded array). Add with Enter or the Add button, remove individual tags or clear all. Observe with `onValueChange` (Vue `value-change`). No controlled tags, inline editing, bulk paste or native required/reset guarantee. |
 | NavigationMenu | A labelled site navigation landmark with one level of disclosure groups. Provide `items` as links `{id, label, href, current?}` or groups `{id, label, links, disabled?}`. Opens on activation, not hover. Native links navigate normally; Escape closes a group and returns focus if it was in the panel. `onValueChange` (Vue `value-change`) reports the open group ID or `null`. |
 | Tree | Labelled tree of `items: [{value, label, disabled?, children?}]`, with globally unique, whitespace-free values. Set expanded keys via `expandedValue`/`defaultExpandedValue` and use `selectedValue`/`defaultSelectedValue` for arrays of zero or one selection. Vue uses `v-model:expanded-value` and `v-model:selected-value`. Static shape, up to 250 nodes and eight levels; no lazy loading, editing, dragging or virtualization. |
+| Popover | One nonmodal interactive panel with a named `trigger` button, `title`, optional `description` and `closeLabel`. Supply content as ordinary framework children, slot or snippet. Use `defaultOpen` or `open`/`onOpenChange` (Vue `v-model:open`). Use Dialog for a blocking interaction. |
+| Tooltip | Supplementary plain `text` associated with a named `trigger` button on keyboard focus or pointer hover. The pointer can move onto the text; Escape dismisses without moving focus. Not an action panel, touch disclosure, or substitute for essential instructions. |
+| HoverCard | One native preview link (`label`, valid `href`) with plain-text `description` and optional `title`. Pointer hover or link focus reveals the visual preview; the link remains the normal action. This is supplemental information, not a focusable panel or navigation menu. |
+| Menu | Named `trigger` and flat action `items: [{value, label, disabled?}]`. `onSelect(value)` (Vue `@select`) delivers the item key; `onOpenChange` (Vue `@open-change`) observes disclosure. No submenus, checkbox/radio items, links or controlled mode in this profile. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
@@ -62,6 +66,11 @@ import '@destyler/ready-prototype/theme.css'
 <Pagination label="Search results" count={95} pageSize={10} />
 <Progress label="Importing files" value={null} />
 ```
+
+The four overlays above render inline, so they retain their inherited Ready theme.
+An ancestor that clips content or creates a new stacking context can affect them.
+Nested Escape ownership, arbitrary portals, and browser/screen-reader acceptance
+are not part of this implementation checkpoint.
 
 Run `node scripts/ready.mjs dev react` (or vue, solid, svelte). Open the URL printed
 by Vite. Run `node scripts/ready.mjs build` for four static demos under artifacts/ready.
