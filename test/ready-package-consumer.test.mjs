@@ -42,11 +42,17 @@ test('Ready packed source package exposes intentional entries and optional frame
     assert.equal(manifest.exports['./theme.css'], './theme.css')
     for (const [peer, metadata] of Object.entries(manifest.peerDependenciesMeta)) assert.equal(metadata.optional, true, peer)
     assert.deepEqual(manifest.sideEffects, ['**/*.css'])
+    const families = 'Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree, Popover, Tooltip, HoverCard, Menu, FloatingPanel, Toast, Tour, Clipboard, Edit, QRCode, ToggleGroup, ColorPicker, Signature, Timer'.split(', ')
+    assert.equal(new Set(families).size, 45)
     const { build } = await import('vite')
     for (const framework of ['react', 'vue', 'solid', 'svelte']) {
       const plugins = framework === 'react' ? [(await import('@vitejs/plugin-react')).default()] : framework === 'vue' ? [(await import('@vitejs/plugin-vue')).default()] : framework === 'solid' ? [(await import('vite-plugin-solid')).default()] : [(await import('@sveltejs/vite-plugin-svelte')).svelte()]
       const entry = join(folder, `${framework}.ts`)
-      await writeFile(entry, `import {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree, Popover, Tooltip, HoverCard, Menu, FloatingPanel, Toast, Tour, createToastController, Clipboard, Edit, QRCode, ToggleGroup} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup, Field, Label, NumberInput, Slider, FileUpload, OTPInput, ScrollArea, Collapse, Splitter, Steps, Carousel, Calendar, Combobox, Dynamic, NavigationMenu, Tree, Popover, Tooltip, HoverCard, Menu, FloatingPanel, Toast, Tour, createToastController, Clipboard, Edit, QRCode, ToggleGroup};`)
+      const symbols = [...families, 'createToastController'].join(', ')
+      const packedEntry = await readFile(join(target, manifest.exports[`./${framework}`].default), 'utf8')
+      const exportedFamilies = [...packedEntry.matchAll(/^export (?:\{ (?:default as )?([A-Z]\w+) \} from |function ([A-Z]\w+)\()/gm)].map(match => match[1] ?? match[2])
+      assert.deepEqual(exportedFamilies.sort(), [...families].sort(), `${framework}: exact complete leaf exports`)
+      await writeFile(entry, `import {${symbols}} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {${symbols}};`)
       const output = join(folder, `out-${framework}`)
       const modules = []
       plugins.push({ name: 'ready-consumer-graph', generateBundle() { modules.push(...this.getModuleIds()) } })
@@ -57,7 +63,7 @@ test('Ready packed source package exposes intentional entries and optional frame
       assert.doesNotMatch(css, /:root|@property/, 'Packed CSS does not install global tokens')
       assert.match(css, /max-height:\s*min\(20rem,\s*var\(--available-height,\s*20rem\)\)/, 'Packed CSS retains the long-list height cap')
       assert.match(css, /overflow-y:\s*auto/, 'Packed CSS retains vertical overflow')
-      for (const family of ['popover', 'tooltip', 'hover-card', 'menu', 'floating-panel', 'toast', 'tour']) {
+      for (const family of ['popover', 'tooltip', 'hover-card', 'menu', 'floating-panel', 'toast', 'tour', 'clipboard', 'edit', 'qr-code', 'toggle-group', 'color-picker', 'signature', 'timer']) {
         assert.ok(css.includes(`.rd-${family} `), `Packed CSS includes the ${family} stylesheet`)
       }
       assert.match(js, /Checkbox/)

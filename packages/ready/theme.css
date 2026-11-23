@@ -17,6 +17,9 @@
 @import "./Edit.css";
 @import "./QRCode.css";
 @import "./ToggleGroup.css";
+@import "./ColorPicker.css";
+@import "./Signature.css";
+@import "./Timer.css";
 
 /* Consumer-level fallbacks provide the default without writing host/global tokens.
    Explicit theme scopes still reset the complete contract; inherited overrides win. */

@@ -71,6 +71,12 @@
     "QRCode.css",
     "ToggleGroup.ts",
     "ToggleGroup.css",
+    "ColorPicker.ts",
+    "ColorPicker.css",
+    "Signature.ts",
+    "Signature.css",
+    "Timer.ts",
+    "Timer.css",
     "theme.css",
     "README.md",
     "THEMING.md"

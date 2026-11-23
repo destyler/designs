@@ -1,0 +1,42 @@
+.rd-color-picker {
+  display: grid;
+  justify-items: start;
+  gap: .5rem;
+}
+.rd-color-picker [data-part="control"], .rd-color-picker [data-part="swatch-group"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+}
+.rd-color-picker .rd-color-hex {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  inline-size: 10ch;
+  max-inline-size: 100%;
+  min-block-size: var(--rd-control-height, 42px);
+  padding: .375rem .625rem;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  color: var(--rd-text, #172033);
+  background: var(--rd-surface, #fff);
+  font: inherit;
+  font-family: ui-monospace, monospace;
+}
+.rd-color-picker [data-part="swatch"], .rd-color-picker [data-part="swatch-trigger"] {
+  box-sizing: border-box;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+}
+.rd-color-picker [data-part="swatch-trigger"] { background: var(--color); cursor: pointer; }
+.rd-color-picker [data-part="swatch-trigger"][aria-pressed="true"] {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: 1px;
+}
+.rd-color-picker :is(input, [data-part="swatch-trigger"]):focus-visible {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: 3px;
+}
+.rd-color-picker :disabled { opacity: .6; cursor: not-allowed; }

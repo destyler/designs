@@ -2,9 +2,8 @@
 
 **Scope:** component code, package exports, tests, and usage contracts. The
 website and gallery are not part of this work. This is a working inventory for
-planning Ready, not a previously agreed Ready release scope or a promise to
-ship every item. Check the current implementation and its evidence before
-changing a status.
+tracking Ready implementation against the checked-in gallery inventory,
+not a publication or full browser-support claim.
 
 ## Baseline and evidence
 
@@ -37,8 +36,8 @@ changing a status.
 | Implemented in the selection and collection expansion; real browser acceptance is still open | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 |
 | Implemented in the first overlay expansion; real browser acceptance is still open | `popover`, `tooltip`, `hover-card`, `menu` | 4 |
 | Implemented in the workflow overlay expansion; selected Chromium interactions verified | `floating-panel`, `toast`, `tour` | 3 |
-| Implemented in the specialized input expansion | `clipboard`, `edit`, `qr-code`, `toggle-group` | 4 |
-| Subsequent consumer candidates | All slugs in batch 6 below | 3 |
+| Implemented in the specialized input expansion; selected Chromium interactions verified | `clipboard`, `edit`, `qr-code`, `toggle-group` | 4 |
+| Implemented in the final control expansion | `color-picker`, `signature`, `timer` | 3 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -143,19 +142,26 @@ An implementation checkpoint includes four package exports and component regress
 runs the targeted browser verification with synthetic fixtures. It is not a
 cross-browser, clipboard policy, scanner or assistive-technology certification.
 
-## Subsequent batches (proposal)
+## Final control evidence boundaries
 
-| Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
-| --- | --- | ---: | --- |
-| 6. Remaining specialized controls | `color-picker`, `signature`, `timer` | 3 | Keyboard input, pointer drawing and export boundaries, and accurate start/pause/reset with timer cleanup. |
+- ColorPicker is an inline, opaque HEX editor with optional presets. It does
+  not provide alpha, a popover, a native color field or form serialization.
+- Signature is an optional pointer-drawn SVG input, not a required workflow
+  or a legal signature system. Keyboard users can clear an existing drawing;
+  the host must supply a separate way to complete any required workflow.
+- Timer is a manually operated count-up display, not a countdown,
+  background clock, or precision timekeeper. It does not announce every tick.
 
-These are dependency-oriented buckets, not deadlines. Small independent
-families can move forward when their API and test plan are ready. For example,
-Tooltip must not silently become a keyboard-inaccessible Popover; do not
-promote complex overlay families until they have their own relevant browser
-checks. Native input integration (File Upload, OTP, Slider), structured data
-(Calendar, Tree) and modality (Floating Panel, Tour) warrant their own review
-even if another family in the same batch is ready.
+Run the targeted Chromium workflow checks with
+`node scripts/test-ready-final-controls-browser.mjs` after installing the
+Playwright Chromium headless shell, or set `CHROMIUM_PATH` to an available
+compatible executable. The included fixtures use synthetic values and strokes.
+
+All **45 consumer families** now have Ready package entries in React, Vue,
+Solid and Svelte. Presence is the 46th gallery slug and remains a support
+primitive, not a separate consumer component. This inventory attests to
+implementation of the documented Ready profiles, not every underlying mode,
+publication, or complete cross-browser and assistive-technology validation.
 
 ## Accepting a family
 

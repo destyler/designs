@@ -64,6 +64,9 @@ parts or installing another theme package.
 | Edit | Inline single-line editor with `label`, optional `defaultValue`, `placeholder`, `maxLength` and `disabled`. Edit opens the draft. Save or Enter outside IME composition commits via `onValueCommit` (Vue `@value-commit`); Cancel, Escape and leaving the editor discard the draft. Uncontrolled, with no native form submission. |
 | QRCode | Render a local, nonblank `value` (up to 256 UTF-8 bytes) as a labelled SVG; `label` describes the image. Optional integer `size` is 96–512 CSS pixels (default 256), shrinking with its container. The frame is white with dark modules and a four-module quiet zone. No upload, scan, download or logo. |
 | ToggleGroup | Labelled group of independent pressed buttons, with `items: [{value, label, disabled?}]`. Use `value`/`defaultValue` arrays and `onValueChange` (Vue `v-model:value`). Supports `orientation`, `loopFocus` and group `disabled`; arrows move focus without changing selections. Not a radio group or native form field. |
+| ColorPicker | Inline opaque HEX editor. Give it a visible `label`, optional `value`/`defaultValue` and `presets` (each `#RRGGBB`), and `disabled`. Enter or blur commits valid text, invalid text reverts. `onValueChange` emits uppercase HEX (Vue `v-model:value`). No alpha, popup or native form submission. |
+| Signature | Optional, labelled local pointer-drawing pad with a native Clear button. Read `onPathsChange` (Vue `@paths-change`) for completed SVG path data; Clear emits an empty array. Supports `disabled`. No image download, native form field or keyboard drawing. Provide a separate accessible path for any required workflow. |
+| Timer | Labelled manual count-up stopwatch with a stable start/pause/resume control and a Reset button that stops and clears the display. Customize `startLabel`, `pauseLabel`, `resumeLabel` and `resetLabel`. Updates by whole seconds without a per-tick live announcement. No countdown, precision or background timing guarantee. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
@@ -92,6 +95,20 @@ import { Clipboard, Edit, QRCode, ToggleGroup } from '@destyler/ready-prototype/
 In this example, `saveTitle` is the app's persistence callback. A copy attempt
 may be denied by the browser or unavailable outside a secure context; keep the
 read-only text field available rather than relying on the button alone.
+
+The last three controls cover inline color editing, optional local drawing,
+and a manually operated elapsed timer:
+
+```tsx
+import { ColorPicker, Signature, Timer } from '@destyler/ready-prototype/react'
+
+<ColorPicker label="Accent color" defaultValue="#3155D9" presets={['#3155D9', '#172033']} />
+<Signature label="Optional signature" onPathsChange={handlePaths} />
+<Timer label="Elapsed time" />
+```
+
+`handlePaths` belongs to the host application; Ready does not upload, persist,
+or validate a signature.
 
 Popover, Tooltip, HoverCard, Menu and FloatingPanel inherit the local theme
 without a body portal. An ancestor that clips content or creates a new stacking
