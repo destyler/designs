@@ -17,9 +17,21 @@ if (process.argv[2] === '--worker') {
   globalThis.window = win; globalThis.document = win.document
   const target = document.createElement('div'); target.id = 'docs-test'; document.body.append(target)
   const { mountReadyDocs } = await import(pathToFileURL(process.argv[3]))
-  const app = mountReadyDocs(target)
   const settle = () => new Promise(resolve => setTimeout(resolve, 100))
-  await settle()
+  const waitForMount = async (ready, description) => {
+    const deadline = performance.now() + 2000
+    while (!ready() && performance.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
+    assert.ok(ready(), description)
+  }
+  // createRoot.render is concurrent; the appearance attribute is set later
+  // by a passive effect. Wait for the effect, not for the expected value.
+  const app = mountReadyDocs(target)
+  await waitForMount(
+    () => target.querySelector('#overview iframe') && document.documentElement.hasAttribute('data-appearance'),
+    'Documentation shell rendered and its appearance effect ran',
+  )
   const button = (text, scope = document) => [...scope.querySelectorAll('button')].find(node => node.textContent.trim() === text)
   const part = (family, name) => document.querySelector(`[data-scope="${family}"][data-part="${name}"]`)
   const click = async node => { assert.ok(node, 'Expected actionable element'); node.click(); await settle() }
@@ -174,7 +186,8 @@ if (process.argv[2] === '--worker') {
   assert.equal(document.querySelector('main').dataset.page, 'dialog')
   assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'History navigation restores actual runtime and page')
   await app.unmount()
-  const refreshed = mountReadyDocs(target); await settle()
+  const refreshed = mountReadyDocs(target)
+  await waitForMount(() => target.querySelector('main iframe'), 'Fresh mount rendered its preview frame')
   assert.equal(document.querySelector('#dialog iframe').getAttribute('src'), './previews/solid/dialog.html', 'Fresh mount restores the shared page and framework')
   await refreshed.unmount(); await win.happyDOM.close()
   console.log('PASS ready docs navigation, framework code, copy, theme, Checkbox, Select and Dialog')
