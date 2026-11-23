@@ -46,7 +46,7 @@ test('Ready packed source package exposes intentional entries and optional frame
     for (const framework of ['react', 'vue', 'solid', 'svelte']) {
       const plugins = framework === 'react' ? [(await import('@vitejs/plugin-react')).default()] : framework === 'vue' ? [(await import('@vitejs/plugin-vue')).default()] : framework === 'solid' ? [(await import('vite-plugin-solid')).default()] : [(await import('@sveltejs/vite-plugin-svelte')).svelte()]
       const entry = join(folder, `${framework}.ts`)
-      await writeFile(entry, `import {Checkbox, Select, Dialog} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {Checkbox, Select, Dialog};`)
+      await writeFile(entry, `import {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup} from '@destyler/ready-prototype/${framework}';import '@destyler/ready-prototype/theme.css';export {Checkbox, Select, Dialog, Switch, Pagination, Progress, Collapsible, Tabs, Toggle, Separator, Fieldset, Avatar, AspectRatio, Breadcrumbs, RadioGroup};`)
       const output = join(folder, `out-${framework}`)
       const modules = []
       plugins.push({ name: 'ready-consumer-graph', generateBundle() { modules.push(...this.getModuleIds()) } })

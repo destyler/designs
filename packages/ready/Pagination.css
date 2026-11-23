@@ -1,0 +1,33 @@
+.rd-component.rd-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--rd-space, 12px) / 2);
+}
+.rd-component.rd-pagination button,
+.rd-component.rd-pagination [data-part="ellipsis"] {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: var(--rd-control-height, 42px);
+  min-block-size: var(--rd-control-height, 42px);
+  padding-inline: .625rem;
+}
+.rd-component.rd-pagination button {
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  cursor: pointer;
+}
+.rd-component.rd-pagination [aria-current="page"] {
+  border-color: var(--rd-accent, #3155d9);
+  background: var(--rd-accent, #3155d9);
+  color: var(--rd-on-accent, #fff);
+}
+.rd-component.rd-pagination [data-part="ellipsis"] {
+  color: var(--rd-muted, #536176);
+}
+.rd-component.rd-pagination button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}

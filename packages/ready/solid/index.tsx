@@ -35,3 +35,16 @@ export function Dialog(props: DialogProps & { children?: JSX.Element }) {
  const [local,setLocal]=createSignal(false); const descriptionId=createUniqueId();
  return <div class="rd-component"><D.Root open={props.open ?? local()} onOpenChange={d=>{setLocal(d.open);props.onOpenChange?.(d.open);}}><D.Trigger class="rd-button">{trigger()}</D.Trigger><D.Backdrop /><D.Positioner><D.Content aria-describedby={props.description ? descriptionId : undefined}><D.Title>{title()}</D.Title>{props.description && <D.Description id={descriptionId}>{props.description}</D.Description>}<div class="rd-dialog-body">{props.children}</div><D.CloseTrigger class="rd-button">{closeLabel()}</D.CloseTrigger></D.Content></D.Positioner></D.Root></div>;
 }
+
+export { Switch } from './Switch'
+export { Progress } from './Progress'
+export { Collapsible } from './Collapsible'
+export { Pagination } from './Pagination'
+export { Tabs } from './Tabs'
+export { Toggle } from './Toggle'
+export { Separator } from './Separator'
+export { Fieldset } from './Fieldset'
+export { Avatar } from './Avatar'
+export { AspectRatio } from './AspectRatio'
+export { Breadcrumbs } from './Breadcrumbs'
+export { RadioGroup } from './RadioGroup'

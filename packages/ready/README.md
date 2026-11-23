@@ -1,6 +1,6 @@
 # Ready component slice (private experiment)
 
-Three composed controls, four framework adapters, one semantic CSS contract.
+Composed controls for React, Vue, Solid and Svelte over one semantic CSS contract.
 Use the explicit framework package subpath and import theme.css once. Components
 have default styling without a theme wrapper. Optionally use an existing ancestor
 with data-rd-theme="default" or "midnight" for an explicit local theme. Components
@@ -17,6 +17,35 @@ Field help, errors and empty-list descriptions remain additive.
 Controlled values are optional; absent values use local state. Vue uses update:checked, update:value and update:open events, consumed as
 v-model:checked, v-model:value and v-model:open. Hidden form inputs, native disabled handling and primitive ARIA are
 retained. No library defaults or published packages change.
+
+## Additional components
+
+Import these from the same framework entry point; none requires adding primitive
+parts or installing another theme package.
+
+| Component | Consumer contract |
+| --- | --- |
+| Switch | `label`, optional `description` and `error`, `name` and form `value` (defaults to `on`), `disabled`, `required`. Use `checked` plus `onCheckedChange` or start with `defaultChecked`. In Vue use `v-model:checked` or `@checked-change`. |
+| Pagination | `label`, `count` (total items, not pages), optional `pageSize` (10), `page`/`defaultPage` (one-based), and `onPageChange` (Vue `v-model:page`). Boundary buttons are disabled; an empty result does not invent a result page. `previousLabel` and `nextLabel` can be localized. |
+| Progress | `label` and `value`, with `min`/`max` defaulting to 0/100. Use `null` for indeterminate progress. This is a passive progress bar, not a status announcement. |
+| Collapsible | `trigger` text, optional `open`/`defaultOpen`, `disabled` and `onOpenChange` (Vue `v-model:open`). Content is ordinary React/Solid children, a Vue default slot, or Svelte children. |
+| Tabs | `label`, `items: [{value, label, disabled?, content?}]`, optional `value`/`defaultValue`, `orientation`, `activationMode`, and `onValueChange` (Vue `v-model:value`). Set `content` for text, or use React/Solid `renderPanel`, Vue's `#panel` slot, or a Svelte `panel` snippet. For a dynamic item list where selection can disappear, control the value and supply a valid enabled item. |
+| Toggle | One pressed button: required `label`, optional `pressed`/`defaultPressed`, `disabled`, and `onPressedChange` (Vue `v-model:pressed`). Keep the label stable between states. |
+| Separator | Noninteractive separator; `orientation` defaults to `horizontal`, or set `vertical` in an inline or flex layout. |
+| Fieldset | `legend`, optional `description` and `disabled`; wraps native framework children in a fieldset. |
+| Avatar | `alt` names the avatar (empty means decorative), optional `src` and `fallback`. Unavailable images render fallback text or initials. |
+| AspectRatio | `ratio` is width divided by height (default 1); renders framework children in the ratio without implicitly cropping them. |
+| Breadcrumbs | Ordered `items` of `{label, href?}`; ancestors need an `href`, the final item is current and may be text or an anchor. Optional `label`, `separator` and native click `onNavigate(event, item)` (Vue `@navigate`). |
+| RadioGroup | `label` and `items: [{value, label, disabled?}]`. Pass a form `name`, optional `required`, `disabled`, `orientation`, and `value`/`defaultValue` (`null` means no choice); Vue uses `v-model:value`. |
+
+```tsx
+import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
+import '@destyler/ready-prototype/theme.css'
+
+<Switch label="Email updates" name="updates" defaultChecked />
+<Pagination label="Search results" count={95} pageSize={10} />
+<Progress label="Importing files" value={null} />
+```
 
 Run `node scripts/ready.mjs dev react` (or vue, solid, svelte). Open the URL printed
 by Vite. Run `node scripts/ready.mjs build` for four static demos under artifacts/ready.
@@ -85,7 +114,7 @@ Inline overlays preserve the nearest theme scope. Do not put scopes in clipped,
 transformed or isolated stacking containers; a general portal/theme bridge is not
 implemented. Cross-framework API conventions are native, not forced to identical
 syntax. Async fetching/loading lifecycles, custom rendering, validation recipes, plugin registration,
-RTL, general nested-overlay behavior and multiple-modal stacks are not promised
+full RTL coverage, general nested-overlay behavior and multiple-modal stacks are not promised
 by this slice. A Select inside a Dialog has limited simulated-DOM regression
 coverage: Escape closes the Select before the Dialog, with focus restoration and
 cleanup checks. That does not establish arbitrary nesting support or real-browser
