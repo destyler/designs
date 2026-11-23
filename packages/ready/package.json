@@ -57,6 +57,12 @@
     "HoverCard.css",
     "Menu.ts",
     "Menu.css",
+    "FloatingPanel.ts",
+    "FloatingPanel.css",
+    "Toast.ts",
+    "Toast.css",
+    "Tour.ts",
+    "Tour.css",
     "theme.css",
     "README.md",
     "THEMING.md"

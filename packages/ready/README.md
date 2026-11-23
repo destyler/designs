@@ -57,6 +57,9 @@ parts or installing another theme package.
 | Tooltip | Supplementary plain `text` associated with a named `trigger` button on keyboard focus or pointer hover. The pointer can move onto the text; Escape dismisses without moving focus. Not an action panel, touch disclosure, or substitute for essential instructions. |
 | HoverCard | One native preview link (`label`, valid `href`) with plain-text `description` and optional `title`. Pointer hover or link focus reveals the visual preview; the link remains the normal action. This is supplemental information, not a focusable panel or navigation menu. |
 | Menu | Named `trigger` and flat action `items: [{value, label, disabled?}]`. `onSelect(value)` (Vue `@select`) delivers the item key; `onOpenChange` (Vue `@open-change`) observes disclosure. No submenus, checkbox/radio items, links or controlled mode in this profile. |
+| FloatingPanel | One standalone, movable nonmodal panel. Provide a `trigger`, `title`, native children, optional `moveHint` and `closeLabel`. Drag the title area or use arrows when the panel itself has focus. Observe or control opening with `onOpenChange`/`open` (Vue `v-model:open`), or use `defaultOpen`. No resize, staging or modal background lock. |
+| Toast | One status-only host and private controller, shared across all four framework APIs. Call `createToastController()`, mount `<Toast controller={controller} />` (with framework syntax), then call `controller.show({title, description?, tone?, duration?})`. Tone is `info` or `success`; default 6 s, whole-ms 1–30 s, at most three concurrent. Use `controller.dismiss(id)` or the close control. Before mount or at capacity, `show` returns no ID. Keep important errors and actions available elsewhere. |
+| Tour | A named launch button and centered modal sequence of `steps: [{id, title, description}]`, set at mount. Previous/Next navigate; only the final Finish action reports `'finished'`. Escape or the close button report `'dismissed'`. Read `onEnd` (Vue `@end`). No spotlight targets, route automation or persisted completion. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
@@ -67,10 +70,13 @@ import '@destyler/ready-prototype/theme.css'
 <Progress label="Importing files" value={null} />
 ```
 
-The four overlays above render inline, so they retain their inherited Ready theme.
-An ancestor that clips content or creates a new stacking context can affect them.
-Nested Escape ownership, arbitrary portals, and browser/screen-reader acceptance
-are not part of this implementation checkpoint.
+Popover, Tooltip, HoverCard, Menu and FloatingPanel inherit the local theme
+without a body portal. An ancestor that clips content or creates a new stacking
+context can affect nonmodal placement. Tour uses a native modal dialog. Mount
+one Toast host per document. Do not share its bottom-end placement with a raw
+Toaster, since the underlying region ID is fixed by placement.
+Nested Escape ownership and browser/screen-reader acceptance are not part of
+this implementation checkpoint.
 
 Run `node scripts/ready.mjs dev react` (or vue, solid, svelte). Open the URL printed
 by Vite. Run `node scripts/ready.mjs build` for four static demos under artifacts/ready.

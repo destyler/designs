@@ -10,6 +10,9 @@
 @import "./Tooltip.css";
 @import "./HoverCard.css";
 @import "./Menu.css";
+@import "./FloatingPanel.css";
+@import "./Toast.css";
+@import "./Tour.css";
 
 /* Consumer-level fallbacks provide the default without writing host/global tokens.
    Explicit theme scopes still reset the complete contract; inherited overrides win. */
