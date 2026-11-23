@@ -1,0 +1,49 @@
+.rd-splitter {
+  min-inline-size: 0;
+  font-family: var(--rd-font, Inter, ui-sans-serif, system-ui, sans-serif);
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  overflow: hidden;
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+}
+.rd-splitter[data-orientation="vertical"] { block-size: 16rem; }
+.rd-splitter [data-scope="splitter"][data-part="root"][data-orientation="horizontal"] { min-block-size: 8rem; }
+.rd-splitter [data-scope="splitter"][data-part="panel"] {
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: auto !important; /* The primitive sets inline overflow:hidden. Keep clipped pane content reachable. */
+}
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"] {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--rd-border, #7b8799);
+  background: transparent;
+}
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"]::before {
+  content: "";
+  background: currentColor;
+}
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="horizontal"] { inline-size: 24px; }
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="horizontal"]::before { inline-size: 1px; block-size: 100%; }
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="vertical"] { block-size: 24px; }
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="vertical"]::before { block-size: 1px; inline-size: 100%; }
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"]:is(:hover, :focus-visible):not([data-disabled]) {
+  color: var(--rd-accent, #3155d9);
+}
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"]:focus-visible {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: -3px;
+}
+.rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-disabled] { cursor: default !important; }
+@media (forced-colors: active) {
+  .rd-splitter [data-scope="splitter"][data-part="resize-trigger"]::before {
+    background: ButtonText;
+    forced-color-adjust: none;
+  }
+  .rd-splitter [data-scope="splitter"][data-part="resize-trigger"]:focus-visible { outline-color: Highlight; }
+}

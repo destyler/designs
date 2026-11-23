@@ -33,7 +33,8 @@ changing a status.
 | Implemented in the Ready baseline | `checkbox`, `dialog`, `select` | 3 |
 | Implemented in the first expansion; real browser acceptance is still open | `switch`, `pagination`, `tabs`, `progress`, `collapsible`, `toggle`, `separator`, `fieldset`, `avatar`, `aspect-ratio`, `breadcrumbs`, `radio` | 12 |
 | Implemented in the form expansion; real browser acceptance is still open | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 |
-| Subsequent consumer candidates | All slugs in batches 2–5 below | 24 |
+| Implemented in the layout and navigation expansion; real browser acceptance is still open | `collapse`, `scroll-area`, `splitter`, `steps`, `carousel` | 5 |
+| Subsequent consumer candidates | All slugs in batches 3–5 below | 19 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -79,8 +80,7 @@ An implementation checkpoint includes four package exports and component regress
 
 | Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
 | --- | --- | ---: | --- |
-| 2. Layout and structure | `collapse`, `scroll-area`, `splitter` | 3 | Ordered accordion state, layout at small widths and zoom, keyboard scrolling and resizing. |
-| 3. Selection, navigation and collections | `calendar`, `carousel`, `combobox`, `dynamic`, `navigation-menu`, `steps`, `tree` | 7 | Current/link semantics, stable keys and focus when items change, keyboard/selection policy and disabled entries; calendar locale, constraints and outside-month policy. |
+| 3. Selection, navigation and collections | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 | Current/link semantics, stable keys and focus when items change, keyboard/selection policy and disabled entries; calendar locale, constraints and outside-month policy. |
 | 4. Overlay workflows | `floating-panel`, `hover-card`, `menu`, `popover`, `toast`, `tooltip`, `tour` | 7 | Deliberate disclosure/focus semantics, dismissal and restoration per family, reduced motion, correct announcements where intended, and theme boundaries in real browsers. |
 | 5. Specialized controls | `clipboard`, `color-picker`, `edit`, `qr-code`, `signature`, `timer`, `toggle-group` | 7 | Clipboard permission/error states; numeric or keyboard alternatives to pointer-only interaction, canvas/export constraints, output announcement, cleanup of timers, and independent/grouped pressed behavior. |
 

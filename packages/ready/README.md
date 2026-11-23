@@ -43,6 +43,11 @@ parts or installing another theme package.
 | OTPInput | Fixed `length` (1–12, default 6), ASCII digits passed as an array with optional blank positions. A form `name` serializes one string only when all enabled slots are filled. `required` validates each visible slot. Use an explicit submit button; `mask` is visual only. |
 | Slider | One horizontal thumb with `label`, optional `min`, `max`, `step`, `value`/`defaultValue`, `name` and `disabled`. No range, vertical mode or native-reset guarantee in this profile. |
 | FileUpload | Labelled local file-picker and removal. Optional `accept`, `maxFiles` and `maxFileSize`; accepted files are provided to `onFilesChange` (Vue `files-change`). No automatic upload, native FormData or reset; the application owns submission and server-side validation. |
+| Collapse | Accordion with `items: [{value, label, disabled?, content?}]`, optional `value`/`defaultValue` arrays, `multiple`, `collapsible`, `disabled`, `orientation` and `headingLevel`. Override text content with React/Solid `renderPanel`, Vue's `#panel`, or a Svelte `panel` snippet. |
+| ScrollArea | Named focusable scroll region with `label`, optional pixel `maxHeight` (320) and `orientation` (vertical, horizontal or both). Renders framework children and uses the browser's own scrollbars. It does not virtualize content or expose a custom scroll track. |
+| Splitter | Two panes, with `label` naming the separator, `defaultSize`, `minSize`, `maxSize` and `step` in percentages. Use `orientation` to specify how panes are laid out. Content goes through React/Solid `first`/`second` props or Vue/Svelte named slots/snippets. `onSizeChange` (Vue `size-change`) observes the first pane's size. |
+| Steps | Labelled ordered list of `items: [{id, label, description?}]`. Previous/Next/Finish navigate linearly; `step`/`defaultStep` are zero-based and `items.length` means complete. Vue uses `v-model:step`; the controls do not submit a surrounding form. |
+| Carousel | Labelled one-at-a-time carousel with `items: [{id, label, content?}]`, native navigation controls and no autoplay or looping. To provide custom slide content use React/Solid `renderSlide`, Vue's `#slide`, or a Svelte `slide` snippet. Page change values are zero-based. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
