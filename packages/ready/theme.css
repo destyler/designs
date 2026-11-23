@@ -13,6 +13,10 @@
 @import "./FloatingPanel.css";
 @import "./Toast.css";
 @import "./Tour.css";
+@import "./Clipboard.css";
+@import "./Edit.css";
+@import "./QRCode.css";
+@import "./ToggleGroup.css";
 
 /* Consumer-level fallbacks provide the default without writing host/global tokens.
    Explicit theme scopes still reset the complete contract; inherited overrides win. */

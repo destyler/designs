@@ -60,6 +60,10 @@ parts or installing another theme package.
 | FloatingPanel | One standalone, movable nonmodal panel. Provide a `trigger`, `title`, native children, optional `moveHint` and `closeLabel`. Drag the title area or use arrows when the panel itself has focus. Observe or control opening with `onOpenChange`/`open` (Vue `v-model:open`), or use `defaultOpen`. No resize, staging or modal background lock. |
 | Toast | One status-only host and private controller, shared across all four framework APIs. Call `createToastController()`, mount `<Toast controller={controller} />` (with framework syntax), then call `controller.show({title, description?, tone?, duration?})`. Tone is `info` or `success`; default 6 s, whole-ms 1–30 s, at most three concurrent. Use `controller.dismiss(id)` or the close control. Before mount or at capacity, `show` returns no ID. Keep important errors and actions available elsewhere. |
 | Tour | A named launch button and centered modal sequence of `steps: [{id, title, description}]`, set at mount. Previous/Next navigate; only the final Finish action reports `'finished'`. Escape or the close button report `'dismissed'`. Read `onEnd` (Vue `@end`). No spotlight targets, route automation or persisted completion. |
+| Clipboard | Provide a visible `label` and a single-line `value`. Copy reports success only after the browser writes it; the read-only field remains selectable for manual copying if unavailable or denied. Localize `copyLabel`, `pendingMessage`, `copiedMessage` and `errorMessage` as needed. The component does not read the clipboard. |
+| Edit | Inline single-line editor with `label`, optional `defaultValue`, `placeholder`, `maxLength` and `disabled`. Edit opens the draft. Save or Enter outside IME composition commits via `onValueCommit` (Vue `@value-commit`); Cancel, Escape and leaving the editor discard the draft. Uncontrolled, with no native form submission. |
+| QRCode | Render a local, nonblank `value` (up to 256 UTF-8 bytes) as a labelled SVG; `label` describes the image. Optional integer `size` is 96–512 CSS pixels (default 256), shrinking with its container. The frame is white with dark modules and a four-module quiet zone. No upload, scan, download or logo. |
+| ToggleGroup | Labelled group of independent pressed buttons, with `items: [{value, label, disabled?}]`. Use `value`/`defaultValue` arrays and `onValueChange` (Vue `v-model:value`). Supports `orientation`, `loopFocus` and group `disabled`; arrows move focus without changing selections. Not a radio group or native form field. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
@@ -69,6 +73,25 @@ import '@destyler/ready-prototype/theme.css'
 <Pagination label="Search results" count={95} pageSize={10} />
 <Progress label="Importing files" value={null} />
 ```
+
+For example, these specialized controls do not require composing primitive parts:
+
+```tsx
+import { Clipboard, Edit, QRCode, ToggleGroup } from '@destyler/ready-prototype/react'
+
+<Clipboard label="Documentation link" value="https://example.test/docs" />
+<Edit label="Document title" defaultValue="Untitled" maxLength={80} onValueCommit={saveTitle} />
+<QRCode label="QR code for the documentation" value="https://example.test/docs" />
+<ToggleGroup
+  label="Formatting"
+  items={[{ value: 'bold', label: 'Bold' }, { value: 'italic', label: 'Italic' }]}
+  defaultValue={['bold']}
+/>
+```
+
+In this example, `saveTitle` is the app's persistence callback. A copy attempt
+may be denied by the browser or unavailable outside a secure context; keep the
+read-only text field available rather than relying on the button alone.
 
 Popover, Tooltip, HoverCard, Menu and FloatingPanel inherit the local theme
 without a body portal. An ancestor that clips content or creates a new stacking

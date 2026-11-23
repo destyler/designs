@@ -36,8 +36,9 @@ changing a status.
 | Implemented in the layout and navigation expansion; real browser acceptance is still open | `collapse`, `scroll-area`, `splitter`, `steps`, `carousel` | 5 |
 | Implemented in the selection and collection expansion; real browser acceptance is still open | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 |
 | Implemented in the first overlay expansion; real browser acceptance is still open | `popover`, `tooltip`, `hover-card`, `menu` | 4 |
-| Implemented in the workflow overlay expansion; real browser acceptance is still open | `floating-panel`, `toast`, `tour` | 3 |
-| Subsequent consumer candidates | All slugs in batch 5 below | 7 |
+| Implemented in the workflow overlay expansion; selected Chromium interactions verified | `floating-panel`, `toast`, `tour` | 3 |
+| Implemented in the specialized input expansion | `clipboard`, `edit`, `qr-code`, `toggle-group` | 4 |
+| Subsequent consumer candidates | All slugs in batch 6 below | 3 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -123,13 +124,30 @@ An implementation checkpoint includes four package exports and component regress
 - Centered Tour steps distinguish explicit finish from dismissal. Raw final-step
   completion in the underlying core also fires for dismissal and does not act
   as a Ready completion signal. Native modal geometry, physical Tab order
-  and real assistive-technology behavior need separate verification.
+  were covered in targeted Chromium checks across all four frameworks. Full
+  cross-browser and assistive-technology acceptance remain open.
+
+## Specialized input evidence boundaries
+
+- Clipboard displays a read-only selectable value and reports the result of
+  the asynchronous browser write. An unavailable or denied write leaves a
+  manual path; a stale result must not appear for the newly displayed value.
+- Edit separates draft from committed text. Explicit Save and noncomposing
+  Enter commit; Escape, Cancel and leaving the editor discard unsaved changes.
+- QRCode encodes text locally and provides a labelled, high-contrast SVG with
+  quiet space. Rendering evidence does not certify scanner or camera behavior.
+- ToggleGroup wraps independent pressed buttons. Arrow navigation is not
+  selection; this is not a radio group. A controlled parent may veto selection.
+
+`CHROMIUM_PATH=/path/to/chromium node scripts/test-ready-specialized-browser.mjs`
+runs the targeted browser verification with synthetic fixtures. It is not a
+cross-browser, clipboard policy, scanner or assistive-technology certification.
 
 ## Subsequent batches (proposal)
 
 | Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
 | --- | --- | ---: | --- |
-| 5. Specialized controls | `clipboard`, `color-picker`, `edit`, `qr-code`, `signature`, `timer`, `toggle-group` | 7 | Clipboard permission/error states; numeric or keyboard alternatives to pointer-only interaction, canvas/export constraints, output announcement, cleanup of timers, and independent/grouped pressed behavior. |
+| 6. Remaining specialized controls | `color-picker`, `signature`, `timer` | 3 | Keyboard input, pointer drawing and export boundaries, and accurate start/pause/reset with timer cleanup. |
 
 These are dependency-oriented buckets, not deadlines. Small independent
 families can move forward when their API and test plan are ready. For example,
