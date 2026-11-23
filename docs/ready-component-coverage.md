@@ -31,8 +31,9 @@ changing a status.
 | Status | Families | Count |
 | --- | --- | ---: |
 | Implemented in the Ready baseline | `checkbox`, `dialog`, `select` | 3 |
-| Implemented in this batch; real browser acceptance is still open | `switch`, `pagination`, `tabs`, `progress`, `collapsible`, `toggle`, `separator`, `fieldset`, `avatar`, `aspect-ratio`, `breadcrumbs`, `radio` | 12 |
-| Subsequent consumer candidates | All slugs in batches 1–5 below | 30 |
+| Implemented in the first expansion; real browser acceptance is still open | `switch`, `pagination`, `tabs`, `progress`, `collapsible`, `toggle`, `separator`, `fieldset`, `avatar`, `aspect-ratio`, `breadcrumbs`, `radio` | 12 |
+| Implemented in the form expansion; real browser acceptance is still open | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 |
+| Subsequent consumer candidates | All slugs in batches 2–5 below | 24 |
 | Supporting primitive only | `presence` | 1 |
 | **Canonical gallery inventory** | The union above, without duplicates | **46** |
 
@@ -78,7 +79,6 @@ An implementation checkpoint includes four package exports and component regress
 
 | Batch | Exact gallery slugs | Count | Important gate beyond the common gate |
 | --- | --- | ---: | --- |
-| 1. Common form foundations | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 | Labels, validation, form value/disabled/required/reset; number locale; OTP typing/paste, slider keyboard and range limits, upload no-op/replacement and restriction messaging. |
 | 2. Layout and structure | `collapse`, `scroll-area`, `splitter` | 3 | Ordered accordion state, layout at small widths and zoom, keyboard scrolling and resizing. |
 | 3. Selection, navigation and collections | `calendar`, `carousel`, `combobox`, `dynamic`, `navigation-menu`, `steps`, `tree` | 7 | Current/link semantics, stable keys and focus when items change, keyboard/selection policy and disabled entries; calendar locale, constraints and outside-month policy. |
 | 4. Overlay workflows | `floating-panel`, `hover-card`, `menu`, `popover`, `toast`, `tooltip`, `tour` | 7 | Deliberate disclosure/focus semantics, dismissal and restoration per family, reduced motion, correct announcements where intended, and theme boundaries in real browsers. |

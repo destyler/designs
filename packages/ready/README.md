@@ -37,6 +37,12 @@ parts or installing another theme package.
 | AspectRatio | `ratio` is width divided by height (default 1); renders framework children in the ratio without implicitly cropping them. |
 | Breadcrumbs | Ordered `items` of `{label, href?}`; ancestors need an `href`, the final item is current and may be text or an anchor. Optional `label`, `separator` and native click `onNavigate(event, item)` (Vue `@navigate`). |
 | RadioGroup | `label` and `items: [{value, label, disabled?}]`. Pass a form `name`, optional `required`, `disabled`, `orientation`, and `value`/`defaultValue` (`null` means no choice); Vue uses `v-model:value`. |
+| Field | One native text input with a visible `label`, optional `description` and external `error` text. Accepts `name`, text-like `type`, `required`, `disabled`, `readOnly`, and `value`/`defaultValue`. Vue uses `v-model:value`; other frameworks use `onValueChange`. External errors set ARIA state; native constraint validation comes from the input. |
+| Label | Associates framework children with an existing native input ID. Use React `htmlFor`, or `for` in Vue, Solid and Svelte. No special input wrapper required. |
+| NumberInput | A labelled spinbutton with step controls. `value` and `defaultValue` are decimal strings (empty means no input); supports `min`, `max`, `step`, form name, `required`, `disabled` and `readOnly`. Current format is ungrouped English decimal text. |
+| OTPInput | Fixed `length` (1–12, default 6), ASCII digits passed as an array with optional blank positions. A form `name` serializes one string only when all enabled slots are filled. `required` validates each visible slot. Use an explicit submit button; `mask` is visual only. |
+| Slider | One horizontal thumb with `label`, optional `min`, `max`, `step`, `value`/`defaultValue`, `name` and `disabled`. No range, vertical mode or native-reset guarantee in this profile. |
+| FileUpload | Labelled local file-picker and removal. Optional `accept`, `maxFiles` and `maxFileSize`; accepted files are provided to `onFilesChange` (Vue `files-change`). No automatic upload, native FormData or reset; the application owns submission and server-side validation. |
 
 ```tsx
 import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
