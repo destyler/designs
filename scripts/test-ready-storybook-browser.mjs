@@ -42,7 +42,7 @@ async function assertRendered(canvas, name, framework) {
   // descendant of the framework's mount target, not just its container.
   await host.locator(':scope > div > *:visible').first().waitFor()
   assert.equal(await host.count(), 1)
-  assert.equal(await canvas.locator('html').getAttribute('data-rd-theme'), 'default')
+  assert.equal(await canvas.locator('html').getAttribute('data-rd-theme'), 'shadcn')
   return host
 }
 

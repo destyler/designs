@@ -1,7 +1,8 @@
 import type { Demo, Mount } from './demo-types'
+import { usagePanel } from './usage-panel'
 
 export const frameworks = ['React', 'Vue', 'Solid', 'Svelte'] as const
-type Framework = (typeof frameworks)[number]
+export type Framework = (typeof frameworks)[number]
 // Vite keeps one fresh module per native adapter; each adapter has its own
 // TypeScript project so React JSX and Solid JSX are not mixed by the checker.
 const loaders = import.meta.glob<{ mountDemo: Mount }>('./frameworks/{react,vue,solid,svelte}.{ts,tsx}')
@@ -28,7 +29,7 @@ class ReadyStory extends HTMLElement {
     this.dataset.status = 'loading'
     target.setAttribute('role', 'status')
     target.textContent = `Loading ${framework} ${name}…`
-    this.replaceChildren(target)
+    this.replaceChildren(target, usagePanel(name, framework, demo))
     void Promise.resolve().then(() => {
       const load = loaders[adapterFiles[framework]]
       if (!load) throw new Error(`Ready Storybook: missing ${framework} adapter`)

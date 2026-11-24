@@ -1,0 +1,22 @@
+/* Optional Ready theme. Load after @destyler/ready-prototype/theme.css
+   and set data-rd-theme="shadcn" on the document element for overlays. */
+/* Map the repo's pinned shadcn Zinc palette (vendor/shadcn/zinc.css, MIT)
+   to Ready's semantic colors. Keep actual control borders and focus cues
+   darker than the decorative Zinc card border. */
+[data-rd-theme="shadcn"] {
+  --rd-bg: oklch(1 0 0);
+  --rd-surface: oklch(1 0 0);
+  --rd-text: oklch(0.141 0.005 285.823);
+  --rd-muted: oklch(0.442 0.017 285.786);
+  --rd-border: oklch(0.55 0.016 285.938);
+  --rd-accent: oklch(0.21 0.006 285.885);
+  --rd-on-accent: oklch(0.985 0 0);
+  --rd-backdrop: oklch(0.141 0.005 285.823 / 48%);
+  --rd-radius: 0.625rem;
+  --rd-control-height: 40px;
+  --rd-space: 12px;
+  --rd-shadow: 0 4px 14px rgb(0 0 0 / 12%), 0 1px 3px rgb(0 0 0 / 8%);
+  --rd-font: ui-sans-serif, system-ui, sans-serif;
+  --story-hairline: oklch(0.92 0.004 286.32);
+  --story-code-bg: oklch(0.967 0.001 286.375);
+}

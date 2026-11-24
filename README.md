@@ -110,20 +110,32 @@ npm run storybook
 Open [Storybook at localhost:6006](http://127.0.0.1:6006). The **Ready** group
 contains 45 components, each with a React, Vue, Solid and Svelte story. Each
 story mounts the corresponding public Ready implementation with that
-framework's runtime. Use the **Ready theme** toolbar to switch between Default
-and Midnight, including on overlays.
+framework's runtime. The canvas defaults to a Shadcn Zinc-inspired theme,
+compiled with Tailwind CSS v4 without Preflight. Use the **Ready theme** toolbar
+to switch to Default or Midnight, including on overlays. These Storybook styles
+do not change the Ready package or require Tailwind in consumer projects.
+Open **Usage code** below the preview to
+see and copy the example for the selected framework and component. The panel
+shows consumer usage, not the Storybook adapter. Its GitHub link opens the
+actual Ready implementation. The example imports use the [private Ready
+prototype tarball](packages/ready/README.md), not a public npm release. To
+reproduce the Shadcn look, load the [optional theme overrides](examples/storybook/shadcn-theme.css)
+after the base stylesheet and apply `data-rd-theme="shadcn"` to the document
+element. Those overrides are not bundled in Ready.
 
 ```sh
 npm run build:storybook      # produces artifacts/storybook/
-npm run check:storybook      # type-checks the fixtures and framework adapters
+npm run check:storybook      # checks the Storybook fixtures and adapters
+npm run check:storybook:source # type-checks the 180 generated usage examples
 npx playwright install --only-shell chromium
-npm run test:storybook        # tests the already-built catalog
+npm run test:storybook:source # checks usage code, copy, and framework switching
+npm run test:storybook        # strict browser check for the already-built catalog
 ```
 
 The separate **Storybook build and Chromium checks** CI job checks the catalog
 and attaches the static `ready-storybook` build for seven days before running
-the strict browser check. To open a
-downloaded artifact locally, extract it and serve the directory containing
+the strict browser check. To open a downloaded artifact locally, extract it
+and serve the directory containing
 `index.html` over HTTP (for example, `python3 -m http.server 6006 --bind 127.0.0.1`
 from that directory). Nothing in this workflow deploys the catalog.
 

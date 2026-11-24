@@ -1,18 +1,67 @@
-/* Keep samples compact while leaving room for popovers, panels and wrapping. */
+/* Preview iframe only. No Preflight and no automatic utility scanning:
+   these utilities style our local chrome, not the Ready parts or manager. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@theme inline {
+  --color-story-surface: var(--rd-surface);
+  --color-story-border: var(--story-hairline, var(--rd-border));
+  --color-story-text: var(--rd-text);
+  --color-story-muted: var(--rd-muted);
+  --color-story-accent: var(--rd-accent);
+  --color-story-code: var(--story-code-bg, var(--rd-bg));
+  --radius-story: var(--rd-radius);
+}
+
 destyler-ready-story {
-  display: block;
+  @apply block;
   width: min(30rem, calc(100vw - 3rem));
 }
 destyler-ready-story[data-wide] { width: min(44rem, calc(100vw - 3rem)); }
-destyler-ready-story .story-input {
-  display: block;
-  width: min(100%, 18rem);
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  font: inherit;
-  color: var(--rd-text);
-  background: var(--rd-surface);
-  border: 1px solid var(--rd-border);
-  border-radius: var(--rd-radius);
+
+destyler-ready-story > div:first-child {
+  @apply min-w-0;
 }
-destyler-ready-story .story-action { margin-top: 1rem; }
+html[data-rd-theme="shadcn"] destyler-ready-story > div:first-child {
+  @apply rounded-story border border-solid border-story-border bg-story-surface px-4 py-5 shadow-xs sm:px-6 sm:py-6;
+}
+
+destyler-ready-story .story-input {
+  @apply mt-2 block rounded-story border border-solid bg-story-surface p-2 text-story-text;
+  width: min(100%, 18rem);
+  border-color: var(--rd-border);
+  font: inherit;
+}
+destyler-ready-story .story-action { @apply mt-4; }
+
+destyler-ready-story [data-ready-source] {
+  @apply mt-4 rounded-story border border-solid border-story-border bg-story-surface px-4 py-3 text-story-text;
+}
+destyler-ready-story [data-ready-source] summary {
+  @apply cursor-pointer text-sm font-semibold;
+}
+destyler-ready-story .story-source-note {
+  @apply mt-3 mb-2 text-sm text-story-muted;
+}
+destyler-ready-story .story-source-actions {
+  @apply flex flex-wrap items-center justify-between gap-2;
+}
+destyler-ready-story .story-source-links {
+  @apply flex flex-wrap items-center gap-3;
+}
+destyler-ready-story .story-source-actions a {
+  @apply text-sm font-medium text-story-accent underline underline-offset-4;
+}
+destyler-ready-story .story-source-actions .rd-button {
+  @apply cursor-pointer rounded-story border border-solid border-story-border bg-story-surface px-3 py-1.5 text-sm font-medium text-story-text hover:bg-story-code disabled:cursor-not-allowed;
+}
+destyler-ready-story .story-source-status {
+  @apply text-sm text-story-muted;
+}
+destyler-ready-story [data-ready-source] pre {
+  @apply box-border mt-3 mb-0 max-h-[22rem] max-w-full overflow-auto rounded-story bg-story-code p-3 font-mono text-[0.8125rem] leading-normal text-story-text;
+}
+destyler-ready-story [data-ready-source] :is(summary, a, pre, button):focus-visible {
+  @apply outline-2 outline-offset-2 outline-story-accent;
+}

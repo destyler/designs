@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/html-vite'
 import '../packages/ready/theme.css'
+import '../examples/storybook/shadcn-theme.css'
 import '../examples/storybook/canvas.css'
 
 const preview: Preview = {
@@ -11,18 +12,20 @@ const preview: Preview = {
         icon: 'paintbrush',
         dynamicTitle: true,
         items: [
+          { value: 'shadcn', title: 'Shadcn' },
           { value: 'default', title: 'Default' },
           { value: 'midnight', title: 'Midnight' },
         ],
       },
     },
   },
-  initialGlobals: { readyTheme: 'default' },
+  initialGlobals: { readyTheme: 'shadcn' },
   decorators: [
     (story, context) => {
       // Theme the actual Canvas document, so components portaled to body
       // inherit the same tokens as components mounted in the host.
-      document.documentElement.dataset.rdTheme = context.globals.readyTheme === 'midnight' ? 'midnight' : 'default'
+      const theme = context.globals.readyTheme
+      document.documentElement.dataset.rdTheme = theme === 'default' || theme === 'midnight' ? theme : 'shadcn'
       return story()
     },
   ],

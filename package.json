@@ -40,7 +40,9 @@
     "prebuild:storybook": "node scripts/generate-ready-stories.mjs",
     "build:storybook": "storybook build --output-dir artifacts/storybook --disable-telemetry",
     "check:storybook": "vue-tsc --noEmit -p .storybook/tsconfig.json && tsc --noEmit -p .storybook/tsconfig.solid.json && svelte-check --tsconfig ./.storybook/tsconfig.svelte.json",
-    "test:storybook": "node scripts/test-ready-storybook-browser.mjs"
+    "test:storybook": "node scripts/test-ready-storybook-browser.mjs",
+    "check:storybook:source": "node scripts/check-ready-storybook-source.mjs",
+    "test:storybook:source": "node scripts/test-ready-storybook-source-browser.mjs"
   },
   "dependencies": {
     "@destyler-ui/react": "0.0.5",
