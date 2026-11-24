@@ -1,0 +1,4 @@
+{
+  "extends": "../examples/ready/solid/tsconfig.json",
+  "include": ["../examples/storybook/frameworks/solid.tsx"]
+}

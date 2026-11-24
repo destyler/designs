@@ -1,0 +1,7 @@
+{
+  "extends": "../examples/ready/svelte/tsconfig.json",
+  "include": [
+    "../examples/storybook/frameworks/svelte.ts",
+    "../examples/storybook/frameworks/SvelteCanvas.svelte"
+  ]
+}

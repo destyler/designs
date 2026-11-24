@@ -43,3 +43,34 @@ jobs:
         run: npm run build:ready:docs
       - name: Build all four Ready demos
         run: npm run build:ready
+
+  storybook:
+    name: Storybook build and Chromium checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the proposed code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build and type-check the Storybook catalog
+        run: npm run build:storybook && npm run check:storybook
+      - name: Save the static Storybook for review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ready-storybook
+          path: artifacts/storybook/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Install Chromium for Playwright
+        run: npx --no-install playwright install --with-deps --only-shell chromium
+      - name: Verify all four Storybook renderers
+        run: npm run test:storybook

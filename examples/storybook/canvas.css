@@ -1,0 +1,18 @@
+/* Keep samples compact while leaving room for popovers, panels and wrapping. */
+destyler-ready-story {
+  display: block;
+  width: min(30rem, calc(100vw - 3rem));
+}
+destyler-ready-story[data-wide] { width: min(44rem, calc(100vw - 3rem)); }
+destyler-ready-story .story-input {
+  display: block;
+  width: min(100%, 18rem);
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font: inherit;
+  color: var(--rd-text);
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: var(--rd-radius);
+}
+destyler-ready-story .story-action { margin-top: 1rem; }

@@ -8,3 +8,6 @@ coverage/
 artifacts/
 
 .astro/
+
+# Generated Storybook CSF files (source: examples/storybook/catalog.ts)
+/examples/storybook/stories/
