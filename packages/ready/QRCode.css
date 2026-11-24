@@ -1,0 +1,10 @@
+/* QR contrast and quiet-zone background do not follow the host theme. */
+.rd-qr-code { min-inline-size:0; max-inline-size:100%; }
+.rd-qr-code [data-scope="qr-code"][data-part="frame"] {
+  display:block;
+  max-inline-size:100%;
+  block-size:auto;
+  background-color:#fff;
+  forced-color-adjust:none;
+}
+.rd-qr-code [data-scope="qr-code"][data-part="pattern"] { fill:#111827; }

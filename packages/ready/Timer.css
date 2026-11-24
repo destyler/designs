@@ -1,0 +1,17 @@
+.rd-timer [data-scope="timer"][data-part="root"] {
+  display: grid;
+  justify-items: start;
+  gap: var(--rd-space, 12px);
+}
+.rd-timer [data-scope="timer"][data-part="area"] {
+  max-inline-size: 100%;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.rd-timer [data-scope="timer"][data-part="control"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--rd-space, 12px) / 2);
+}

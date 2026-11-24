@@ -1,0 +1,25 @@
+.rd-edit { display: grid; min-inline-size: 0; gap: 6px; }
+.rd-edit > [data-scope="edit"][data-part="label"] { font-size: .875rem; font-weight: 600; }
+.rd-edit > [data-scope="edit"][data-part="area"] { min-inline-size: 0; }
+.rd-edit [data-scope="edit"][data-part="preview"] { overflow-wrap: anywhere; }
+.rd-edit [data-scope="edit"][data-part="preview"][data-placeholder-shown] { color: var(--rd-muted, #536176); }
+.rd-edit [data-scope="edit"][data-part="control"] { display: flex; flex-wrap: wrap; gap: 6px; }
+.rd-edit :is([data-part="input"], [data-part="edit-trigger"], [data-part="submit-trigger"], [data-part="cancel-trigger"]) {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  min-block-size: var(--rd-control-height, 42px);
+  padding: 6px 12px;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  font: inherit;
+}
+.rd-edit [data-part="input"] { inline-size: min(22rem, 100%); }
+.rd-edit [data-part="submit-trigger"] {
+  border-color: var(--rd-accent, #3155d9);
+  background: var(--rd-accent, #3155d9);
+  color: var(--rd-on-accent, #fff);
+}
+.rd-edit :is([data-part="edit-trigger"], [data-part="submit-trigger"], [data-part="cancel-trigger"]):enabled { cursor: pointer; }
+.rd-edit :disabled { cursor: not-allowed; opacity: .6; }

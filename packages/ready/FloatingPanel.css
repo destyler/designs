@@ -1,0 +1,40 @@
+.rd-floating-panel [data-scope="floating-panel"][data-part="positioner"] {
+  /* The core stores viewport coordinates. Keep them viewport-relative when the page scrolls. */
+  position: fixed !important;
+  z-index: var(--rd-overlay-z, 40);
+}
+.rd-floating-panel [data-scope="floating-panel"][data-part="content"] {
+  position: relative !important;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 16px);
+  max-block-size: calc(100dvh - 16px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  padding: var(--rd-space, 12px);
+  color: var(--rd-text, #172033);
+  background: var(--rd-surface, #fff);
+  box-shadow: var(--rd-shadow, 0 12px 32px #17203326);
+  overflow-wrap: anywhere;
+}
+.rd-floating-panel [data-scope="floating-panel"][data-part="content"]:focus-visible {
+  outline: 2px solid var(--rd-accent, #3155d9);
+  outline-offset: -2px;
+}
+.rd-floating-panel [data-scope="floating-panel"][data-part="header"] {
+  display: flex;
+  align-items: start;
+  gap: .5rem;
+}
+.rd-floating-panel [data-scope="floating-panel"][data-part="drag-trigger"] {
+  flex: 1;
+  min-inline-size: 0;
+}
+.rd-floating-panel [data-scope="floating-panel"][data-part="title"] {
+  margin: 0;
+  padding-block: .25rem;
+  font-size: 1rem;
+  font-weight: 650;
+}
+.rd-floating-panel-hint { margin-block: .25rem .625rem; color: var(--rd-muted, #536176); font-size: .875rem; }

@@ -1,0 +1,149 @@
+{
+  "name": "@destyler/ready-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private Vite-source pilot for composed Destyler components; requires the selected framework compiler",
+  "files": [
+    "react",
+    "vue",
+    "solid",
+    "svelte",
+    "types.ts",
+    "select-options.ts",
+    "accessible-text.ts",
+    "switch-description.ts",
+    "Progress.ts",
+    "Collapsible.ts",
+    "Pagination.ts",
+    "Pagination.css",
+    "Tabs.model.ts",
+    "Tabs.types.ts",
+    "Toggle.ts",
+    "Separator.ts",
+    "Fieldset.ts",
+    "Field.ts",
+    "OTPInput.ts",
+    "Label.ts",
+    "NumberInput.ts",
+    "Slider.ts",
+    "Slider.css",
+    "ScrollArea.ts",
+    "Collapse.ts",
+    "Splitter.ts",
+    "Splitter.css",
+    "Steps.ts",
+    "Carousel.ts",
+    "FileUpload.ts",
+    "Avatar.ts",
+    "AspectRatio.ts",
+    "Breadcrumbs.ts",
+    "RadioGroup.ts",
+    "Calendar.ts",
+    "Calendar.css",
+    "Combobox.ts",
+    "Combobox.css",
+    "Dynamic.ts",
+    "Dynamic.css",
+    "NavigationMenu.ts",
+    "NavigationMenu.css",
+    "Tree.ts",
+    "Tree.css",
+    "Popover.ts",
+    "Popover.css",
+    "Tooltip.ts",
+    "Tooltip.css",
+    "HoverCard.ts",
+    "HoverCard.css",
+    "Menu.ts",
+    "Menu.css",
+    "FloatingPanel.ts",
+    "FloatingPanel.css",
+    "Toast.ts",
+    "Toast.css",
+    "Tour.ts",
+    "Tour.css",
+    "Clipboard.ts",
+    "Clipboard.css",
+    "Edit.ts",
+    "Edit.css",
+    "QRCode.ts",
+    "QRCode.css",
+    "ToggleGroup.ts",
+    "ToggleGroup.css",
+    "ColorPicker.ts",
+    "ColorPicker.css",
+    "Signature.ts",
+    "Signature.css",
+    "Timer.ts",
+    "Timer.css",
+    "theme.css",
+    "README.md",
+    "THEMING.md"
+  ],
+  "exports": {
+    "./react": {
+      "types": "./react/index.tsx",
+      "default": "./react/index.tsx"
+    },
+    "./vue": {
+      "types": "./vue/index.ts",
+      "default": "./vue/index.ts"
+    },
+    "./solid": {
+      "types": "./solid/index.tsx",
+      "default": "./solid/index.tsx"
+    },
+    "./svelte": {
+      "types": "./svelte/index.ts",
+      "svelte": "./svelte/index.ts",
+      "default": "./svelte/index.ts"
+    },
+    "./theme.css": "./theme.css",
+    "./types": "./types.ts",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "@destyler-ui/react": "0.0.5",
+    "@destyler-ui/vue": "0.0.5",
+    "@destyler-ui/solid": "0.0.5",
+    "@destyler-ui/svelte": "0.0.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "vue": "^3.5.22",
+    "solid-js": "^1.9.17",
+    "svelte": "^5.57.2"
+  },
+  "peerDependenciesMeta": {
+    "@destyler-ui/react": {
+      "optional": true
+    },
+    "@destyler-ui/vue": {
+      "optional": true
+    },
+    "@destyler-ui/solid": {
+      "optional": true
+    },
+    "@destyler-ui/svelte": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
+  }
+}

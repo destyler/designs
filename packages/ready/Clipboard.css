@@ -1,0 +1,23 @@
+.rd-clipboard [data-scope="clipboard"][data-part="root"] {
+  display: grid;
+  gap: calc(var(--rd-space, 12px) / 2);
+}
+.rd-clipboard [data-scope="clipboard"][data-part="control"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--rd-space, 12px) / 2);
+}
+.rd-clipboard [data-rd-copy-value] {
+  min-inline-size: 0;
+  flex: 1 1 12ch;
+  min-block-size: var(--rd-control-height, 42px);
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  padding-inline: .625rem;
+}
+.rd-clipboard [data-rd-copy-button][aria-disabled="true"] {
+  cursor: wait;
+}

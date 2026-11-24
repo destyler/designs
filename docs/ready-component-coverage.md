@@ -1,0 +1,200 @@
+# Ready component coverage and implementation queue
+
+**Scope:** component code, package exports, tests, and usage contracts. The
+website and gallery are not part of this work. This is a working inventory for
+tracking Ready implementation against the checked-in gallery inventory,
+not a publication or full browser-support claim.
+
+## Baseline and evidence
+
+- The private Vite-source package at Ready baseline `1c498da` exports **Checkbox,
+  Select, Dialog** in React, Vue, Solid, and Svelte. They are implemented, not
+  published or fully browser/assistive-technology certified. Check the
+  [Ready README](../packages/ready/README.md) and [delivery status](ready-delivery-status.md)
+  for the support boundaries of that slice.
+- The comparison inventory is the [46-family gallery catalog](https://github.com/destyler/designs/blob/70dac1cf17a0ddde062cb413540fe81bfdadf716/examples/all-components/shared/catalog.json)
+  at `rebuild/all-components-20261106` commit `70dac1c`, including 184 actual
+  framework examples. Its [reconstruction report](https://github.com/destyler/designs/blob/70dac1cf17a0ddde062cb413540fe81bfdadf716/docs/all-components-reconstruction.md)
+  describes the differing example-source and runtime versions. These are
+  gallery demos of UI primitives, not packaged Ready implementations.
+- On this checkout's locked `@destyler-ui/*@0.0.5`, a read-only comparison found
+  an exact match for all 46 catalog slugs in each gallery registry and found
+  all 46 corresponding upstream export targets in each framework. For React
+  and Vue, the check imported named runtime exports from the package root.
+  For Solid, it checked the wildcard subpath export and each concrete JS and
+  declaration. For Svelte, it checked the explicit subpath exports and their
+  concrete JS and declarations. This confirms availability of the inputs, not interaction or build parity of
+  future Ready wrappers. The demos linked by the gallery registries show the
+  exact upstream import conventions.
+
+| Status | Families | Count |
+| --- | --- | ---: |
+| Implemented in the Ready baseline | `checkbox`, `dialog`, `select` | 3 |
+| Implemented in the first expansion; real browser acceptance is still open | `switch`, `pagination`, `tabs`, `progress`, `collapsible`, `toggle`, `separator`, `fieldset`, `avatar`, `aspect-ratio`, `breadcrumbs`, `radio` | 12 |
+| Implemented in the form expansion; real browser acceptance is still open | `field`, `label`, `number-input`, `otp-input`, `slider`, `file-upload` | 6 |
+| Implemented in the layout and navigation expansion; real browser acceptance is still open | `collapse`, `scroll-area`, `splitter`, `steps`, `carousel` | 5 |
+| Implemented in the selection and collection expansion; real browser acceptance is still open | `calendar`, `combobox`, `dynamic`, `navigation-menu`, `tree` | 5 |
+| Implemented in the first overlay expansion; real browser acceptance is still open | `popover`, `tooltip`, `hover-card`, `menu` | 4 |
+| Implemented in the workflow overlay expansion; selected Chromium interactions verified | `floating-panel`, `toast`, `tour` | 3 |
+| Implemented in the specialized input expansion; selected Chromium interactions verified | `clipboard`, `edit`, `qr-code`, `toggle-group` | 4 |
+| Implemented in the final control expansion | `color-picker`, `signature`, `timer` | 3 |
+| Supporting primitive only | `presence` | 1 |
+| **Canonical gallery inventory** | The union above, without duplicates | **46** |
+
+An implementation checkpoint includes four package exports and component regressions. It does not mean each family passed the full release gates below. Advance and record release verification independently for each family.
+
+## What the queue does and does not count
+
+- **Presence is real but not a leaf control.** All four gallery examples toggle
+  an element's mount/exit lifecycle. React and Vue export `Presence` at the root,
+  Solid and Svelte expose the `presence` subpath. Use it internally for
+  disclosure or overlays where needed; do not count four implementations of a
+  support primitive as a new Ready consumer family. This is not a missing React
+  export: it exists as a direct named export, not only a namespaced part.
+- **Collapse and Collapsible are distinct.** The former is a multi-item
+  accordion-style container (with item values, disabled items and single/multiple
+  open policy); the latter is a single disclosure. Retain both upstream slugs,
+  and document the Ready naming instead of treating the first Collapsible as
+  both. Likewise Toggle is one pressed control; Toggle Group adds group
+  selection and keyboard behavior. Dialog, Popover, Hover Card, Tooltip and
+  Floating Panel have different dismissal/focus rules.
+- **Semantic wrappers are an API choice, not a framework gap.** Label,
+  Fieldset, Separator and Aspect Ratio have simple HTML/CSS building blocks.
+  Their upstream UI implementations still exist in all four frameworks.
+  In Ready, count them only if the wrapper clarifies a real shared contract,
+  such as label association, grouped form semantics, separator role and
+  orientation, or reusable sizing. Ordinary Button, Input and Textarea are
+  native HTML controls and not separate families in this gallery inventory.
+  A component's slots and native controls do not each count as another family.
+- **Providers, internal helpers and core-only exports are not missing leaf
+  components.** The locked packages expose helpers such as ClientOnly,
+  EnvironmentProvider, FocusTrap, Format, Frame, Highlight and LocaleProvider
+  outside the 46 gallery families. Solid's package separately maps
+  `collection`/`factory`; Svelte's root exports `portal`. The locked core
+  packages include `@destyler/collection`, `@destyler/dismissable`,
+  `@destyler/interact-outside`, and `@destyler/popper`; they are
+  infrastructure rather than standalone Ready controls. Distinguish a missing
+  framework wrapper from a different subpath/name or an HTML implementation.
+  No framework-specific family gap was found in **this intersection of 46 at
+  UI 0.0.5**. No other framework, renderer, dependency version, or package
+  export outside that intersection is promised.
+
+## Selection and collection evidence boundaries
+
+- Calendar uses one inline Gregorian day grid and date-only values. On the
+  locked calendar primitive, marking a cell disabled blocked pointer selection
+  but not Enter at the grid. Ready guards the activation before the grid
+  handles it. The four compiled interaction fixtures move roving focus onto the
+  disabled date, prove Enter/Space do not select it, and then prove movement and
+  enabled selection still work. This does not certify the browser, week/month
+  transitions beyond the tested route, or screen-reader behavior.
+- NavigationMenu preserves native anchor activation and uses one in-flow
+  disclosure level. Keyboard and focus assertions in the regression use a
+  simulated DOM. The opt-in browser check is
+  `node scripts/test-ready-navigation-menu-browser.mjs`; no successful physical
+  browser run is required to claim only a source implementation checkpoint.
+- Combobox is local, single-select search; Dynamic owns an uncontrolled set of
+  tags; Tree is single-select and expects a static data shape. The shared
+  framework exports do not imply native form support for every family.
+
+## First overlay expansion boundaries
+
+- Popover is a nonmodal interactive panel; Menu is a flat list of named actions.
+  Pointer and keyboard dismissal were exercised with the locked compiled
+  frameworks. Focus restoration on explicit dismissal is different from
+  preserving an outside destination when focus leaves the overlay.
+- Tooltip and HoverCard stay non-interactive. Their pointer and focus states
+  are tracked independently to keep supplemental text available while moving
+  to the popup or while the trigger remains focused. Tooltip text describes a
+  button; HoverCard supplements a native link and does not replace its action.
+- The four overlays use inline positioning and inherit the local theme.
+  There is no cross-overlay or nested Escape guarantee. Simulated DOM coverage
+  is not viewport geometry, physical Tab or pointer input, or a screen-reader
+  acceptance result.
+
+## Workflow overlay evidence boundaries
+
+- FloatingPanel is nonmodal and movable without exposing staging or sizing.
+  Keyboard movement belongs to the panel, not its inner controls; focus returns
+  when appropriate but isn't taken from a newly focused outside element.
+- Toast is transient status, not its own recovery workflow. The controller
+  and one host bound the queue and distinguish dismiss from cleanup after a
+  finite delay. A screen-reader announcement is not inferred from ARIA markup.
+- Centered Tour steps distinguish explicit finish from dismissal. Raw final-step
+  completion in the underlying core also fires for dismissal and does not act
+  as a Ready completion signal. Native modal geometry, physical Tab order
+  were covered in targeted Chromium checks across all four frameworks. Full
+  cross-browser and assistive-technology acceptance remain open.
+
+## Specialized input evidence boundaries
+
+- Clipboard displays a read-only selectable value and reports the result of
+  the asynchronous browser write. An unavailable or denied write leaves a
+  manual path; a stale result must not appear for the newly displayed value.
+- Edit separates draft from committed text. Explicit Save and noncomposing
+  Enter commit; Escape, Cancel and leaving the editor discard unsaved changes.
+- QRCode encodes text locally and provides a labelled, high-contrast SVG with
+  quiet space. Rendering evidence does not certify scanner or camera behavior.
+- ToggleGroup wraps independent pressed buttons. Arrow navigation is not
+  selection; this is not a radio group. A controlled parent may veto selection.
+
+`CHROMIUM_PATH=/path/to/chromium node scripts/test-ready-specialized-browser.mjs`
+runs the targeted browser verification with synthetic fixtures. It is not a
+cross-browser, clipboard policy, scanner or assistive-technology certification.
+
+## Final control evidence boundaries
+
+- ColorPicker is an inline, opaque HEX editor with optional presets. It does
+  not provide alpha, a popover, a native color field or form serialization.
+- Signature is an optional pointer-drawn SVG input, not a required workflow
+  or a legal signature system. Keyboard users can clear an existing drawing;
+  the host must supply a separate way to complete any required workflow.
+- Timer is a manually operated count-up display, not a countdown,
+  background clock, or precision timekeeper. It does not announce every tick.
+
+Run the targeted Chromium workflow checks with
+`node scripts/test-ready-final-controls-browser.mjs` after installing the
+Playwright Chromium headless shell, or set `CHROMIUM_PATH` to an available
+compatible executable. The included fixtures use synthetic values and strokes.
+
+All **45 consumer families** now have Ready package entries in React, Vue,
+Solid and Svelte. Presence is the 46th gallery slug and remains a support
+primitive, not a separate consumer component. This inventory attests to
+implementation of the documented Ready profiles, not every underlying mode,
+publication, or complete cross-browser and assistive-technology validation.
+
+## Accepting a family
+
+1. **Composed public API.** One idiomatic entry per framework, common semantic
+   props with native event/slot conventions, useful accessible name and depth
+   of composition comparable to a Ready control. State ownership, defaults,
+   controlled updates and callbacks, disabled state, and unsupported modes
+   must be explicit. Do not promise impossible equivalence (e.g. HTML form
+   submission from a presentational control).
+2. **Package and theme.** Export from the correct shared package subpaths, pack
+   every referenced source file and stylesheet, and validate a separate locked
+   Vite consumer for each selected framework. An app installs only its own
+   matching UI and renderer peers. All four builds/types/contract checks pass;
+   verify the tarball contents rather than relying on workspace imports.
+   Verify no theme wrapper is required for default styling and shared semantic
+   tokens work in both built-in scopes and a custom override. Preserve
+   `theme.css` as a deliberate CSS side effect.
+3. **Regression matrix.** Test the four real compiled adapters, their positive
+   and negative type contracts, SSR/hydration when relevant, and browser
+   interaction for the states that matter to the family. At minimum use a
+   keyboard with visible focus, a pointer, and a small viewport; check markup
+   semantics, invalid/missing accessible labels, scope isolation, and cleanup
+   when relevant. Native-form families need real submit/reset behavior; overlay
+   families need focus/dismissal/scrolling checks. Pin the code revision and
+   report automated DOM, browser, and manual assistive-technology evidence
+   separately. Known pre-hydration loss, nested-overlay and portal constraints
+   stay visible until proven resolved.
+4. **Release handoff, not publication.** Update the package README and runnable
+   consumer usage (including versions and limitations); record per-family
+   evidence. Use `npm run check:ready`, `npm run check:ready:contracts`,
+   `node --test test/ready-*.test.mjs`, `npm run build:ready` and the
+   [clean consumer verification](ready-clean-consumer-verification.md) as
+   applicable, plus targeted real-browser checks. A pass establishes only the
+   matrix exercised. Ready remains private/Vite-source unless distribution and
+   compatibility are explicitly agreed; no website changes, publish, merge, or
+   deploy follows automatically from this checklist.

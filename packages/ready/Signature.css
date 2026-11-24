@@ -1,0 +1,39 @@
+.rd-signature { display: grid; gap: 6px; inline-size: min(32rem, 100%); min-inline-size: 0; }
+.rd-signature [data-scope="signature"][data-part="label"] { font-size: .875rem; font-weight: 600; }
+.rd-signature :is(.rd-signature-hint, [role="status"]) {
+  margin: 0;
+  color: var(--rd-muted, #536176);
+  font-size: .875rem;
+  line-height: 1.45;
+}
+.rd-signature [data-scope="signature"][data-part="control"] {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  block-size: 12rem;
+  overflow: hidden;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  cursor: crosshair;
+}
+.rd-signature [data-scope="signature"][data-part="control"][data-disabled] { cursor: not-allowed; touch-action: auto !important; }
+.rd-signature [data-scope="signature"][data-part="guide"] {
+  position: absolute;
+  inset-inline: var(--rd-space, 12px);
+  inset-block-end: 2rem;
+  border-block-end: 1px dashed var(--rd-border, #7b8799);
+  pointer-events: none;
+}
+.rd-signature .rd-signature-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.rd-signature [data-scope="signature"][data-part="clear-trigger"] {
+  min-block-size: var(--rd-control-height, 42px);
+  padding: 6px 12px;
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  cursor: pointer;
+  font: inherit;
+}
+.rd-signature [data-scope="signature"][data-part="clear-trigger"]:disabled { cursor: not-allowed; opacity: .6; }

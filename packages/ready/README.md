@@ -1,0 +1,343 @@
+# Ready component slice (private experiment)
+
+Composed controls for React, Vue, Solid and Svelte over one semantic CSS contract.
+Use the explicit framework package subpath and import theme.css once. Components
+have default styling without a theme wrapper. Optionally use an existing ancestor
+with data-rd-theme="default" or "midnight" for an explicit local theme. Components
+never branch on theme names. Override the same --rd-* variables for a custom style.
+
+Checkbox accepts label, description, checked, disabled, required, error, name and a boolean change callback.
+Select accepts label, description, options ({label,value,disabled?}), value, placeholder, emptyMessage,
+disabled, required, error, name and a string change callback. Dialog accepts trigger, title,
+description, closeLabel, open and a boolean change callback; its body is children/default slot.
+Checkbox/Select `description` is optional plain text rendered and associated by Ready,
+including in SSR. Omitted, empty or whitespace-only descriptions render nothing.
+Use it instead of repeating the same text in an ancestor Field.HelperText; distinct
+Field help, errors and empty-list descriptions remain additive.
+Controlled values are optional; absent values use local state. Vue uses update:checked, update:value and update:open events, consumed as
+v-model:checked, v-model:value and v-model:open. Hidden form inputs, native disabled handling and primitive ARIA are
+retained. No library defaults or published packages change.
+
+## Additional components
+
+Import these from the same framework entry point; none requires adding primitive
+parts or installing another theme package.
+
+| Component | Consumer contract |
+| --- | --- |
+| Switch | `label`, optional `description` and `error`, `name` and form `value` (defaults to `on`), `disabled`, `required`. Use `checked` plus `onCheckedChange` or start with `defaultChecked`. In Vue use `v-model:checked` or `@checked-change`. |
+| Pagination | `label`, `count` (total items, not pages), optional `pageSize` (10), `page`/`defaultPage` (one-based), and `onPageChange` (Vue `v-model:page`). Boundary buttons are disabled; an empty result does not invent a result page. `previousLabel` and `nextLabel` can be localized. |
+| Progress | `label` and `value`, with `min`/`max` defaulting to 0/100. Use `null` for indeterminate progress. This is a passive progress bar, not a status announcement. |
+| Collapsible | `trigger` text, optional `open`/`defaultOpen`, `disabled` and `onOpenChange` (Vue `v-model:open`). Content is ordinary React/Solid children, a Vue default slot, or Svelte children. |
+| Tabs | `label`, `items: [{value, label, disabled?, content?}]`, optional `value`/`defaultValue`, `orientation`, `activationMode`, and `onValueChange` (Vue `v-model:value`). Set `content` for text, or use React/Solid `renderPanel`, Vue's `#panel` slot, or a Svelte `panel` snippet. For a dynamic item list where selection can disappear, control the value and supply a valid enabled item. |
+| Toggle | One pressed button: required `label`, optional `pressed`/`defaultPressed`, `disabled`, and `onPressedChange` (Vue `v-model:pressed`). Keep the label stable between states. |
+| Separator | Noninteractive separator; `orientation` defaults to `horizontal`, or set `vertical` in an inline or flex layout. |
+| Fieldset | `legend`, optional `description` and `disabled`; wraps native framework children in a fieldset. |
+| Avatar | `alt` names the avatar (empty means decorative), optional `src` and `fallback`. Unavailable images render fallback text or initials. |
+| AspectRatio | `ratio` is width divided by height (default 1); renders framework children in the ratio without implicitly cropping them. |
+| Breadcrumbs | Ordered `items` of `{label, href?}`; ancestors need an `href`, the final item is current and may be text or an anchor. Optional `label`, `separator` and native click `onNavigate(event, item)` (Vue `@navigate`). |
+| RadioGroup | `label` and `items: [{value, label, disabled?}]`. Pass a form `name`, optional `required`, `disabled`, `orientation`, and `value`/`defaultValue` (`null` means no choice); Vue uses `v-model:value`. |
+| Field | One native text input with a visible `label`, optional `description` and external `error` text. Accepts `name`, text-like `type`, `required`, `disabled`, `readOnly`, and `value`/`defaultValue`. Vue uses `v-model:value`; other frameworks use `onValueChange`. External errors set ARIA state; native constraint validation comes from the input. |
+| Label | Associates framework children with an existing native input ID. Use React `htmlFor`, or `for` in Vue, Solid and Svelte. No special input wrapper required. |
+| NumberInput | A labelled spinbutton with step controls. `value` and `defaultValue` are decimal strings (empty means no input); supports `min`, `max`, `step`, form name, `required`, `disabled` and `readOnly`. Current format is ungrouped English decimal text. |
+| OTPInput | Fixed `length` (1–12, default 6), ASCII digits passed as an array with optional blank positions. A form `name` serializes one string only when all enabled slots are filled. `required` validates each visible slot. Use an explicit submit button; `mask` is visual only. |
+| Slider | One horizontal thumb with `label`, optional `min`, `max`, `step`, `value`/`defaultValue`, `name` and `disabled`. No range, vertical mode or native-reset guarantee in this profile. |
+| FileUpload | Labelled local file-picker and removal. Optional `accept`, `maxFiles` and `maxFileSize`; accepted files are provided to `onFilesChange` (Vue `files-change`). No automatic upload, native FormData or reset; the application owns submission and server-side validation. |
+| Collapse | Accordion with `items: [{value, label, disabled?, content?}]`, optional `value`/`defaultValue` arrays, `multiple`, `collapsible`, `disabled`, `orientation` and `headingLevel`. Override text content with React/Solid `renderPanel`, Vue's `#panel`, or a Svelte `panel` snippet. |
+| ScrollArea | Named focusable scroll region with `label`, optional pixel `maxHeight` (320) and `orientation` (vertical, horizontal or both). Renders framework children and uses the browser's own scrollbars. It does not virtualize content or expose a custom scroll track. |
+| Splitter | Two panes, with `label` naming the separator, `defaultSize`, `minSize`, `maxSize` and `step` in percentages. Use `orientation` to specify how panes are laid out. Content goes through React/Solid `first`/`second` props or Vue/Svelte named slots/snippets. `onSizeChange` (Vue `size-change`) observes the first pane's size. |
+| Steps | Labelled ordered list of `items: [{id, label, description?}]`. Previous/Next/Finish navigate linearly; `step`/`defaultStep` are zero-based and `items.length` means complete. Vue uses `v-model:step`; the controls do not submit a surrounding form. |
+| Carousel | Labelled one-at-a-time carousel with `items: [{id, label, content?}]`, native navigation controls and no autoplay or looping. To provide custom slide content use React/Solid `renderSlide`, Vue's `#slide`, or a Svelte `slide` snippet. Page change values are zero-based. |
+| Calendar | Inline single-month, single-selection grid. Provide a grid `label`, ISO Gregorian `value`/`defaultValue` (`YYYY-MM-DD`, or `null` for none), optional `min`/`max`, `disabledDates`, and `locale` for date formatting. Vue uses `v-model:value`. UTC date-only; no text input, popup, multiple/range selection or native form field. |
+| Combobox | Labelled searchable single-select with `options: [{value, label, disabled?}]`, `value`/`defaultValue`, optional `description`, `placeholder`, `emptyMessage`, and `disabled`. On input, filters option labels by case-insensitive substring; the empty value means clear. Vue uses `v-model:value`. No free-form value, remote loading API, multiple selection or native form submission. |
+| Dynamic | Labelled tag input with optional `defaultValue`, `maxTags`, `maxLength`, `disabled`, and form `name` (one JSON-encoded array). Add with Enter or the Add button, remove individual tags or clear all. Observe with `onValueChange` (Vue `value-change`). No controlled tags, inline editing, bulk paste or native required/reset guarantee. |
+| NavigationMenu | A labelled site navigation landmark with one level of disclosure groups. Provide `items` as links `{id, label, href, current?}` or groups `{id, label, links, disabled?}`. Opens on activation, not hover. Native links navigate normally; Escape closes a group and returns focus if it was in the panel. `onValueChange` (Vue `value-change`) reports the open group ID or `null`. |
+| Tree | Labelled tree of `items: [{value, label, disabled?, children?}]`, with globally unique, whitespace-free values. Set expanded keys via `expandedValue`/`defaultExpandedValue` and use `selectedValue`/`defaultSelectedValue` for arrays of zero or one selection. Vue uses `v-model:expanded-value` and `v-model:selected-value`. Static shape, up to 250 nodes and eight levels; no lazy loading, editing, dragging or virtualization. |
+| Popover | One nonmodal interactive panel with a named `trigger` button, `title`, optional `description` and `closeLabel`. Supply content as ordinary framework children, slot or snippet. Use `defaultOpen` or `open`/`onOpenChange` (Vue `v-model:open`). Use Dialog for a blocking interaction. |
+| Tooltip | Supplementary plain `text` associated with a named `trigger` button on keyboard focus or pointer hover. The pointer can move onto the text; Escape dismisses without moving focus. Not an action panel, touch disclosure, or substitute for essential instructions. |
+| HoverCard | One native preview link (`label`, valid `href`) with plain-text `description` and optional `title`. Pointer hover or link focus reveals the visual preview; the link remains the normal action. This is supplemental information, not a focusable panel or navigation menu. |
+| Menu | Named `trigger` and flat action `items: [{value, label, disabled?}]`. `onSelect(value)` (Vue `@select`) delivers the item key; `onOpenChange` (Vue `@open-change`) observes disclosure. No submenus, checkbox/radio items, links or controlled mode in this profile. |
+| FloatingPanel | One standalone, movable nonmodal panel. Provide a `trigger`, `title`, native children, optional `moveHint` and `closeLabel`. Drag the title area or use arrows when the panel itself has focus. Observe or control opening with `onOpenChange`/`open` (Vue `v-model:open`), or use `defaultOpen`. No resize, staging or modal background lock. |
+| Toast | One status-only host and private controller, shared across all four framework APIs. Call `createToastController()`, mount `<Toast controller={controller} />` (with framework syntax), then call `controller.show({title, description?, tone?, duration?})`. Tone is `info` or `success`; default 6 s, whole-ms 1–30 s, at most three concurrent. Use `controller.dismiss(id)` or the close control. Before mount or at capacity, `show` returns no ID. Keep important errors and actions available elsewhere. |
+| Tour | A named launch button and centered modal sequence of `steps: [{id, title, description}]`, set at mount. Previous/Next navigate; only the final Finish action reports `'finished'`. Escape or the close button report `'dismissed'`. Read `onEnd` (Vue `@end`). No spotlight targets, route automation or persisted completion. |
+| Clipboard | Provide a visible `label` and a single-line `value`. Copy reports success only after the browser writes it; the read-only field remains selectable for manual copying if unavailable or denied. Localize `copyLabel`, `pendingMessage`, `copiedMessage` and `errorMessage` as needed. The component does not read the clipboard. |
+| Edit | Inline single-line editor with `label`, optional `defaultValue`, `placeholder`, `maxLength` and `disabled`. Edit opens the draft. Save or Enter outside IME composition commits via `onValueCommit` (Vue `@value-commit`); Cancel, Escape and leaving the editor discard the draft. Uncontrolled, with no native form submission. |
+| QRCode | Render a local, nonblank `value` (up to 256 UTF-8 bytes) as a labelled SVG; `label` describes the image. Optional integer `size` is 96–512 CSS pixels (default 256), shrinking with its container. The frame is white with dark modules and a four-module quiet zone. No upload, scan, download or logo. |
+| ToggleGroup | Labelled group of independent pressed buttons, with `items: [{value, label, disabled?}]`. Use `value`/`defaultValue` arrays and `onValueChange` (Vue `v-model:value`). Supports `orientation`, `loopFocus` and group `disabled`; arrows move focus without changing selections. Not a radio group or native form field. |
+| ColorPicker | Inline opaque HEX editor. Give it a visible `label`, optional `value`/`defaultValue` and `presets` (each `#RRGGBB`), and `disabled`. Enter or blur commits valid text, invalid text reverts. `onValueChange` emits uppercase HEX (Vue `v-model:value`). No alpha, popup or native form submission. |
+| Signature | Optional, labelled local pointer-drawing pad with a native Clear button. Read `onPathsChange` (Vue `@paths-change`) for completed SVG path data; Clear emits an empty array. Supports `disabled`. No image download, native form field or keyboard drawing. Provide a separate accessible path for any required workflow. |
+| Timer | Labelled manual count-up stopwatch with a stable start/pause/resume control and a Reset button that stops and clears the display. Customize `startLabel`, `pauseLabel`, `resumeLabel` and `resetLabel`. Updates by whole seconds without a per-tick live announcement. No countdown, precision or background timing guarantee. |
+
+```tsx
+import { Switch, Pagination, Progress } from '@destyler/ready-prototype/react'
+import '@destyler/ready-prototype/theme.css'
+
+<Switch label="Email updates" name="updates" defaultChecked />
+<Pagination label="Search results" count={95} pageSize={10} />
+<Progress label="Importing files" value={null} />
+```
+
+For example, these specialized controls do not require composing primitive parts:
+
+```tsx
+import { Clipboard, Edit, QRCode, ToggleGroup } from '@destyler/ready-prototype/react'
+
+<Clipboard label="Documentation link" value="https://example.test/docs" />
+<Edit label="Document title" defaultValue="Untitled" maxLength={80} onValueCommit={saveTitle} />
+<QRCode label="QR code for the documentation" value="https://example.test/docs" />
+<ToggleGroup
+  label="Formatting"
+  items={[{ value: 'bold', label: 'Bold' }, { value: 'italic', label: 'Italic' }]}
+  defaultValue={['bold']}
+/>
+```
+
+In this example, `saveTitle` is the app's persistence callback. A copy attempt
+may be denied by the browser or unavailable outside a secure context; keep the
+read-only text field available rather than relying on the button alone.
+
+The last three controls cover inline color editing, optional local drawing,
+and a manually operated elapsed timer:
+
+```tsx
+import { ColorPicker, Signature, Timer } from '@destyler/ready-prototype/react'
+
+<ColorPicker label="Accent color" defaultValue="#3155D9" presets={['#3155D9', '#172033']} />
+<Signature label="Optional signature" onPathsChange={handlePaths} />
+<Timer label="Elapsed time" />
+```
+
+`handlePaths` belongs to the host application; Ready does not upload, persist,
+or validate a signature.
+
+Popover, Tooltip, HoverCard, Menu and FloatingPanel inherit the local theme
+without a body portal. An ancestor that clips content or creates a new stacking
+context can affect nonmodal placement. Tour uses a native modal dialog. Mount
+one Toast host per document. Do not share its bottom-end placement with a raw
+Toaster, since the underlying region ID is fixed by placement.
+Nested Escape ownership and browser/screen-reader acceptance are not part of
+this implementation checkpoint.
+
+Run `node scripts/ready.mjs dev react` (or vue, solid, svelte). Open the URL printed
+by Vite. Run `node scripts/ready.mjs build` for four static demos under artifacts/ready.
+Serve artifacts/ready with any static server to use the cross-framework links.
+
+## Consuming the private source package
+
+For the complete checkout → tarball → clean Vite application commands and minimal
+React/Vue/Solid/Svelte source, follow the [executable quickstart](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-quickstart.md).
+The quickstart generator lives in the repository, not inside this tarball.
+For built-in and custom theme usage, read [THEMING.md](./THEMING.md).
+
+This is a **Vite-compiled source package**, not precompiled JavaScript for direct
+Node execution. It intentionally has no default root component export. Select one
+framework subpath: `@destyler/ready-prototype/react`, `/vue`, `/solid`, or `/svelte`.
+Import `@destyler/ready-prototype/theme.css` once in the application entry.
+Use that framework's normal Vite plugin. TypeScript, Vue and Svelte sources remain
+in the archive so the consumer compiler handles its own framework semantics.
+
+For a long-lived application, keep the packed `.tgz` **inside the application's
+repository**, for example `vendor/destyler/<source-commit>/destyler-ready-prototype-0.0.0.tgz`,
+and install it via that application-relative path. Commit the archive together
+with the application's `package.json` and `package-lock.json`. A fresh checkout/CI
+must obtain the same archive bytes at the same relative path before `npm ci`.
+If artifacts are distributed through private storage instead, download that exact
+locked artifact before installation; keep the lockfile integrity check. Do not
+regenerate a different archive against an unchanged lockfile or overwrite an
+already locked archive. Use a new source-commit directory for upgrades and update
+the dependency and lockfile together. The `/tmp` quickstart is only a disposable
+trial: a fresh-cache `npm ci` fails with ENOENT after its archive disappears.
+This reinstall flow is tested with npm, not pnpm.
+
+Install only the matching runtime and UI peer:
+- React: `react`, `react-dom`, `@destyler-ui/react@0.0.5`, with `@vitejs/plugin-react`.
+- Vue: `vue`, `@destyler-ui/vue@0.0.5`, with `@vitejs/plugin-vue`.
+- Solid: `solid-js`, `@destyler-ui/solid@0.0.5`, with `vite-plugin-solid`.
+- Svelte: `svelte`, `@destyler-ui/svelte@0.0.5`, with `@sveltejs/vite-plugin-svelte`.
+
+All framework peers are optional at package level so choosing React does not
+install Vue, Solid and Svelte. The selected subpath still requires its own listed
+peers; optional does not mean its runtime can be omitted. Tested version ranges
+and explicit entry points are recorded in package.json. CSS is declared a side
+effect so consumer tree-shaking does not discard an intentional stylesheet import.
+The `files` list excludes demos, tests, build outputs and dependencies from packing.
+No publication is performed by these local packaging commands.
+
+The package consumer regression packs and unpacks the archive into a separate
+consumer tree, imports each framework and CSS by package name, builds with its
+framework plugin, and checks that unused UI adapters are absent. It reuses the
+repository's locked runtime installations, without source aliases or links back
+to packages/ready; it is not a claim of compatibility with every bundler.
+
+## Contract
+
+--rd-bg, --rd-surface, --rd-text, --rd-muted, --rd-border, --rd-accent,
+--rd-on-accent, --rd-radius, --rd-control-height, --rd-space, --rd-shadow, --rd-font,
+--rd-backdrop, --rd-overlay-z.
+The default theme is light rounded sans-serif. Midnight changes palette, corner
+geometry, spacing, control height, typography and shadow without replacing any
+component. Both scopes coexist in each demo with separate component state.
+
+## Deliberate limits
+
+This is not a published library or a replacement for every gallery component.
+Inline overlays preserve the nearest theme scope. Do not put scopes in clipped,
+transformed or isolated stacking containers; a general portal/theme bridge is not
+implemented. Cross-framework API conventions are native, not forced to identical
+syntax. Async fetching/loading lifecycles, custom rendering, validation recipes, plugin registration,
+full RTL coverage, general nested-overlay behavior and multiple-modal stacks are not promised
+by this slice. A Select inside a Dialog has limited simulated-DOM regression
+coverage: Escape closes the Select before the Dialog, with focus restoration and
+cleanup checks. That does not establish arbitrary nesting support or real-browser
+acceptance. Browser layout, keyboard focus trapping, real pointer, mobile and
+assistive-technology acceptance remain pending;
+simulated DOM tests are not substitutes for them.
+
+Form submission names are forwarded to hidden controls. Reset uses the primitive's
+existing reset listener, not a second business-event listener. Uncontrolled values
+return to false/empty; controlled resets request their initial mount values through
+the same change callback. Parents may accept the request or keep their current
+value. Reset does not unilaterally replace a controlled parent value. A primitive
+may suppress notification if the requested value is unchanged.
+
+Hidden Select state and option reset defaults mirror the effective value so native
+reset cannot silently submit the first option while the visible value differs.
+The primitive separately retains its logical initial reset value. No synthetic
+input/change event or duplicate reset callback is added by this reconciliation.
+Cancelled resets, repeated/no-op resets, parent acceptance/refusal and FormData
+are covered in four-framework simulated tests. Happy DOM's form.reset ordering
+is not browser-correct, so cancellation tests explicitly model event-before-default-action ordering.
+Successful and repeated reset cases call the actual Happy DOM form.reset() method
+on real compiled components and check FormData. These are distinct test layers.
+Real-browser form reset and full form-library integration still need validation.
+
+## Verification commands
+
+These commands run from a checkout of the **repository root** with its dependencies
+installed (`npm ci`). They are not scripts shipped inside the packed package.
+
+- `node scripts/verify-ready-clean-consumers.mjs --documented` (installs and builds the exact quickstart examples)
+
+- `node scripts/verify-ready-clean-consumers.mjs` (opt-in registry access; fresh npm-installed consumers in `/tmp`, four Vite builds and type checks; see [verification report](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-clean-consumer-verification.md))
+
+- `node --test test/ready-*.test.mjs`
+- `node node_modules/typescript/bin/tsc -p examples/ready/react/tsconfig.json`
+- `node node_modules/typescript/bin/tsc -p examples/ready/solid/tsconfig.json`
+- `node node_modules/vue-tsc/bin/vue-tsc.js -p examples/ready/vue/tsconfig.json`
+- `node node_modules/svelte-check/bin/svelte-check --tsconfig examples/ready/svelte/tsconfig.json`
+- `node scripts/ready.mjs build`
+
+The focused tests exercise real compiled components in simulated DOMs and
+check theme contracts. They cover duplicate IDs across scopes, form names,
+controlled false/empty values, disabled choices, callbacks, repeated dialog
+closing, Escape and title/description links. Both framework pairs are exercised;
+Vue/Svelte additionally have explicit frozen-dialog and uncontrolled-mode fixtures.
+A Vite HTTP smoke returned 200 for the two-scope React page. No browser screenshot
+or pixel-equivalence claim is made.
+
+### Multiple Vue applications on one page
+
+Within one Vue application, framework-generated IDs distinguish component instances.
+If a page mounts multiple independent `createApp()` roots, set a different
+`app.config.idPrefix` on each app **before** `app.mount(...)`, for example
+`app.config.idPrefix = "settings"` and `app.config.idPrefix = "billing"`.
+Both the Ready description IDs and the underlying primitive IDs use Vue
+`useId()`, whose default prefix is not unique across independent applications.
+The two-root demo and regression tests configure distinct prefixes explicitly;
+they do not establish support for unconfigured multi-app roots.
+
+## Select option values
+
+An option's `value` must be a unique, nonempty string. Exactly `""` is reserved for no
+selection and the clear callback, so an empty option throws a descriptive runtime
+error before creating the collection, even when disabled. The same validation
+runs when options change. Values are never trimmed or silently filtered: `"0"`,
+`" "` and all other nonempty strings remain valid. TypeScript's `string` type
+cannot prove nonempty values or uniqueness across an array; runtime validation is authoritative.
+
+Duplicate values throw a descriptive Ready error before collection creation,
+including duplicates with identical labels or disabled entries. Validation also
+runs on reactive option replacements. Values are compared exactly, without
+trimming or case folding: `a`, `A`, ` a` and `a ` are distinct. Repeated labels
+with distinct values are allowed. No first/last-wins deduplication is performed;
+applications must provide stable unique keys rather than rely on labels or array
+positions. Every option also needs a non-whitespace `label`, including disabled
+options. Empty or whitespace-only labels throw a Ready error during initial
+rendering (including SSR) and reactive option replacements. Valid labels retain
+their original whitespace; equal nonblank labels with distinct keys are allowed. Handle invalid external data before rendering; this developer error
+is not a form validation message or an automatic recovery mechanism.
+
+## Server rendering and hydration
+
+The Vite source-package contract does not by itself guarantee SSR integration.
+See the [SSR and hydration verification](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-ssr-hydration.md)
+for the tested server/client compilation paths, form-state fixes and limits.
+These checks use real server rendering followed by simulated DOM hydration, not
+browser acceptance or a promise of Next.js, Nuxt, SolidStart or SvelteKit support.
+
+**Known hydration gap:** native form values changed after SSR but before hydration
+can be overwritten or diverge from the visible component state, including a
+Checkbox's first later click not emitting a callback. Automatic preservation is
+not supported. See the [pre-hydration investigation](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-prehydration-input.md)
+for reproduced behavior and the still-proposed explicit adoption policy. Passing
+the unchanged-DOM SSR tests does not resolve this separate input-loss risk.
+An [experimental controlled adoption recipe](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-prehydration-recipe.md)
+shows the narrow explicitly accepted snapshot path in four frameworks. Rejection,
+field identity, reset and concurrent edits remain open policies; it is not a
+production-ready or default restoration capability.
+
+## Native form validation
+
+`required` forwards the native constraint. A nonempty `error` displays an
+associated message and sets native custom validity after client mount; clearing
+it removes the custom error without removing `required`. Disabled controls are
+excluded from constraint validation until re-enabled. SSR can render error text
+and ARIA, but custom validity needs JavaScript and is not a server-side check.
+See the [native form contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-native-forms.md).
+
+## Changing Select options
+
+A requested value absent from `options` renders an empty effective selection, not
+the first available option. Its requested value is retained and restored when a
+matching option arrives, without a fabricated change callback. Reordering and
+relabeling preserve value. Disabling an already selected option does not clear it;
+native submission excludes disabled options, so applications should explicitly
+clear or validate withdrawn choices. See the [dynamic options contract and test
+limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-select-dynamic-options.md).
+
+## Required naming text
+
+Checkbox/Select `label` and Dialog `trigger`/`title` must contain non-whitespace
+text. Initial and reactive blank values throw a descriptive Ready error; valid
+text is preserved, not trimmed. Optional placeholder/description can be empty.
+There is no icon-only or alternate aria-label API in this pilot. See the
+[naming-source contract and test limits](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-accessible-names.md).
+
+For callback payloads, controlled ownership, runtime validation boundaries and
+reproducible packed-consumer positive/negative type checks, see the
+[consumer type contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-type-contract.md).
+
+Checkbox change callbacks are proposals, not DOM commit notifications. Do not
+assume synchronous FormData inside a callback reflects a controlled parent's
+accepted/refused state; see the [timing investigation and submission guidance](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-checkbox-callback-timing.md).
+
+Translate built-in text with `Select.emptyMessage` and `Dialog.closeLabel`, along
+with the existing label/placeholder/description/option text props. See the
+[text customization contract](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-text-customization.md) for defaults, empty-state semantics and accessibility limits.
+
+
+### Additional attributes are not native-control props
+
+Only the documented component props are supported. In Vue, undeclared attributes
+may fall through to the outer wrapper because these are single-root SFCs. Passing
+`id`, `aria-label` or `readonly` this way does **not** configure the native input
+or Select trigger. Other adapters do not promise the same wrapper fallthrough.
+Use `label`, `description`, `disabled`, `required` and `error` for their documented
+purposes; there is no general native-attribute forwarding API in this pilot.
+
+For the remaining acceptance and release gates, see the
+[delivery boundary](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-delivery-status.md).
+
+For the limited four-framework locale-provider direction checks and their
+boundaries, see [RTL investigation](https://github.com/destyler/designs/blob/feat/ready-components-pilot/docs/ready-rtl.md). An ancestor
+`dir="rtl"` alone does not configure primitive direction.

@@ -1,0 +1,17 @@
+.rd-tooltip {
+  display: inline-block;
+}
+.rd-tooltip [data-scope="tooltip"][data-part="positioner"] {
+  z-index: calc(var(--rd-overlay-z, 40) + 3);
+}
+.rd-tooltip [data-scope="tooltip"][data-part="content"] {
+  max-inline-size: min(20rem, calc(100vw - 1rem), var(--available-width, 100vw));
+  border: 1px solid var(--rd-border, #7b8799);
+  border-radius: var(--rd-radius, 10px);
+  background: var(--rd-surface, #fff);
+  color: var(--rd-text, #172033);
+  box-shadow: var(--rd-shadow, 0 12px 32px #17203326);
+  padding: 6px 10px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
