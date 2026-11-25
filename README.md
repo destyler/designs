@@ -116,7 +116,7 @@ to switch to Default or Midnight, including on overlays. These Storybook styles
 do not change the Ready package or require Tailwind in consumer projects.
 Open **Usage code** below the preview to
 see and copy the example for the selected framework and component. The panel
-shows consumer usage, not the Storybook adapter. Its GitHub link opens the
+shows consumer usage with explicit, framework-native props (no spread or blanket binding), not the Storybook adapter. Its GitHub link opens the
 actual Ready implementation. The example imports use the [private Ready
 prototype tarball](packages/ready/README.md), not a public npm release. To
 reproduce the Shadcn look, use **Download Shadcn CSS** in Usage code.

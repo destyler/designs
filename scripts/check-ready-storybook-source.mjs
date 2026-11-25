@@ -35,6 +35,19 @@ try {
       const source = getUsageSource(component, name, demo)
       assert.ok(source.includes(`from '@destyler/ready-prototype/${framework}'`), `${name} ${component}: incorrect package import`)
       assert.ok(source.includes("import '@destyler/ready-prototype/theme.css'"), `${name} ${component}: missing theme import`)
+      assert.doesNotMatch(source, /\bv-bind\s*=|\{\s*\.\.\./, `${name} ${component}: consumer code must use explicit props`)
+      const assertAttributes = (componentName, args) => {
+        const opening = source.match(new RegExp(`<${componentName}(?=\\s|>)((?:[^>]|=>)*)>`))?.[1]
+        assert.ok(opening !== undefined, `${name} ${componentName}: missing component markup`)
+        for (const key of Object.keys(args)) {
+          const prop = componentName === 'Label' && name === 'React' && key === 'for' ? 'htmlFor' : key
+          const attribute = name === 'Vue' ? prop.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()) : prop
+          assert.match(opening, new RegExp(`\\s:?${attribute}\\s*=`), `${name} ${componentName}: missing explicit ${attribute} prop`)
+        }
+      }
+      assertAttributes(component, demo.args)
+      if (demo.child && typeof demo.child !== 'string') assertAttributes(demo.child.component, demo.child.args)
+      if (demo.action) assertAttributes(component, { controller: true })
       const link = getImplementationUrl(component, name)
       const target = new URL(link)
       const path = target.pathname.match(/^\/destyler\/designs\/blob\/[a-f0-9]{40}\/packages\/ready\/([a-z]+\/[A-Za-z0-9]+\.[a-z]+)$/)?.[1]
