@@ -17,6 +17,7 @@
   --rd-space: 12px;
   --rd-shadow: 0 4px 14px rgb(0 0 0 / 12%), 0 1px 3px rgb(0 0 0 / 8%);
   --rd-font: ui-sans-serif, system-ui, sans-serif;
+  --story-control-border: oklch(0.65 0.016 285.938);
   --story-hairline: oklch(0.92 0.004 286.32);
   --story-code-bg: oklch(0.967 0.001 286.375);
 }

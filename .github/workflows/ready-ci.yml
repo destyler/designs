@@ -46,7 +46,7 @@ jobs:
 
   storybook:
     name: Storybook build and Chromium checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Check out the proposed code
@@ -62,7 +62,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
       - name: Build and type-check the Storybook catalog
-        run: npm run build:storybook && npm run check:storybook
+        run: npm run build:storybook && npm run check:storybook && npm run check:storybook:source
       - name: Save the static Storybook for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -71,6 +71,10 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Install Chromium for Playwright
+        id: browser
         run: npx --no-install playwright install --with-deps --only-shell chromium
+      - name: Verify usage code and actual component styles
+        run: npm run test:storybook:source
       - name: Verify all four Storybook renderers
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: npm run test:storybook

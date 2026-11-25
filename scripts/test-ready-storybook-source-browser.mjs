@@ -97,6 +97,31 @@ try {
     await canvas.getByText('Files and folders', { exact: true }).waitFor()
     assert.match(await code.getByRole('link', { name: 'View implementation on GitHub' }).getAttribute('href'), new RegExp(`/${framework}/Splitter\\.`))
   }
+  // Check actual control geometry, not only theme tokens or canvas chrome.
+  for (const framework of ['react', 'vue', 'solid', 'svelte']) {
+    await manager.goto(`${origin}/?path=/story/ready-switch--${framework}`)
+    await canvas.locator('[data-ready-story="Switch"][data-status="ready"]').waitFor()
+    const sw = canvas.locator('[data-scope="switch"][data-part="control"]')
+    if (await theme.getAttribute('data-rd-theme') !== 'shadcn') {
+      await manager.getByRole('button', { name: /Destyler Ready theme/ }).click()
+      await manager.getByText('Shadcn', { exact: true }).click()
+      await canvas.locator('html[data-rd-theme="shadcn"]').waitFor()
+    }
+    const geometry = await sw.evaluate(node => {
+      const style = getComputedStyle(node)
+      return { width: parseFloat(style.width), height: parseFloat(style.height) }
+    })
+    assert.equal(geometry.width, 32, `${framework}: actual Shadcn switch width`)
+    assert.ok(Math.abs(geometry.height - 18.4) < 0.1, `${framework}: actual Shadcn switch height`)
+    await manager.getByRole('button', { name: /Destyler Ready theme Shadcn/ }).click()
+    await manager.getByText('Default', { exact: true }).click()
+    await canvas.locator('html[data-rd-theme="default"]').waitFor()
+    assert.equal(await sw.evaluate(node => parseFloat(getComputedStyle(node).width)), 42)
+    await manager.getByRole('button', { name: /Destyler Ready theme Default/ }).click()
+    await manager.getByText('Shadcn', { exact: true }).click()
+    await canvas.locator('html[data-rd-theme="shadcn"]').waitFor()
+    assert.equal(await sw.evaluate(node => parseFloat(getComputedStyle(node).width)), 32)
+  }
   assert.deepEqual(errors, [], 'Unexpected uncaught errors in the source/preview stories')
   console.log('Storybook source: framework-native examples, GitHub links, exact clipboard, theme switch, and live story state passed.')
 } finally {

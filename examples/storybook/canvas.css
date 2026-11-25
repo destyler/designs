@@ -1,8 +1,9 @@
-/* Preview iframe only. No Preflight and no automatic utility scanning:
-   these utilities style our local chrome, not the Ready parts or manager. */
+/* Preview iframe only. No Preflight or automatic utility scanning.
+   Explicit Tailwind recipes style both Ready parts and local canvas chrome. */
 @layer theme, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./shadcn-components.css";
 
 @theme inline {
   --color-story-surface: var(--rd-surface);
