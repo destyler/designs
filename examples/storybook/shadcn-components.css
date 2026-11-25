@@ -331,3 +331,24 @@ html[data-rd-theme="shadcn"] .rd-qr-code [data-part="frame"] {
 html[data-rd-theme="shadcn"] [data-scope="aspect-ratio"][data-part="root"] {
   @apply overflow-hidden rounded-lg bg-ready-muted;
 }
+
+/* Retain the native high-contrast affordance despite the more specific
+   Shadcn theme selectors. System colors, not light-theme palette values. */
+@media (forced-colors: active) {
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"] {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    background: Highlight;
+  }
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="root"]:has(input:focus-visible) [data-part="control"] {
+    outline-color: Highlight;
+  }
+  html[data-rd-theme="shadcn"] .rd-slider [data-scope="slider"][data-part="thumb"] {
+    border-color: ButtonText;
+  }
+  html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="resize-trigger"]::after {
+    border-color: ButtonText;
+  }
+}

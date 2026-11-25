@@ -130,6 +130,30 @@ try {
     await manager.getByText('Shadcn', { exact: true }).click()
     await canvas.locator('html[data-rd-theme="shadcn"]').waitFor()
     assert.equal(await sw.evaluate(node => parseFloat(getComputedStyle(node).width)), 32)
+    await manager.emulateMedia({ forcedColors: 'active' })
+    const input = canvas.locator('[data-scope="switch"][data-part="root"] input')
+    const thumb = canvas.locator('[data-scope="switch"][data-part="thumb"]')
+    const systemColor = keyword => thumb.evaluate((node, color) => {
+      const probe = node.ownerDocument.createElement('span')
+      probe.style.forcedColorAdjust = 'none'
+      probe.style.backgroundColor = color
+      node.ownerDocument.body.append(probe)
+      const value = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      return value
+    }, keyword)
+    assert.equal(await thumb.getAttribute('data-state'), 'unchecked')
+    assert.equal(await thumb.evaluate(node => getComputedStyle(node).backgroundColor), await systemColor('CanvasText'))
+    await input.focus()
+    await manager.keyboard.press('Space')
+    await canvas.locator('[data-scope="switch"][data-part="thumb"][data-state="checked"]').waitFor()
+    assert.equal(await thumb.evaluate(node => getComputedStyle(node).backgroundColor), await systemColor('Highlight'))
+    assert.ok(await input.evaluate(node => node.matches(':focus-visible')))
+    assert.equal(await sw.evaluate(node => getComputedStyle(node).outlineColor), await systemColor('Highlight'))
+    await manager.keyboard.press('Space')
+    await canvas.locator('[data-scope="switch"][data-part="thumb"][data-state="unchecked"]').waitFor()
+    assert.equal(await thumb.evaluate(node => getComputedStyle(node).backgroundColor), await systemColor('CanvasText'))
+    await manager.emulateMedia({ forcedColors: 'none' })
   }
   assert.deepEqual(errors, [], 'Unexpected uncaught errors in the source/preview stories')
   console.log('Storybook source: framework-native examples, GitHub links, exact clipboard, theme switch, and live story state passed.')
