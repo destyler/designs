@@ -149,7 +149,18 @@ try {
     await canvas.locator('[data-scope="switch"][data-part="thumb"][data-state="checked"]').waitFor()
     assert.equal(await thumb.evaluate(node => getComputedStyle(node).backgroundColor), await systemColor('Highlight'))
     assert.ok(await input.evaluate(node => node.matches(':focus-visible')))
-    assert.equal(await sw.evaluate(node => getComputedStyle(node).outlineColor), await systemColor('Highlight'))
+    const focus = await sw.evaluate(async node => {
+      const animations = node.getAnimations()
+      await Promise.allSettled(animations.map(animation => animation.finished))
+      const style = getComputedStyle(node)
+      return { color: style.outlineColor, width: style.outlineWidth, style: style.outlineStyle,
+        offset: style.outlineOffset, transition: style.transitionProperty, animations: animations.length }
+    })
+    assert.equal(focus.transition, 'none', JSON.stringify(focus))
+    assert.equal(focus.color, await systemColor('Highlight'), JSON.stringify(focus))
+    assert.equal(focus.width, '3px', JSON.stringify(focus))
+    assert.equal(focus.style, 'solid', JSON.stringify(focus))
+    assert.equal(focus.offset, '3px', JSON.stringify(focus))
     await manager.keyboard.press('Space')
     await canvas.locator('[data-scope="switch"][data-part="thumb"][data-state="unchecked"]').waitFor()
     assert.equal(await thumb.evaluate(node => getComputedStyle(node).backgroundColor), await systemColor('CanvasText'))

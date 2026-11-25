@@ -335,6 +335,11 @@ html[data-rd-theme="shadcn"] [data-scope="aspect-ratio"][data-part="root"] {
 /* Retain the native high-contrast affordance despite the more specific
    Shadcn theme selectors. System colors, not light-theme palette values. */
 @media (forced-colors: active) {
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="control"] {
+    /* Never interpolate a system focus color: Chromium can force an
+       intermediate color to CanvasText during keyboard focus changes. */
+    transition-property: none;
+  }
   html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"] {
     forced-color-adjust: none;
     background: CanvasText;
