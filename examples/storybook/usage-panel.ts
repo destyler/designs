@@ -24,7 +24,7 @@ export function usagePanel(name: string, framework: Framework, demo: Demo) {
 
   const help = document.createElement('p')
   help.className = 'story-source-note'
-  help.textContent = `${framework} usage example · ${filenames[framework]}. The code imports Ready's base styles; the Shadcn theme is optional.`
+  help.textContent = `${framework} usage example · ${filenames[framework]}. This code imports Ready's base styles. For the appearance shown in Shadcn, download the compiled CSS, import it after the base styles, and set data-rd-theme=“shadcn” on the document element. No Tailwind installation needed for the compiled CSS.`
 
   const header = document.createElement('div')
   header.className = 'story-source-actions'
@@ -35,14 +35,19 @@ export function usagePanel(name: string, framework: Framework, demo: Demo) {
   link.textContent = 'View implementation on GitHub'
 
   const themeLink = document.createElement('a')
-  themeLink.href = 'https://github.com/destyler/designs/blob/feat/ready-storybook/examples/storybook/shadcn-theme.css'
-  themeLink.target = '_blank'
-  themeLink.rel = 'noopener noreferrer'
-  themeLink.textContent = 'View Shadcn theme CSS'
+  themeLink.href = './styles/shadcn-ready.css'
+  themeLink.download = 'shadcn-ready.css'
+  themeLink.textContent = 'Download Shadcn CSS'
+
+  const quickstart = document.createElement('a')
+  quickstart.href = 'https://github.com/destyler/designs/blob/fadc289d06031827dba90bda2a1a4f20694e52f4/docs/ready-quickstart.md'
+  quickstart.target = '_blank'
+  quickstart.rel = 'noopener noreferrer'
+  quickstart.textContent = 'Install Ready'
 
   const links = document.createElement('div')
   links.className = 'story-source-links'
-  links.append(link, themeLink)
+  links.append(link, quickstart, themeLink)
 
   const copy = document.createElement('button')
   copy.type = 'button'

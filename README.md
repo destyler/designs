@@ -119,9 +119,12 @@ see and copy the example for the selected framework and component. The panel
 shows consumer usage, not the Storybook adapter. Its GitHub link opens the
 actual Ready implementation. The example imports use the [private Ready
 prototype tarball](packages/ready/README.md), not a public npm release. To
-reproduce the Shadcn look, load the [optional theme overrides](examples/storybook/shadcn-theme.css)
-after the base stylesheet and apply `data-rd-theme="shadcn"` to the document
-element. Those overrides are not bundled in Ready.
+reproduce the Shadcn look, use **Download Shadcn CSS** in Usage code.
+Import that exact build’s compiled `shadcn-ready.css` after the Ready base stylesheet
+and apply `data-rd-theme="shadcn"` to the document element. No consumer Tailwind
+installation is needed for this asset; it contains both tokens and actual component
+recipes, but not the Storybook chrome. To modify the styles, see the [Tailwind entry](examples/storybook/shadcn-ready.css).
+These styles are not bundled in Ready.
 
 ```sh
 npm run build:storybook      # produces artifacts/storybook/

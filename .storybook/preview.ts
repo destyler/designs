@@ -1,6 +1,5 @@
 import type { Preview } from '@storybook/html-vite'
 import '../packages/ready/theme.css'
-import '../examples/storybook/shadcn-theme.css'
 import '../examples/storybook/canvas.css'
 
 const preview: Preview = {

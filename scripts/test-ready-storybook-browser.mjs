@@ -50,6 +50,8 @@ const verifiers = {
   async Checkbox(page, host) {
     const label = { name: 'Email me product updates', exact: true }
     const checkbox = host.getByRole('checkbox', label)
+    const control = host.locator('[data-scope="checkbox"][data-part="control"]')
+    assert.equal(await control.evaluate(node => getComputedStyle(node).width), '16px')
     await host.getByRole('checkbox', { ...label, checked: false }).waitFor({ state: 'attached' })
     await checkbox.focus()
     assert.ok(await active(checkbox), 'Checkbox has keyboard focus')
@@ -72,6 +74,21 @@ const verifiers = {
     const selected = host.locator('[data-part="table-cell-trigger"][data-selected]').first()
     const day = number => host.locator('[data-part="table-cell-trigger"]').filter({ hasText: new RegExp(`^${number}$`) }).first()
     assert.equal(await selected.innerText(), '15')
+    const colors = node => node.evaluate(element => {
+      const style = getComputedStyle(element)
+      return [style.backgroundColor, style.color]
+    })
+    await page.mouse.move(0, 0)
+    const selectedColors = await colors(selected)
+    assert.notEqual(selectedColors[0], selectedColors[1])
+    await selected.hover()
+    assert.deepEqual(await colors(selected), selectedColors, 'Selected date retains its colors on hover')
+    const disabled = day(16)
+    await page.mouse.move(0, 0)
+    const disabledColors = await colors(disabled)
+    await disabled.hover({ force: true })
+    assert.deepEqual(await colors(disabled), disabledColors, 'Disabled date retains its colors on hover')
+    await page.mouse.move(0, 0)
     await selected.focus()
     await page.keyboard.press('ArrowLeft')
     await day(14).and(host.locator(':focus')).waitFor()
@@ -85,6 +102,7 @@ const verifiers = {
     await trigger.click()
     const dialog = page.getByRole('dialog', { name: 'Workspace settings', exact: true })
     await dialog.waitFor()
+    assert.equal(await dialog.evaluate(node => getComputedStyle(node).paddingTop), '24px')
     await dialog.getByText('Only workspace owners can change these settings.', { exact: true }).waitFor()
     await page.keyboard.press('Escape')
     await dialog.waitFor({ state: 'hidden' })
@@ -101,6 +119,7 @@ const verifiers = {
     await host.getByText('Files and folders', { exact: true }).waitFor()
     await host.getByText('Selected file details', { exact: true }).waitFor()
     await host.locator('[data-scope="splitter"][data-part="resize-trigger"]').waitFor()
+    assert.equal(await host.locator('[data-scope="splitter"][data-part="panel"]').first().evaluate(node => getComputedStyle(node).paddingTop), '16px')
   },
 }
 

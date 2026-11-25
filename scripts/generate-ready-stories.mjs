@@ -1,6 +1,7 @@
-import { mkdir, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
+import { compile } from '@tailwindcss/node'
 import { catalog } from '../examples/storybook/catalog.ts'
 
 const target = fileURLToPath(new URL('../examples/storybook/stories/', import.meta.url))
@@ -27,3 +28,17 @@ export const Svelte = nativeStory('${name}', 'Svelte', catalog.${name})
 for (const filename of await readdir(target)) {
   if (/^[A-Za-z]+\.stories\.ts$/.test(filename) && !expected.has(filename)) await rm(join(target, filename))
 }
+
+// The exact same Tailwind entry styles Storybook and generates a downloadable
+// consumer stylesheet. Do not rely on a mutable GitHub branch or expose raw @apply.
+const entry = fileURLToPath(new URL('../examples/storybook/shadcn-ready.css', import.meta.url))
+const output = fileURLToPath(new URL('../artifacts/storybook-style/shadcn-ready.css', import.meta.url))
+const compiled = await compile(await readFile(entry, 'utf8'), {
+  base: dirname(entry), onDependency: () => {},
+})
+const css = compiled.build([])
+if (!css.includes('data-scope="switch"') || css.includes('@apply')) {
+  throw new Error('Shadcn consumer stylesheet is incomplete')
+}
+await mkdir(dirname(output), { recursive: true })
+await writeFile(output, css)

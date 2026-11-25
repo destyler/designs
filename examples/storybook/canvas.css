@@ -1,13 +1,9 @@
 /* Preview iframe only. No Preflight or automatic utility scanning.
    Explicit Tailwind recipes style both Ready parts and local canvas chrome. */
-@layer theme, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities) source(none);
-@import "./shadcn-components.css";
+@import "./shadcn-ready.css";
 
 @theme inline {
   --color-story-surface: var(--rd-surface);
-  --color-story-border: var(--story-hairline, var(--rd-border));
   --color-story-text: var(--rd-text);
   --color-story-muted: var(--rd-muted);
   --color-story-accent: var(--rd-accent);

@@ -1,5 +1,4 @@
-/* Optional Ready theme. Load after @destyler/ready-prototype/theme.css
-   and set data-rd-theme="shadcn" on the document element for overlays. */
+/* Token input for shadcn-ready.css; not a complete component theme by itself. */
 /* Map the repo's pinned shadcn Zinc palette (vendor/shadcn/zinc.css, MIT)
    to Ready's semantic colors. Keep actual control borders and focus cues
    darker than the decorative Zinc card border. */

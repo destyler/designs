@@ -3,6 +3,7 @@
    only override the Shadcn canvas, and leave the native primitive layout,
    events, visibility, and alternative themes intact. */
 @theme inline {
+  --color-story-border: var(--story-hairline, var(--rd-border));
   --color-ready-primary: var(--rd-accent);
   --color-ready-primary-foreground: var(--rd-on-accent);
   --color-ready-background: var(--rd-surface);
@@ -301,7 +302,10 @@ html[data-rd-theme="shadcn"] .rd-calendar {
   @apply rounded-lg border-story-border p-3 text-sm;
 }
 html[data-rd-theme="shadcn"] .rd-calendar [data-scope="calendar"]:is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]) {
-  @apply min-h-8 min-w-0 rounded-md text-sm hover:bg-ready-muted;
+  @apply min-h-8 min-w-0 rounded-md text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-calendar [data-scope="calendar"]:is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):not([data-selected]):not([data-disabled]):not(:disabled):hover {
+  @apply bg-ready-muted;
 }
 html[data-rd-theme="shadcn"] .rd-calendar [data-part="table-cell-trigger"][data-selected] {
   @apply bg-ready-primary text-ready-primary-foreground;
@@ -324,6 +328,6 @@ html[data-rd-theme="shadcn"] .rd-timer [data-part="area"] {
 html[data-rd-theme="shadcn"] .rd-qr-code [data-part="frame"] {
   @apply rounded-md border border-story-border p-2;
 }
-html[data-rd-theme="shadcn"] destyler-ready-story [data-scope="aspect-ratio"][data-part="root"] {
+html[data-rd-theme="shadcn"] [data-scope="aspect-ratio"][data-part="root"] {
   @apply overflow-hidden rounded-lg bg-ready-muted;
 }

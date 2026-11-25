@@ -12,6 +12,7 @@ const solidSources = /(?:\/packages\/ready\/solid\/|\/examples\/storybook\/frame
 const config: StorybookConfig = {
   framework: { name: '@storybook/html-vite', options: { builder: { viteConfigPath: '.storybook/vite.config.ts' } } },
   stories: ['../examples/storybook/stories/*.stories.ts'],
+  staticDirs: [{ from: '../artifacts/storybook-style', to: '/styles' }],
   async viteFinal(config) {
     // The HTML renderer houses a native component, rather than making other
     // frameworks pass through React. Keep the JSX compilers mutually exclusive.
