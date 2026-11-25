@@ -18,7 +18,7 @@ for (const name of Object.keys(catalog).sort()) {
 import { catalog } from '../catalog'
 import { nativeStory } from '../host'
 
-export default { title: ${JSON.stringify(title)} }
+export default { title: ${JSON.stringify(title)}, tags: ['autodocs'] }
 export const React = nativeStory('${name}', 'React', catalog.${name})
 export const Vue = nativeStory('${name}', 'Vue', catalog.${name})
 export const Solid = nativeStory('${name}', 'Solid', catalog.${name})

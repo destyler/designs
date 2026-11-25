@@ -65,6 +65,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "@astrojs/react": "4.4.2",
+    "@storybook/addon-docs": "10.6.8",
     "@storybook/html-vite": "10.6.8",
     "@sveltejs/vite-plugin-svelte": "6.2.4",
     "@tailwindcss/node": "4.3.4",

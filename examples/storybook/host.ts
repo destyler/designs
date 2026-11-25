@@ -1,5 +1,5 @@
 import type { Demo, Mount } from './demo-types'
-import { usagePanel } from './usage-panel'
+import { getImplementationUrl, getUsageSource } from './usage-source'
 
 export const frameworks = ['React', 'Vue', 'Solid', 'Svelte'] as const
 export type Framework = (typeof frameworks)[number]
@@ -29,7 +29,7 @@ class ReadyStory extends HTMLElement {
     this.dataset.status = 'loading'
     target.setAttribute('role', 'status')
     target.textContent = `Loading ${framework} ${name}…`
-    this.replaceChildren(target, usagePanel(name, framework, demo))
+    this.replaceChildren(target)
     void Promise.resolve().then(() => {
       const load = loaders[adapterFiles[framework]]
       if (!load) throw new Error(`Ready Storybook: missing ${framework} adapter`)
@@ -66,6 +66,18 @@ export function nativeStory(name: string, framework: Framework, demo: Demo) {
   // native state. Changing stories disconnects it; returning mounts afresh.
   let host: ReadyStory | undefined
   return {
+    parameters: {
+      docs: {
+        source: {
+          code: getUsageSource(name, framework, demo),
+          type: 'code' as const,
+          language: framework === 'React' || framework === 'Solid' ? 'tsx' : 'html',
+        },
+        description: {
+          story: `[View implementation on GitHub](${getImplementationUrl(name, framework)}). [Install Ready](https://github.com/destyler/designs/blob/fadc289d06031827dba90bda2a1a4f20694e52f4/docs/ready-quickstart.md). [Download Shadcn CSS](./styles/shadcn-ready.css), import it after the Ready base stylesheet and set \`data-rd-theme="shadcn"\` on the document element.`,
+        },
+      },
+    },
     render: () => {
       if (!host) {
         host = document.createElement(tag) as ReadyStory

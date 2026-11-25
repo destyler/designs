@@ -45,23 +45,21 @@ try {
   manager.on('pageerror', error => errors.push(error.message))
   await manager.goto(`${origin}/?path=/story/ready-checkbox--react`)
   const canvas = manager.frameLocator('#storybook-preview-iframe')
-  const code = canvas.locator('[data-ready-source]')
+  const codeTab = manager.getByRole('tab', { name: 'Code', exact: true })
+  const code = manager.locator('.docblock-source').filter({ visible: true })
   const snippet = code.locator('pre code')
-  const summary = code.getByText('Usage code', { exact: true })
   const checked = canvas.getByRole('checkbox', { name, checked: true })
   await canvas.getByRole('checkbox', { name }).focus()
   await manager.keyboard.press('Space')
   await checked.waitFor({ state: 'attached' })
-  await summary.focus()
-  await manager.keyboard.press('Enter')
+  await codeTab.click()
   await snippet.waitFor()
-  assert.match(await snippet.textContent(), /from '@destyler\/ready-prototype\/react'/)
+  assert.match(await snippet.textContent(), /from ['"]@destyler\/ready-prototype\/react['"]/)
   assert.match(await snippet.textContent(), /label="Email me product updates"/)
   assert.match(await snippet.textContent(), /name="product-updates"/)
   assert.doesNotMatch(await snippet.textContent(), /v-bind=|\{\s*\.\.\./)
-  assert.match(await code.getByRole('link', { name: 'View implementation on GitHub' }).getAttribute('href'), /\/react\/index\.tsx$/)
-  const themeAsset = code.getByRole('link', { name: 'Download Shadcn CSS' })
-  assert.equal(await themeAsset.getAttribute('download'), 'shadcn-ready.css')
+  assert.equal(await canvas.locator('[data-ready-source]').count(), 0, 'No custom source card in the canvas')
+
   const downloaded = await context.request.get(`${origin}/styles/shadcn-ready.css`)
   assert.equal(downloaded.status(), 200)
   const css = await downloaded.text()
@@ -69,11 +67,10 @@ try {
   assert.match(css, /height: 1.15rem;/)
   assert.match(css, /--rd-accent:/)
   assert.doesNotMatch(css, /@apply|destyler-ready-story/)
-  assert.match(await code.getByRole('link', { name: 'Install Ready' }).getAttribute('href'), /\/docs\/ready-quickstart\.md$/)
 
-  await code.getByRole('button', { name: 'Copy code' }).click()
-  await code.getByRole('status').getByText('Code copied.', { exact: true }).waitFor()
-  assert.equal(await snippet.evaluate(() => navigator.clipboard.readText()), await snippet.textContent())
+  await code.getByRole('button', { name: 'Copy', exact: true }).click()
+  await code.getByRole('button', { name: 'Copied!', exact: true }).waitFor()
+  assert.equal((await manager.evaluate(() => navigator.clipboard.readText())).trim(), (await snippet.textContent()).trim())
 
   const theme = canvas.locator('html')
   assert.equal(await theme.getAttribute('data-rd-theme'), 'shadcn')
@@ -83,15 +80,11 @@ try {
   await canvas.locator('html[data-rd-theme="midnight"]').waitFor()
   await checked.waitFor({ state: 'attached' })
   await snippet.waitFor()
-  await summary.click()
-  await snippet.waitFor({ state: 'hidden' })
-  await checked.waitFor({ state: 'attached' })
 
-  // The selected story changes the shown syntax, including real named slots.
-  // First use the public URL to expand Splitter from the sidebar, then switch.
+  // The native Code panel must follow the selected story and its syntax.
   await manager.goto(`${origin}/?path=/story/ready-splitter--solid`)
   await canvas.locator('[data-ready-story="Splitter"][data-framework="solid"][data-status="ready"]').waitFor()
-  await summary.click()
+  await codeTab.click()
   for (const [framework, syntax] of [
     ['solid', /first=\{/],
     ['vue', /<template #first>/],
@@ -102,15 +95,25 @@ try {
       await canvas.locator(`[data-ready-story="Splitter"][data-framework="${framework}"][data-status="ready"]`).waitFor()
     }
     await snippet.waitFor()
+    await manager.waitForFunction(framework => document.querySelector('.docblock-source pre code')?.textContent?.includes(`@destyler/ready-prototype/${framework}`), framework)
     const rendered = await snippet.textContent()
-    assert.ok(rendered.includes(`from '@destyler/ready-prototype/${framework}'`))
     assert.match(rendered, syntax)
     assert.match(rendered, /label="Files"/)
     assert.match(rendered, framework === 'vue' ? /:default-size="35"/ : /defaultSize=\{35\}/)
     assert.doesNotMatch(rendered, /v-bind=|\{\s*\.\.\./)
     await canvas.getByText('Files and folders', { exact: true }).waitFor()
-    assert.match(await code.getByRole('link', { name: 'View implementation on GitHub' }).getAttribute('href'), new RegExp(`/${framework}/Splitter\\.`))
+    assert.equal(await canvas.locator('[data-ready-source]').count(), 0)
   }
+
+  // Installation/implementation/theme links live on Storybook's native Docs
+  // page rather than a custom card inserted in the component preview.
+  await manager.goto(`${origin}/?path=/docs/ready-checkbox--docs`)
+  const docs = manager.frameLocator('#storybook-preview-iframe')
+  await docs.getByRole('link', { name: 'View implementation on GitHub' }).first().waitFor()
+  assert.match(await docs.getByRole('link', { name: 'View implementation on GitHub' }).first().getAttribute('href'), /packages\/ready\/react\/index\.tsx$/)
+  assert.match(await docs.getByRole('link', { name: 'Install Ready' }).first().getAttribute('href'), /docs\/ready-quickstart\.md$/)
+  assert.match(await docs.getByRole('link', { name: 'Download Shadcn CSS' }).first().getAttribute('href'), /styles\/shadcn-ready\.css$/)
+
   // Check actual control geometry, not only theme tokens or canvas chrome.
   for (const framework of ['react', 'vue', 'solid', 'svelte']) {
     await manager.goto(`${origin}/?path=/story/ready-switch--${framework}`)

@@ -114,12 +114,13 @@ framework's runtime. The canvas defaults to a Shadcn Zinc-inspired theme,
 compiled with Tailwind CSS v4 without Preflight. Use the **Ready theme** toolbar
 to switch to Default or Midnight, including on overlays. These Storybook styles
 do not change the Ready package or require Tailwind in consumer projects.
-Open **Usage code** below the preview to
-see and copy the example for the selected framework and component. The panel
-shows consumer usage with explicit, framework-native props (no spread or blanket binding), not the Storybook adapter. Its GitHub link opens the
-actual Ready implementation. The example imports use the [private Ready
-prototype tarball](packages/ready/README.md), not a public npm release. To
-reproduce the Shadcn look, use **Download Shadcn CSS** in Usage code.
+Open the native Storybook **Code** panel below the canvas to view and copy
+the selected framework's example, with explicit component props (no spread or
+blanket binding). The built-in **Docs** page provides the implementation,
+installation and compiled theme stylesheet links. The examples target the
+[private Ready prototype tarball](packages/ready/README.md), not a public npm
+release. To reproduce the Shadcn look, download the compiled stylesheet at `/styles/shadcn-ready.css`
+from the running Storybook.
 Import that exact build’s compiled `shadcn-ready.css` after the Ready base stylesheet
 and apply `data-rd-theme="shadcn"` to the document element. No consumer Tailwind
 installation is needed for this asset; it contains both tokens and actual component

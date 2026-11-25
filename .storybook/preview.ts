@@ -28,7 +28,15 @@ const preview: Preview = {
       return story()
     },
   ],
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    docs: {
+      codePanel: true,
+      // Each Docs example gets its own iframe: native adapters and portaled
+      // components must not share a document with other framework examples.
+      story: { inline: false },
+    },
+  },
 }
 
 export default preview
