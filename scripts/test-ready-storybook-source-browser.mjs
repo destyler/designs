@@ -47,7 +47,8 @@ try {
   const canvas = manager.frameLocator('#storybook-preview-iframe')
   const codeTab = manager.getByRole('tab', { name: 'Code', exact: true })
   const code = manager.locator('.docblock-source').filter({ visible: true })
-  const snippet = code.locator('pre code')
+  // Storybook 10's native syntax highlighter uses a div inside pre, not a code tag.
+  const snippet = code.locator('pre > div')
   const checked = canvas.getByRole('checkbox', { name, checked: true })
   await canvas.getByRole('checkbox', { name }).focus()
   await manager.keyboard.press('Space')
@@ -95,7 +96,7 @@ try {
       await canvas.locator(`[data-ready-story="Splitter"][data-framework="${framework}"][data-status="ready"]`).waitFor()
     }
     await snippet.waitFor()
-    await manager.waitForFunction(framework => document.querySelector('.docblock-source pre code')?.textContent?.includes(`@destyler/ready-prototype/${framework}`), framework)
+    await manager.waitForFunction(framework => document.querySelector('.docblock-source pre > div')?.textContent?.includes(`@destyler/ready-prototype/${framework}`), framework)
     const rendered = await snippet.textContent()
     assert.match(rendered, syntax)
     assert.match(rendered, /label="Files"/)
