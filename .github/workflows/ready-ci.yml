@@ -78,3 +78,6 @@ jobs:
       - name: Verify all four Storybook renderers
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: npm run test:storybook
+      - name: Verify Ready Calendar inside Dialog
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node scripts/test-ready-calendar-dialog-browser.mjs

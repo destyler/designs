@@ -22,7 +22,7 @@ function change({ value }: { value: { toString(): string }[] }) {
 
 <template>
   <div class="rd-component rd-calendar">
-    <Primitive.Root open selection-mode="single" :close-on-select="false" :allow-outside-days="false"
+    <Primitive.Root inline selection-mode="single" :allow-outside-days="false"
       :locale="locale ?? 'en-US'" time-zone="UTC" :min="config.min" :max="config.max"
       :model-value="valueModel" :default-value="initial" @value-change="change">
       <Primitive.Context v-slot="calendar">

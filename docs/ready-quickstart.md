@@ -48,10 +48,10 @@ The generated manifest pins the versions from the repository manifest:
 
 | Framework | Runtime/UI peer | Compiler and types |
 | --- | --- | --- |
-| React | react + react-dom 19.2.0; @destyler-ui/react 0.0.5 | @vitejs/plugin-react 5.0.4; @types/react + @types/react-dom 19.2.2 |
-| Vue | vue 3.5.22; @destyler-ui/vue 0.0.5 | @vitejs/plugin-vue 6.0.1; vue-tsc 3.1.1 |
-| Solid | solid-js 1.9.17; @destyler-ui/solid 0.0.5 | vite-plugin-solid 2.11.14 |
-| Svelte | svelte 5.57.2; @destyler-ui/svelte 0.0.5 | @sveltejs/vite-plugin-svelte 6.2.4; svelte-check 4.7.8 |
+| React | react + react-dom 19.2.0; @destyler-ui/react 0.0.6 | @vitejs/plugin-react 5.0.4; @types/react + @types/react-dom 19.2.2 |
+| Vue | vue 3.5.22; @destyler-ui/vue 0.0.6 | @vitejs/plugin-vue 6.0.1; vue-tsc 3.1.1 |
+| Solid | solid-js 1.9.17; @destyler-ui/solid 0.0.6 | vite-plugin-solid 2.11.14 |
+| Svelte | svelte 5.57.2; @destyler-ui/svelte 0.0.6 | @sveltejs/vite-plugin-svelte 6.2.4; svelte-check 4.7.8 |
 
 Each uses Vite 7.1.12 and TypeScript 5.9.3. Only the chosen framework's peers are
 requested. These are tested versions, not a promise that every version or bundler

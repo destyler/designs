@@ -10,7 +10,7 @@
 </script>
 
 <div class="rd-component rd-calendar">
-  <Primitive.Root open selectionMode="single" closeOnSelect={false} allowOutsideDays={false}
+  <Primitive.Root inline selectionMode="single" allowOutsideDays={false}
     {locale} timeZone="UTC" min={config.min} max={config.max}
     value={value === undefined ? undefined : value === null ? [] : [calendarDate(parseIsoDate, value)]}
     defaultValue={value === undefined && defaultValue != null ? [calendarDate(parseIsoDate, defaultValue)] : undefined}

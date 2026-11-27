@@ -15,7 +15,7 @@ const mount = {
   svelte: "import {mount} from 'svelte';import Fixture from './Fixture.svelte';mount(Fixture,{target:document.getElementById('app')})",
 }
 
-export async function runReadyFixture(root, framework, fixture, worker) {
+export async function runReadyFixture(root, framework, fixture, worker, { define, timeout = 30_000 } = {}) {
   const dir = await mkdtemp(join(root, 'node_modules/.ready-fixture-'))
   try {
     const inline = !mount[framework]
@@ -23,10 +23,10 @@ export async function runReadyFixture(root, framework, fixture, worker) {
     if (!inline) await writeFile(join(dir, `Fixture.${framework}`), fixture)
     await writeFile(entry, inline ? fixture : mount[framework])
     const { build } = await import('vite')
-    await build({ root, configFile: false, logLevel: 'error', plugins: [await plugins[framework]()], build: {
+    await build({ root, configFile: false, define, logLevel: 'error', plugins: [await plugins[framework]()], build: {
       outDir: join(dir, 'out'), lib: { entry, formats: ['es'], fileName: () => 'fixture.mjs' },
     } })
-    execFileSync(process.execPath, [worker, '--ready-fixture', join(dir, 'out/fixture.mjs')], { cwd: root, timeout: 30_000, stdio: 'inherit' })
+    execFileSync(process.execPath, [worker, '--ready-fixture', join(dir, 'out/fixture.mjs')], { cwd: root, timeout, stdio: 'inherit' })
   } finally {
     await rm(dir, { recursive: true, force: true })
   }
