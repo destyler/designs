@@ -35,7 +35,6 @@ export function calendarConstraints<T extends { toString(): string }>(parse: (da
 // The locked grid handles Enter using its focused date, but not a cell’s
 // explicit disabled flag. Block that activation at capture before the table.
 const triggerSelector = 'button[data-scope="calendar"][data-part="table-cell-trigger"]'
-const rovingKeys = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'])
 
 export function handleCalendarGridKey(event: Pick<KeyboardEvent, 'key' | 'target' | 'currentTarget' | 'preventDefault' | 'stopPropagation'>, focusBlocked: boolean) {
   if (!(event.target instanceof Element)) return
@@ -45,16 +44,5 @@ export function handleCalendarGridKey(event: Pick<KeyboardEvent, 'key' | 'target
     (focusBlocked || cell.getAttribute('aria-disabled') === 'true')) {
     event.preventDefault()
     event.stopPropagation()
-  } else if (rovingKeys.has(event.key) && event.currentTarget instanceof Element) {
-    // An inline grid deliberately has no overlay Content/Positioner, so the
-    // core cannot look up its focused cell. Move DOM focus to the next
-    // primitive's roving target after its keyboard state has rendered.
-    const grid = event.currentTarget
-    const doc = cell.ownerDocument
-    if (doc.activeElement !== cell) return
-    doc.defaultView?.requestAnimationFrame(() => {
-      if (!grid.isConnected || (doc.activeElement !== cell && (cell.isConnected || doc.activeElement !== doc.body))) return
-      grid.querySelector<HTMLButtonElement>(triggerSelector + '[tabindex="0"]')?.focus()
-    })
   }
 }

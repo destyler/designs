@@ -150,10 +150,10 @@ trial: a fresh-cache `npm ci` fails with ENOENT after its archive disappears.
 This reinstall flow is tested with npm, not pnpm.
 
 Install only the matching runtime and UI peer:
-- React: `react`, `react-dom`, `@destyler-ui/react@0.0.5`, with `@vitejs/plugin-react`.
-- Vue: `vue`, `@destyler-ui/vue@0.0.5`, with `@vitejs/plugin-vue`.
-- Solid: `solid-js`, `@destyler-ui/solid@0.0.5`, with `vite-plugin-solid`.
-- Svelte: `svelte`, `@destyler-ui/svelte@0.0.5`, with `@sveltejs/vite-plugin-svelte`.
+- React: `react`, `react-dom`, `@destyler-ui/react@0.0.6`, with `@vitejs/plugin-react`.
+- Vue: `vue`, `@destyler-ui/vue@0.0.6`, with `@vitejs/plugin-vue`.
+- Solid: `solid-js`, `@destyler-ui/solid@0.0.6`, with `vite-plugin-solid`.
+- Svelte: `svelte`, `@destyler-ui/svelte@0.0.6`, with `@sveltejs/vite-plugin-svelte`.
 
 All framework peers are optional at package level so choosing React does not
 install Vue, Solid and Svelte. The selected subpath still requires its own listed

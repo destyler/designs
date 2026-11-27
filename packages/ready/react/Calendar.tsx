@@ -9,7 +9,7 @@ const parseIsoDate = (iso: string) => parseDate(iso)
 export function Calendar({ value, defaultValue, locale = 'en-US', onValueChange, ...props }: CalendarProps) {
   const config = calendarConstraints(parseIsoDate, props)
   return <div className="rd-component rd-calendar">
-    <Primitive.Root open selectionMode="single" closeOnSelect={false} allowOutsideDays={false}
+    <Primitive.Root inline selectionMode="single" allowOutsideDays={false}
       locale={locale} timeZone="UTC" min={config.min} max={config.max}
       value={value === undefined ? undefined : value === null ? [] : [calendarDate(parseIsoDate, value)]}
       defaultValue={value === undefined && defaultValue != null ? [calendarDate(parseIsoDate, defaultValue)] : undefined}

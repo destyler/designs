@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "./*.ts",
+    "../examples/storybook/*.ts",
+    "../examples/storybook/stories/*.ts",
+    "../examples/storybook/frameworks/react.tsx",
+    "../examples/storybook/frameworks/vue.ts"
+  ]
+}

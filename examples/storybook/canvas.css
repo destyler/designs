@@ -1,0 +1,30 @@
+/* Preview iframe only. No Preflight or automatic utility scanning.
+   Explicit Tailwind recipes style both Ready parts and local canvas chrome. */
+@import "./shadcn-ready.css";
+
+@theme inline {
+  --color-story-surface: var(--rd-surface);
+  --color-story-text: var(--rd-text);
+  --radius-story: var(--rd-radius);
+}
+
+destyler-ready-story {
+  @apply block;
+  width: min(30rem, calc(100vw - 3rem));
+}
+destyler-ready-story[data-wide] { width: min(44rem, calc(100vw - 3rem)); }
+
+destyler-ready-story > div:first-child {
+  @apply min-w-0;
+}
+html[data-rd-theme="shadcn"] destyler-ready-story > div:first-child {
+  @apply rounded-story border border-solid border-story-border bg-story-surface px-4 py-5 shadow-xs sm:px-6 sm:py-6;
+}
+
+destyler-ready-story .story-input {
+  @apply mt-2 block rounded-story border border-solid bg-story-surface p-2 text-story-text;
+  width: min(100%, 18rem);
+  border-color: var(--rd-border);
+  font: inherit;
+}
+destyler-ready-story .story-action { @apply mt-4; }

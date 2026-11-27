@@ -1,0 +1,359 @@
+/* Storybook's Shadcn component recipes. Compiled by Tailwind v4.
+   Unlayered on purpose: Ready's base CSS is unlayered. These selectors
+   only override the Shadcn canvas, and leave the native primitive layout,
+   events, visibility, and alternative themes intact. */
+@theme inline {
+  --color-story-border: var(--story-hairline, var(--rd-border));
+  --color-ready-primary: var(--rd-accent);
+  --color-ready-primary-foreground: var(--rd-on-accent);
+  --color-ready-background: var(--rd-surface);
+  --color-ready-foreground: var(--rd-text);
+  --color-ready-input: var(--story-control-border, var(--rd-border));
+  --color-ready-switch-off: var(--rd-border);
+  --color-ready-muted: var(--story-code-bg);
+  --color-ready-muted-foreground: var(--rd-muted);
+  --color-ready-ring: var(--rd-muted);
+}
+
+html[data-rd-theme="shadcn"] .rd-component .rd-button {
+  @apply inline-flex h-9 min-h-9 items-center justify-center gap-2 rounded-md border border-transparent bg-ready-primary px-4 py-2 text-sm font-medium text-ready-primary-foreground shadow-xs transition-colors hover:bg-ready-primary/90 disabled:opacity-50;
+}
+html[data-rd-theme="shadcn"] .rd-component :is(.rd-button, [data-part="trigger"], [data-part="close-trigger"]):focus-visible {
+  @apply outline-2 outline-offset-2 outline-ready-ring;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="root"] {
+  @apply min-h-9 gap-3;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="control"] {
+  @apply inline-flex h-[1.15rem] w-8 shrink-0 items-center justify-start rounded-full border border-transparent bg-ready-switch-off p-0 shadow-xs transition-colors;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="control"][data-state="checked"] {
+  @apply justify-end bg-ready-primary;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"] {
+  @apply pointer-events-none block size-4 shrink-0 rounded-full bg-ready-background;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="label"],
+html[data-rd-theme="shadcn"] .rd-component [data-scope="checkbox"][data-part="label"],
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="label"] {
+  @apply text-sm font-medium leading-none;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="checkbox"][data-part="control"] {
+  @apply grid size-4 shrink-0 place-items-center rounded-[4px] border border-ready-input bg-ready-background text-xs shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="checkbox"][data-part="control"][data-state="checked"] {
+  @apply border-ready-primary bg-ready-primary text-ready-primary-foreground;
+}
+
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="trigger"] {
+  @apply h-9 min-h-9 items-center rounded-md border border-ready-input bg-ready-background px-3 py-2 text-sm font-normal shadow-xs transition-colors;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="trigger"][data-placeholder-shown] {
+  @apply text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="indicator"] {
+  @apply shrink-0 text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="content"] {
+  @apply rounded-md border border-story-border bg-ready-background p-1 text-sm shadow-md;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="item"] {
+  @apply items-center rounded-sm px-2 py-1.5 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="select"][data-part="item"][data-highlighted] {
+  @apply bg-ready-muted text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="dialog"][data-part="content"] {
+  @apply grid w-full max-w-lg gap-4 rounded-lg border border-story-border bg-ready-background p-6 shadow-lg;
+  /* Preserve Ready's fixed, centered Positioner rather than adding
+     shadcn's portal-specific translate and absolute coordinates. */
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="dialog"][data-part="title"] {
+  @apply m-0 text-lg font-semibold leading-none;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="dialog"][data-part="description"] {
+  @apply m-0 text-sm leading-5 text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component .rd-dialog-body {
+  @apply py-0 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="dialog"][data-part="close-trigger"] {
+  @apply justify-self-end border-ready-input bg-ready-background text-ready-foreground hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="tabs"][data-part="list"] {
+  @apply w-fit gap-0 rounded-lg bg-ready-muted p-[3px] text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="tabs"][data-part="trigger"] {
+  @apply min-h-7 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-medium text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="tabs"][data-part="trigger"][data-selected] {
+  @apply bg-ready-background text-ready-foreground shadow-sm;
+}
+html[data-rd-theme="shadcn"] .rd-splitter {
+  @apply rounded-lg border border-story-border;
+}
+html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="panel"] {
+  @apply p-4 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="resize-trigger"] {
+  @apply relative text-ready-input;
+}
+html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="resize-trigger"]::after {
+  @apply absolute h-4 w-3 rounded-sm border border-ready-input bg-ready-background;
+  content: "";
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="resize-trigger"][data-orientation="vertical"]::after {
+  @apply h-3 w-4;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-rd-theme="shadcn"] .rd-component :is(.rd-button, [data-part="control"], [data-part="thumb"], [data-part="trigger"]) {
+    transition-duration: 0s;
+  }
+}
+
+/* Inputs and form primitives: Ready preserves its native hidden form controls. */
+html[data-rd-theme="shadcn"] .rd-field > [data-part="input"],
+html[data-rd-theme="shadcn"] .rd-component [data-scope="number-input"][data-part="input"],
+html[data-rd-theme="shadcn"] .rd-clipboard [data-rd-copy-value],
+html[data-rd-theme="shadcn"] .rd-edit [data-part="input"],
+html[data-rd-theme="shadcn"] .rd-color-picker .rd-color-hex {
+  @apply min-h-9 rounded-md border border-ready-input bg-ready-background px-3 py-1 text-sm shadow-xs;
+}
+html[data-rd-theme="shadcn"] :is(.rd-field,.rd-radio-group,.rd-file-upload,.rd-dynamic,.rd-edit,.rd-signature) [data-part="label"],
+html[data-rd-theme="shadcn"] .rd-component [data-scope="number-input"][data-part="label"],
+html[data-rd-theme="shadcn"] .rd-component[data-scope="label"][data-part="root"],
+html[data-rd-theme="shadcn"] .rd-otp-label {
+  @apply text-sm font-medium leading-none;
+}
+html[data-rd-theme="shadcn"] .rd-component :is(.rd-description,.rd-empty) {
+  @apply text-sm leading-5 text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component[data-scope="fieldset"][data-part="root"] {
+  @apply rounded-lg border border-story-border p-4;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="fieldset"][data-part="legend"] {
+  @apply px-1 text-sm font-semibold;
+}
+html[data-rd-theme="shadcn"] .rd-radio-group [data-part="item-control"] {
+  @apply size-4 rounded-full border border-ready-input bg-ready-background shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-radio-group [data-part="item-control"][data-state="checked"]::before {
+  @apply size-2 bg-ready-primary;
+}
+html[data-rd-theme="shadcn"] .rd-radio-group [data-part="item-text"] {
+  @apply text-sm font-medium;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="otp-input"][data-part="input"] {
+  @apply h-10 min-h-10 w-10 rounded-md border-ready-input text-sm shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="number-input"]:is([data-part="increment-trigger"],[data-part="decrement-trigger"]),
+html[data-rd-theme="shadcn"] .rd-edit :is([data-part="edit-trigger"],[data-part="cancel-trigger"]),
+html[data-rd-theme="shadcn"] .rd-tour :is([data-part="close-trigger"],[data-part="action-trigger"]),
+html[data-rd-theme="shadcn"] .rd-signature [data-part="clear-trigger"],
+html[data-rd-theme="shadcn"] .rd-file-upload [data-part="item-delete-trigger"] {
+  @apply min-h-9 rounded-md border border-ready-input bg-ready-background px-3 text-sm font-medium shadow-xs hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-edit [data-part="submit-trigger"],
+html[data-rd-theme="shadcn"] .rd-file-upload [data-part="trigger"],
+html[data-rd-theme="shadcn"] .rd-tour [data-part="action-trigger"]:is([data-type="next"],[data-type="custom"]) {
+  @apply min-h-9 rounded-md border-transparent bg-ready-primary px-4 py-2 text-sm font-medium text-ready-primary-foreground shadow-xs hover:bg-ready-primary/90;
+}
+html[data-rd-theme="shadcn"] .rd-file-upload [data-part="item"] {
+  @apply rounded-md border border-story-border px-3 py-2 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-color-picker [data-part="swatch-trigger"] {
+  @apply size-7 rounded-md shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-dynamic [data-part="control"] {
+  @apply rounded-md border-ready-input bg-ready-background p-1.5 shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-dynamic [data-part="item-preview"] {
+  @apply rounded-sm bg-ready-muted px-2 py-1 text-xs;
+}
+html[data-rd-theme="shadcn"] .rd-dynamic :is(.rd-dynamic-add,[data-part="clear-trigger"],[data-part="item-delete-trigger"]) {
+  @apply rounded-md text-sm font-medium;
+}
+html[data-rd-theme="shadcn"] .rd-signature [data-part="control"] {
+  @apply rounded-lg border-ready-input shadow-xs;
+}
+
+/* Menus, popups and feedback: retain the primitive's own positioning and visibility. */
+html[data-rd-theme="shadcn"] .rd-combobox [data-scope="combobox"][data-part="control"] {
+  @apply gap-1;
+}
+html[data-rd-theme="shadcn"] .rd-combobox [data-scope="combobox"]:is([data-part="input"],[data-part="trigger"],[data-part="clear-trigger"]) {
+  @apply min-h-9 rounded-md border-ready-input bg-ready-background px-3 py-1 text-sm shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-combobox [data-scope="combobox"][data-part="content"],
+html[data-rd-theme="shadcn"] .rd-menu [data-part="content"] {
+  @apply rounded-md border-story-border bg-ready-background p-1 text-sm shadow-md;
+}
+html[data-rd-theme="shadcn"] .rd-combobox [data-scope="combobox"][data-part="item"],
+html[data-rd-theme="shadcn"] .rd-menu [data-part="item"] {
+  @apply rounded-sm px-2 py-1.5 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-combobox [data-scope="combobox"][data-part="item"][data-highlighted],
+html[data-rd-theme="shadcn"] .rd-menu [data-part="item"][data-highlighted] {
+  @apply bg-ready-muted text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-menu [data-part="trigger"],
+html[data-rd-theme="shadcn"] .rd-hover-card > [data-part="trigger"],
+html[data-rd-theme="shadcn"] .rd-navigation-menu :is([data-part="trigger"], a) {
+  @apply min-h-9 rounded-md border-transparent bg-transparent px-3 py-2 text-sm font-medium text-ready-foreground hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-navigation-menu [data-part="content"],
+html[data-rd-theme="shadcn"] .rd-hover-card [data-part="content"]:not([hidden]),
+html[data-rd-theme="shadcn"] .rd-popover [data-part="content"],
+html[data-rd-theme="shadcn"] .rd-floating-panel [data-part="content"],
+html[data-rd-theme="shadcn"] .rd-tour [data-part="content"] {
+  @apply rounded-lg border-story-border bg-ready-background p-4 text-sm shadow-md;
+}
+html[data-rd-theme="shadcn"] :is(.rd-popover,.rd-floating-panel,.rd-tour) [data-part="title"] {
+  @apply text-sm font-semibold;
+}
+html[data-rd-theme="shadcn"] .rd-tooltip [data-part="content"] {
+  @apply rounded-md bg-ready-primary px-3 py-1.5 text-xs text-ready-primary-foreground shadow-sm;
+}
+html[data-rd-theme="shadcn"] .rd-toast [data-scope="toast"][data-part="root"] {
+  @apply rounded-lg border-story-border bg-ready-background p-4 text-sm shadow-lg;
+}
+html[data-rd-theme="shadcn"] .rd-toast [data-part="root"][data-type="success"] {
+  @apply border-ready-input;
+}
+html[data-rd-theme="shadcn"] .rd-toast [data-part="description"] {
+  @apply text-sm text-ready-muted-foreground;
+}
+
+/* Navigation, display and layout. */
+html[data-rd-theme="shadcn"] .rd-avatar {
+  @apply size-10 rounded-full border-0 bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-avatar > [data-part="fallback"] {
+  @apply text-sm font-medium;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="breadcrumbs"][data-part="list"] {
+  @apply gap-2 text-sm text-ready-muted-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="breadcrumbs"][data-part="link"] {
+  @apply text-ready-muted-foreground no-underline hover:text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="breadcrumbs"][data-current="page"] {
+  @apply font-normal text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-component[data-scope="separator"][data-part="root"] {
+  @apply border-story-border;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="collapse"][data-part="item"] {
+  @apply border-story-border;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="collapse"][data-part="item-trigger"] {
+  @apply min-h-12 px-0 py-4 text-sm font-medium hover:underline;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="collapse"][data-part="item-content"] {
+  @apply px-0 pb-4 pt-0 text-sm leading-6;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="collapsible"][data-part="content"] {
+  @apply pt-3 text-sm leading-6;
+}
+html[data-rd-theme="shadcn"] .rd-scroll-area {
+  @apply rounded-md border-story-border;
+}
+html[data-rd-theme="shadcn"] .rd-scroll-area > [data-part="viewport"] > [data-part="content"] {
+  @apply p-4 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-carousel [data-part="item-group"] {
+  @apply rounded-xl border-story-border;
+}
+html[data-rd-theme="shadcn"] .rd-carousel [data-part="item"] {
+  @apply p-6 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-carousel :is([data-part="prev-trigger"],[data-part="next-trigger"],[data-part="indicator"]),
+html[data-rd-theme="shadcn"] .rd-component.rd-pagination button {
+  @apply min-h-9 min-w-9 rounded-md border border-transparent bg-transparent px-2 text-sm font-medium hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-carousel [data-part="indicator"][aria-current="true"],
+html[data-rd-theme="shadcn"] .rd-component.rd-pagination [aria-current="page"] {
+  @apply border-ready-input bg-ready-background text-ready-foreground shadow-xs;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="progress"][data-part="track"] {
+  @apply h-2 rounded-full border-0 bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-slider [data-part="track"] {
+  @apply h-1.5 bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-slider [data-part="range"] {
+  @apply h-1.5;
+}
+html[data-rd-theme="shadcn"] .rd-slider [data-part="thumb"] {
+  @apply size-4 border border-ready-primary bg-ready-background shadow-sm;
+  inset-block-start: 8px;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="toggle"][data-part="root"],
+html[data-rd-theme="shadcn"] .rd-toggle-group [data-scope="toggle-group"][data-part="item"] {
+  @apply min-h-9 rounded-md border-transparent bg-transparent px-3 py-2 text-sm font-medium hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-component [data-scope="toggle"][data-part="root"][data-state="on"],
+html[data-rd-theme="shadcn"] .rd-toggle-group [data-part="item"][aria-pressed="true"] {
+  @apply border-transparent bg-ready-muted text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-calendar {
+  @apply rounded-lg border-story-border p-3 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-calendar [data-scope="calendar"]:is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]) {
+  @apply min-h-8 min-w-0 rounded-md text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-calendar [data-scope="calendar"]:is([data-part="table-cell-trigger"],[data-part="prev-trigger"],[data-part="next-trigger"]):not([data-selected]):not([data-disabled]):not(:disabled):hover {
+  @apply bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-calendar [data-part="table-cell-trigger"][data-selected] {
+  @apply bg-ready-primary text-ready-primary-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-tree [data-scope="tree"]:is([data-part="item"],[data-part="branch-control"]) {
+  @apply min-h-8 rounded-md px-2 py-1.5 text-sm hover:bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-tree [data-scope="tree"]:is([data-part="item"],[data-part="branch-control"])[data-selected] {
+  @apply bg-ready-muted text-ready-foreground;
+}
+html[data-rd-theme="shadcn"] .rd-steps-list {
+  @apply gap-3 text-sm;
+}
+html[data-rd-theme="shadcn"] .rd-steps-list > [data-current] {
+  @apply rounded-sm bg-ready-muted;
+}
+html[data-rd-theme="shadcn"] .rd-timer [data-part="area"] {
+  @apply text-3xl font-semibold tracking-tight tabular-nums;
+}
+html[data-rd-theme="shadcn"] .rd-qr-code [data-part="frame"] {
+  @apply rounded-md border border-story-border p-2;
+}
+html[data-rd-theme="shadcn"] [data-scope="aspect-ratio"][data-part="root"] {
+  @apply overflow-hidden rounded-lg bg-ready-muted;
+}
+
+/* Retain the native high-contrast affordance despite the more specific
+   Shadcn theme selectors. System colors, not light-theme palette values. */
+@media (forced-colors: active) {
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="control"] {
+    /* Never interpolate a system focus color: Chromium can force an
+       intermediate color to CanvasText during keyboard focus changes. */
+    transition-property: none;
+  }
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"] {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    background: Highlight;
+  }
+  html[data-rd-theme="shadcn"] .rd-component [data-scope="switch"][data-part="root"]:has(input:focus-visible) [data-part="control"] {
+    outline-color: Highlight;
+  }
+  html[data-rd-theme="shadcn"] .rd-slider [data-scope="slider"][data-part="thumb"] {
+    border-color: ButtonText;
+  }
+  html[data-rd-theme="shadcn"] .rd-splitter [data-scope="splitter"][data-part="resize-trigger"]::after {
+    border-color: ButtonText;
+  }
+}
