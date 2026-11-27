@@ -113,6 +113,17 @@ try {
   await docs.getByRole('link', { name: 'View implementation on GitHub' }).first().waitFor()
   assert.match(await docs.getByRole('link', { name: 'View implementation on GitHub' }).first().getAttribute('href'), /packages\/ready\/react\/index\.tsx$/)
   assert.match(await docs.getByRole('link', { name: 'Install Ready' }).first().getAttribute('href'), /docs\/ready-quickstart\.md$/)
+  const installUrl = await docs.getByRole('link', { name: 'Install Ready' }).first().getAttribute('href')
+  const revision = installUrl.match(/\/blob\/([a-f0-9]{40})\//)?.[1]
+  assert.ok(revision)
+  await manager.goto(`${origin}/?path=/docs/ready-calendar--docs`)
+  await docs.getByRole('link', { name: 'View implementation on GitHub' }).first().waitFor()
+  const implementations = await docs.getByRole('link', { name: 'View implementation on GitHub' }).evaluateAll(links => links.map(link => link.getAttribute('href')))
+  for (const [framework, ext] of [['react', 'tsx'], ['solid', 'tsx'], ['vue', 'vue'], ['svelte', 'svelte']]) {
+    assert.ok(implementations.includes(`https://github.com/destyler/designs/blob/${revision}/packages/ready/${framework}/Calendar.${ext}`), `${framework}: Calendar implementation link matches Install Ready revision`)
+  }
+  await manager.goto(`${origin}/?path=/docs/ready-checkbox--docs`)
+  await docs.getByRole('link', { name: 'Download Shadcn CSS' }).first().waitFor()
   assert.match(await docs.getByRole('link', { name: 'Download Shadcn CSS' }).first().getAttribute('href'), /styles\/shadcn-ready\.css$/)
 
   // Check actual control geometry, not only theme tokens or canvas chrome.

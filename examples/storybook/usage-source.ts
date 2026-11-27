@@ -2,7 +2,7 @@ import type { Demo } from './demo-types'
 import type { Framework } from './host'
 
 const packageName = '@destyler/ready-prototype'
-const implementationRevision = 'fadc289d06031827dba90bda2a1a4f20694e52f4'
+const implementationRevision = 'cd6b8fb858dbcacea48e7d889178844cdfb1baa3'
 const barrelComponents = new Set(['Checkbox', 'Select', 'Dialog'])
 const indent = (code: string, spaces: number) => code.split('\n').map(line => line ? ' '.repeat(spaces) + line : line).join('\n')
 const literal = (value: unknown) => JSON.stringify(value, null, 2)
@@ -10,6 +10,10 @@ const attrText = (value: string) => text(value).replace(/"/g, '&quot;')
 const vuePropName = (key: string) => key.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase())
 const text = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/{/g, '&#123;').replace(/}/g, '&#125;')
+
+export function getInstallUrl(): string {
+  return `https://github.com/destyler/designs/blob/${implementationRevision}/docs/ready-quickstart.md`
+}
 
 export function getImplementationUrl(name: string, framework: Framework): string {
   const folder = framework.toLowerCase()

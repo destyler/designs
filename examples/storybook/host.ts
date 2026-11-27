@@ -1,5 +1,5 @@
 import type { Demo, Mount } from './demo-types'
-import { getImplementationUrl, getUsageSource } from './usage-source'
+import { getImplementationUrl, getInstallUrl, getUsageSource } from './usage-source'
 
 export const frameworks = ['React', 'Vue', 'Solid', 'Svelte'] as const
 export type Framework = (typeof frameworks)[number]
@@ -74,7 +74,7 @@ export function nativeStory(name: string, framework: Framework, demo: Demo) {
           language: framework === 'React' || framework === 'Solid' ? 'tsx' : 'html',
         },
         description: {
-          story: `[View implementation on GitHub](${getImplementationUrl(name, framework)}). [Install Ready](https://github.com/destyler/designs/blob/fadc289d06031827dba90bda2a1a4f20694e52f4/docs/ready-quickstart.md). [Download Shadcn CSS](./styles/shadcn-ready.css), import it after the Ready base stylesheet and set \`data-rd-theme="shadcn"\` on the document element.`,
+          story: `[View implementation on GitHub](${getImplementationUrl(name, framework)}). [Install Ready](${getInstallUrl()}). [Download Shadcn CSS](./styles/shadcn-ready.css), import it after the Ready base stylesheet and set \`data-rd-theme="shadcn"\` on the document element.`,
         },
       },
     },

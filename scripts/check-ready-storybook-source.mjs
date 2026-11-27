@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { access, mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
+import { access, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { catalog } from '../examples/storybook/catalog.ts'
-import { getImplementationUrl, getUsageSource } from '../examples/storybook/usage-source.ts'
+import { getImplementationUrl, getInstallUrl, getUsageSource } from '../examples/storybook/usage-source.ts'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 const artifactDir = join(root, 'artifacts')
@@ -16,6 +16,15 @@ const frameworks = [
   { name: 'Svelte', extension: 'svelte', checker: 'svelte-check/bin/svelte-check' },
 ]
 const entries = Object.entries(catalog)
+const installLink = new URL(getInstallUrl())
+const revision = installLink.pathname.match(/^\/destyler\/designs\/blob\/([a-f0-9]{40})\/docs\/ready-quickstart\.md$/)?.[1]
+assert.equal(installLink.origin, 'https://github.com')
+assert.ok(revision, 'Install link must use an immutable Ready revision')
+async function assertLinkedContents(path) {
+  const linked = execFileSync('git', ['show', `${revision}:${path}`], { cwd: root })
+  assert.deepEqual(linked, await readFile(join(root, path)), `Storybook link has stale contents: ${path}`)
+}
+await assertLinkedContents('docs/ready-quickstart.md')
 assert.equal(entries.length, 45, 'Expected the complete Ready catalog')
 await mkdir(artifactDir, { recursive: true })
 const scratch = await mkdtemp(join(artifactDir, 'storybook-source-check-'))
@@ -53,7 +62,9 @@ try {
       const path = target.pathname.match(/^\/destyler\/designs\/blob\/[a-f0-9]{40}\/packages\/ready\/([a-z]+\/[A-Za-z0-9]+\.[a-z]+)$/)?.[1]
       assert.equal(target.origin, 'https://github.com')
       assert.ok(path?.startsWith(`${framework}/`), `${name} ${component}: invalid implementation target`)
+      assert.ok(target.pathname.startsWith(`/destyler/designs/blob/${revision}/`), `${name} ${component}: mixed implementation revision`)
       await access(join(readyPackage, path))
+      await assertLinkedContents(`packages/ready/${path}`)
       await writeFile(join(dir, `${component}.${extension}`), source)
     }
 

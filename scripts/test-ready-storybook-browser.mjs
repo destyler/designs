@@ -104,6 +104,9 @@ const verifiers = {
     await dialog.waitFor()
     assert.equal(await dialog.evaluate(node => getComputedStyle(node).paddingTop), '24px')
     await dialog.getByText('Only workspace owners can change these settings.', { exact: true }).waitFor()
+    // The modal is visible before its deferred dismissal/focus activity starts.
+    // Require native initial focus before sending a key, not an arbitrary delay.
+    await dialog.locator('[data-part="close-trigger"]:focus').waitFor()
     await page.keyboard.press('Escape')
     await dialog.waitFor({ state: 'hidden' })
     await page.waitForFunction(() => document.activeElement?.textContent?.trim() === 'Review settings')
