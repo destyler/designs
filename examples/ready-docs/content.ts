@@ -91,7 +91,7 @@ export function install(framework: Framework) {
 // These versions are the repository's verified consumer baseline, not registry latest.
 export const consumerSetup = {
   React: {
-    peers: "react@19.2.0 react-dom@19.2.0 @destyler-ui/react@0.0.5",
+    peers: "react@19.2.0 react-dom@19.2.0 @destyler-ui/react@0.0.6",
     plugin: "@vitejs/plugin-react@5.0.4",
     config:
       "import react from '@vitejs/plugin-react'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [react()] }",
@@ -99,7 +99,7 @@ export const consumerSetup = {
     component: "src/Example.tsx",
   },
   Vue: {
-    peers: "vue@3.5.22 @destyler-ui/vue@0.0.5",
+    peers: "vue@3.5.22 @destyler-ui/vue@0.0.6",
     plugin: "@vitejs/plugin-vue@6.0.1",
     config:
       "import vue from '@vitejs/plugin-vue'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [vue()] }",
@@ -107,7 +107,7 @@ export const consumerSetup = {
     component: "src/Example.vue",
   },
   Solid: {
-    peers: "solid-js@1.9.17 @destyler-ui/solid@0.0.5",
+    peers: "solid-js@1.9.17 @destyler-ui/solid@0.0.6",
     plugin: "vite-plugin-solid@2.11.14",
     config:
       "import solid from 'vite-plugin-solid'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [solid()] }",
@@ -115,7 +115,7 @@ export const consumerSetup = {
     component: "src/Example.tsx",
   },
   Svelte: {
-    peers: "svelte@5.57.2 @destyler-ui/svelte@0.0.5",
+    peers: "svelte@5.57.2 @destyler-ui/svelte@0.0.6",
     plugin: "@sveltejs/vite-plugin-svelte@6.2.4",
     config:
       "import { svelte } from '@sveltejs/vite-plugin-svelte'\n\n// 合并到已有 vite.config 的 plugins，勿重复注册\nexport default { plugins: [svelte()] }",

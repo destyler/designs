@@ -252,7 +252,7 @@ if (process.argv[2] === '--worker') {
     for (const framework of frameworks) {
       const setup = consumerSetup[framework], code = existingInstall(framework)
       const peers = setup.peers.split(' ')
-      assert.ok(peers.includes(`@destyler-ui/${framework.toLowerCase()}@0.0.5`))
+      assert.ok(peers.includes(`@destyler-ui/${framework.toLowerCase()}@0.0.6`))
       for (const dependency of [...peers, setup.plugin]) {
         const split = dependency.lastIndexOf('@'), name = dependency.slice(0,split), version = dependency.slice(split+1)
         assert.equal(manifest.dependencies?.[name] ?? manifest.devDependencies?.[name], version)
